@@ -66,14 +66,14 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => handleLinkClick('/login')}
+                  onClick={() => handleLinkClick('/auth')}
                 >
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
                 <Button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
-                  onClick={() => handleLinkClick('/signup')}
+                  onClick={() => handleLinkClick('/auth')}
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Get Started
@@ -127,7 +127,7 @@ export default function Header() {
                 <div className="py-1">
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('/login')}
+                    onClick={() => handleLinkClick('/auth')}
                   >
                     <LogIn className="h-4 w-4 mr-3 text-gray-400" />
                     Sign In
@@ -135,7 +135,7 @@ export default function Header() {
                   
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('/signup')}
+                    onClick={() => handleLinkClick('/auth')}
                   >
                     <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
                     Get Started
