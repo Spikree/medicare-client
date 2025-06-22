@@ -1,5 +1,9 @@
+import LandingPage from "./pages/LandingPage";
+
 const App = () => {
-  return <div className="text-4xl">App</div>;
+  return <>
+    <LandingPage/>
+  </>;
 };
 
 export default App;
