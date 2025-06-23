@@ -1,5 +1,5 @@
-import Auth from "./pages/auth";
-import LandingPage from "./pages/LandingPage";
+import Auth from "@/pages/Auth";
+import LandingPage from "@/pages/LandingPage";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
