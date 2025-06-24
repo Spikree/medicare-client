@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthLayout } from "./AuthLayout";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface props {
   setShowLogin: (value: boolean) => void;
@@ -19,11 +20,14 @@ export function LoginForm({ setShowLogin }: props) {
     password: "",
   });
 
+  const {login} = useAuthStore();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
+    login(formData.email, formData.password);
 
     console.log("Login attempt:", formData);
     setIsLoading(false);

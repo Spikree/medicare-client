@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { AuthLayout } from "./AuthLayout"
+import { useAuthStore } from "@/store/useAuthStore"
 
 interface props {
     setShowLogin: (value: boolean) => void;
@@ -22,21 +23,18 @@ export function SignupForm({setShowLogin} : props) {
     role: "",
   })
 
+  const {signup} = useAuthStore();
+
   const roles = [
     { value: "doctor", label: "Doctor" },
-    { value: "nurse", label: "Nurse" },
-    { value: "admin", label: "Practice Administrator" },
-    { value: "receptionist", label: "Receptionist" },
-    { value: "physician-assistant", label: "Physician Assistant" },
-    { value: "nurse-practitioner", label: "Nurse Practitioner" },
+    { value: "patient", label: "Patient" },
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    signup(formData.email, formData.name, formData.password, formData.role);
 
     console.log("Signup attempt:", formData)
     setIsLoading(false)
