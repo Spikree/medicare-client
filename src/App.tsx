@@ -8,6 +8,7 @@ import Dashboard from "./pages/doctor/Dashboard";
 import DoctorRoutes from "./routes/DoctorRoute";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import PatientRoutes from "./routes/PatientRoutes";
+import SidebarLayout from "./layouts/NavbarLayout";
 
 const App = () => {
   const { checkAuth } = useAuthStore();
@@ -24,12 +25,14 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedRoutes />}>
-          <Route element={<DoctorRoutes />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Route>
+          <Route element={<SidebarLayout/>}>
+            <Route element={<DoctorRoutes />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                      </Route>
 
-          <Route element={<PatientRoutes />}></Route>
-        </Route>
+                      <Route element={<PatientRoutes />}></Route>
+                    </Route>
+          </Route>
       </Routes>
     </>
   );

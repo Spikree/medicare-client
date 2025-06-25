@@ -17,11 +17,11 @@ export default function Header() {
   };
 
   const handleLinkClick = (href: string): void => {
-    if (href.startsWith('#')) {
+    if (href.startsWith("#")) {
       // Smooth scroll for anchor links
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     } else {
       // Navigate to external links
@@ -49,14 +49,14 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => handleLinkClick('#features')}
+                  onClick={() => handleLinkClick("#features")}
                 >
                   Features
                 </Button>
                 <Button
                   variant="ghost"
                   className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => handleLinkClick('#testimonials')}
+                  onClick={() => handleLinkClick("#testimonials")}
                 >
                   Testimonials
                 </Button>
@@ -66,14 +66,14 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                  onClick={() => handleLinkClick('/auth')}
+                  onClick={() => handleLinkClick("/auth")}
                 >
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
                 <Button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
-                  onClick={() => handleLinkClick('/auth')}
+                  onClick={() => handleLinkClick("/auth")}
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Get Started
@@ -98,7 +98,7 @@ export default function Header() {
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              
+
               <DropdownMenuContent
                 align="end"
                 className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
@@ -107,15 +107,15 @@ export default function Header() {
                 <div className="py-1">
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('#features')}
+                    onClick={() => handleLinkClick("#features")}
                   >
                     <User className="h-4 w-4 mr-3 text-gray-400" />
                     Features
                   </DropdownMenuItem>
-                  
+
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('#testimonials')}
+                    onClick={() => handleLinkClick("#testimonials")}
                   >
                     <User className="h-4 w-4 mr-3 text-gray-400" />
                     Testimonials
@@ -127,15 +127,15 @@ export default function Header() {
                 <div className="py-1">
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('/auth')}
+                    onClick={() => handleLinkClick("/auth")}
                   >
                     <LogIn className="h-4 w-4 mr-3 text-gray-400" />
                     Sign In
                   </DropdownMenuItem>
-                  
+
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick('/auth')}
+                    onClick={() => handleLinkClick("/auth")}
                   >
                     <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
                     Get Started
