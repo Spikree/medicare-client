@@ -42,7 +42,7 @@ export default function Testimonials() {
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="border-0 shadow-lg bg-green-50">
+            <Card key={index} className="border-0 bg-green-50">
               <CardContent className="p-8">
                 <div className="flex items-center py-2">
                   <Avatar className="h-12 w-12 mr-4">

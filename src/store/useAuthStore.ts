@@ -38,6 +38,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     try {
       const response = await axiosInstance.post("/auth/login", formData);
       set({ authUser: response.data.user });
+      localStorage.setItem("user_role", response.data.user.role)
       toast(response.data.message);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       console.log(response);
       set({ authUser: response.data.user });
       toast(response.data.message);
+      localStorage.setItem("user_role", response.data.user.role)
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
