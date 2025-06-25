@@ -3,22 +3,14 @@ import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
-// interface User {
-//   _id: string;
-//   name: string;
-//   email: string;
-//   password: string;
-//   role: "doctor" | "patient";
-//   bio: string;
-//   profilePicture: string;
-//   doctorId: string;
-// }
-
 interface authUser {
   _id: string;
-  name?: string;
+  name: string;
   email: string;
-  role?: "doctor" | "patient";
+  role: "doctor" | "patient";
+  bio?: string;
+  profilePicture?: string;
+  doctorId?: string;
 }
 
 interface AuthStore {
@@ -29,11 +21,15 @@ interface AuthStore {
     name: string,
     role: string
   ) => Promise<void>;
+  checkAuth: () => Promise<void>;
+
   authUser: authUser | null;
+  isCheckingAuth: boolean;
 }
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   authUser: null,
+  isCheckingAuth: false,
   login: async (email: string, password: string) => {
     const formData = {
       email,
@@ -74,6 +70,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         axiosError.response?.data?.message ||
         "Signup failed. Please try again.";
       toast.error(errorMessage);
+    }
+  },
+
+  checkAuth: async () => {
+    set({ isCheckingAuth: true });
+    try {
+      const response = await axiosInstance.get("/auth/checkAuth");
+      set({ authUser: response.data });
+    } catch (error) {
+      // const axiosError = error as AxiosError<{ message: string }>;
+      // const errorMessage =
+      //   axiosError.response?.data?.message ||
+      //   "Signup failed. Please try again.";
+      // toast.error(errorMessage);
+      console.log(error)
+    } finally {
+      set({ isCheckingAuth: false });
     }
   },
 }));
