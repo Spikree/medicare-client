@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DoctorStore } from "@/store/DoctorStore";
 import { Search } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const { getPatientList, patientList } = DoctorStore();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     getPatientList();
@@ -21,19 +22,28 @@ const Dashboard = () => {
     (patient) => patient.patientStatus === "old"
   );
 
+  const SearchPatients = () => {
+    console.log("Search " + searchQuery);
+  };
+
   return (
     <>
-      <Card className=" max-w-auto max-h-full p-10 m-4 flex justify-between">
+      <Card className=" max-w-auto max-h-full p-10 m-4 flex flex-wrap gap-2 justify-between">
         <div className="flex gap-2 max-w-96">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input placeholder="Search Patients" className="pl-10" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Patients"
+              className="pl-10"
+            />
           </div>
-          <Button>Search</Button>
+          <Button variant={"green"} onClick={() => SearchPatients()}>Search</Button>
         </div>
 
         <div>
-          <Button>Add Patient</Button>
+          <Button variant={"green"}>Add Patient</Button>
         </div>
       </Card>
 
@@ -50,12 +60,10 @@ const Dashboard = () => {
 
           <Card className="py-2 mt-4">
             <TabsContent value="current">
-              {/* add accordian from shadcn */}
               <PatientAccordion patients={currentPatients} />
             </TabsContent>
 
             <TabsContent value="old">
-              {/* add accordian from shadcn */}
               <PatientAccordion patients={oldPatients} />
             </TabsContent>
           </Card>
