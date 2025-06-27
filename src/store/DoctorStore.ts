@@ -13,14 +13,26 @@ interface Patient {
   createdOn: string;
 }
 
+interface Searchpatient {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdOn: string;
+}
+
 interface DoctorStore {
   getPatientList: () => Promise<void>;
+  searchPatients: (query: string) => Promise<void>;
 
   patientList: Patient[];
+  searchPatientList: Searchpatient[];
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
   patientList: [],
+  searchPatientList: [],
+
   getPatientList: async () => {
     try {
       const response = await axiosInstance.get("/doctor/getPatientList");
@@ -29,6 +41,21 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error fecthing patient list";
+      toast.error(errorMessage);
+    }
+  },
+
+  searchPatients: async (query: string) => {
+    try {
+      const response = await axiosInstance.post("/doctor/searchPatients", {
+        patientName: query,
+        patientEmail: query
+      });
+      set({searchPatientList: response.data.patients});
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error searching patient list";
       toast.error(errorMessage);
     }
   },
