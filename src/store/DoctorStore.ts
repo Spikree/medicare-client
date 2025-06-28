@@ -22,18 +22,33 @@ interface Searchpatient {
   createdOn: string;
 }
 
+interface PatientDetails {
+  _id: string;
+  name: string;
+  doctor: string;
+  patient: string;
+  Disease: string;
+  symptom: string;
+  patientFeedback: string;
+  medicationPrescribed: string;
+  createdOn: string;
+}
+
 interface DoctorStore {
   getPatientList: () => Promise<void>;
   addPatient: (patientId: string) => Promise<AxiosResponse | void>;
   searchPatients: (query: string) => Promise<void>;
+  getPatientDetails: (patientId: string) => Promise<void>;
 
   patientList: Patient[];
   searchPatientList: Searchpatient[];
+  patientDetailsList: PatientDetails[];
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
   patientList: [],
   searchPatientList: [],
+  patientDetailsList: [],
 
   getPatientList: async () => {
     try {
@@ -73,6 +88,20 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error adding patient";
+      toast.error(errorMessage);
+    }
+  },
+
+  getPatientDetails: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/doctor/getPatientDetails/${patientId}`
+      );
+      set({ patientDetailsList: response.data.patientDetails });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error getting patient info";
       toast.error(errorMessage);
     }
   },

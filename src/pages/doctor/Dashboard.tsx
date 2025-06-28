@@ -78,7 +78,7 @@ const Dashboard = () => {
             </Card>
           </Tabs>
         </Card>
-        <AddNewPatientDialog setOpen={setOpen} />
+        <AddNewPatientDialog setOpen={setOpen} open={open} />
       </Dialog>
     </>
   );

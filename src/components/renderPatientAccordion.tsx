@@ -8,6 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Mail, User } from "lucide-react";
 import { Card } from "./ui/card";
+import { Link } from "react-router-dom";
 
 interface Patient {
   _id: string;
@@ -94,9 +95,11 @@ const PatientAccordion = ({ patients }: props) => {
                   <Button size="sm" variant="outline">
                     Edit Patient
                   </Button>
-                  <Button size="sm" variant="outline">
-                    View Details
-                  </Button>
+                  <Link to={`/patientDetails/${patient?.patient}`}>
+                    <Button size="sm" variant="outline">
+                      View Details
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </AccordionContent>

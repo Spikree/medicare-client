@@ -7,14 +7,15 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Search } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoctorStore } from "@/store/DoctorStore";
 
 interface Props {
   setOpen: (value: boolean) => void;
+  open: boolean;
 }
 
-const AddNewPatientDialog = ({ setOpen }: Props) => {
+const AddNewPatientDialog = ({ setOpen, open }: Props) => {
   const [searchPatient, setSearchPatient] = useState("");
   const { searchPatients, searchPatientList, addPatient, getPatientList } =
     DoctorStore();
@@ -32,6 +33,12 @@ const AddNewPatientDialog = ({ setOpen }: Props) => {
       }
     });
   };
+
+  useEffect(() => {
+    if (open === false) {
+      setSearchPatient("");
+    }
+  }, [open]);
 
   return (
     <DialogContent className="w-full max-w-2xl mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
