@@ -16,7 +16,8 @@ interface Props {
 
 const AddNewPatientDialog = ({ setOpen }: Props) => {
   const [searchPatient, setSearchPatient] = useState("");
-  const { searchPatients, searchPatientList, addPatient } = DoctorStore();
+  const { searchPatients, searchPatientList, addPatient, getPatientList } =
+    DoctorStore();
 
   const searchPatientFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
     searchPatients(e.target.value);
@@ -27,6 +28,7 @@ const AddNewPatientDialog = ({ setOpen }: Props) => {
       if (response?.status === 200) {
         setOpen(false);
         setSearchPatient("");
+        getPatientList();
       }
     });
   };
