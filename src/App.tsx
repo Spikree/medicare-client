@@ -25,14 +25,14 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedRoutes />}>
-          <Route element={<SidebarLayout/>}>
+          <Route element={<SidebarLayout />}>
             <Route element={<DoctorRoutes />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                      </Route>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
 
-                      <Route element={<PatientRoutes />}></Route>
-                    </Route>
+            <Route element={<PatientRoutes />}></Route>
           </Route>
+        </Route>
       </Routes>
     </>
   );

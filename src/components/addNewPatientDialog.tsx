@@ -10,12 +10,25 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { DoctorStore } from "@/store/DoctorStore";
 
-const AddNewPatientDialog = () => {
+interface Props {
+  setOpen: (value: boolean) => void;
+}
+
+const AddNewPatientDialog = ({ setOpen }: Props) => {
   const [searchPatient, setSearchPatient] = useState("");
-  const { searchPatients, searchPatientList } = DoctorStore();
+  const { searchPatients, searchPatientList, addPatient } = DoctorStore();
 
   const searchPatientFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
     searchPatients(e.target.value);
+  };
+
+  const addPatients = (patientId: string) => {
+    addPatient(patientId).then((response) => {
+      if (response?.status === 200) {
+        setOpen(false);
+        setSearchPatient("");
+      }
+    });
   };
 
   return (
@@ -61,7 +74,11 @@ const AddNewPatientDialog = () => {
                     {patient.email}
                   </p>
                 </div>
-                <Button variant="green" className="w-full sm:w-auto">
+                <Button
+                  onClick={() => addPatients(patient?._id)}
+                  variant="green"
+                  className="w-full sm:w-auto"
+                >
                   Add
                 </Button>
               </Card>

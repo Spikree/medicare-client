@@ -49,14 +49,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   signup: async (
+    name: string,
     email: string,
     password: string,
-    name: string,
     role: string
   ) => {
     const formData = {
-      email,
       name,
+      email,
       password,
       role,
     };

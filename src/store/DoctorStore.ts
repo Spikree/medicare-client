@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
+import type { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
 interface Patient {
@@ -23,6 +24,7 @@ interface Searchpatient {
 
 interface DoctorStore {
   getPatientList: () => Promise<void>;
+  addPatient: (patientId: string) => Promise<AxiosResponse | void>;
   searchPatients: (query: string) => Promise<void>;
 
   patientList: Patient[];
@@ -49,13 +51,28 @@ export const DoctorStore = create<DoctorStore>((set) => ({
     try {
       const response = await axiosInstance.post("/doctor/searchPatients", {
         patientName: query,
-        patientEmail: query
+        patientEmail: query,
       });
-      set({searchPatientList: response.data.patients});
+      set({ searchPatientList: response.data.patients });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error searching patient list";
+      toast.error(errorMessage);
+    }
+  },
+
+  addPatient: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.post("/doctor/addPatient", {
+        patientId,
+      });
+      toast(response.data.message);
+      return response;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error adding patient";
       toast.error(errorMessage);
     }
   },

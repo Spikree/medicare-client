@@ -1,11 +1,8 @@
-import AddNewPatientDialog from "@/components/addNewPatientDialog";
+import AddNewPatientDialog from "@/components/AddNewPatientDialog";
 import PatientAccordion from "@/components/renderPatientAccordion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DoctorStore } from "@/store/DoctorStore";
@@ -15,6 +12,7 @@ import { useEffect, useState } from "react";
 const Dashboard = () => {
   const { getPatientList, patientList } = DoctorStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getPatientList();
@@ -33,7 +31,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <Card className=" max-w-auto max-h-full p-10 m-4 flex flex-wrap gap-2 justify-between">
           <div className="flex gap-2 max-w-96">
             <div className="relative w-full">
@@ -49,8 +47,6 @@ const Dashboard = () => {
             <Button variant={"green"} onClick={() => SearchPatients()}>
               Open
             </Button>
-
-            
           </div>
 
           <div>
@@ -71,7 +67,7 @@ const Dashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            <Card className="py-2 mt-4">
+            <Card className="py-2 mt-4 border-0 shadow-none">
               <TabsContent value="current">
                 <PatientAccordion patients={currentPatients} />
               </TabsContent>
@@ -82,7 +78,7 @@ const Dashboard = () => {
             </Card>
           </Tabs>
         </Card>
-        <AddNewPatientDialog/>
+        <AddNewPatientDialog setOpen={setOpen} />
       </Dialog>
     </>
   );

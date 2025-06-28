@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Mail, User } from "lucide-react";
+import { Card } from "./ui/card";
 
 interface Patient {
   _id: string;
@@ -42,57 +43,65 @@ const PatientAccordion = ({ patients }: props) => {
   }
 
   return (
-    <Accordion type="single" collapsible className="w-full">
+    <Accordion
+      type="single"
+      collapsible
+      className="w-full flex flex-col gap-4 p-4"
+    >
       {patients.map((patient) => (
-        <AccordionItem 
-          key={patient._id} 
-          value={patient._id} 
-          className="px-10 border-b-0"
-        >
-          <AccordionTrigger>
-            <div className="flex items-center justify-between w-full mr-4">
-              <div className="flex items-center gap-3">
-                <User className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{patient.name}</span>
-              </div>
-              <Badge
-                variant={
-                  patient.patientStatus === "current" ? "default" : "secondary"
-                }
-                className="ml-auto"
-              >
-                {patient.patientStatus}
-              </Badge>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="pt-4 space-y-4 px-10">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Email:</span>
-                  <span className="text-sm">{patient.email}</span>
+        <Card>
+          <AccordionItem
+            key={patient._id}
+            value={patient._id}
+            className="px-10 border-b-0"
+          >
+            <AccordionTrigger>
+              <div className="flex items-center justify-between w-full mr-4">
+                <div className="flex items-center gap-3">
+                  <User className="h-4 w-4 text-gray-500" />
+                  <span className="font-medium">{patient.name}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Created On:</span>
-                  <span className="text-sm">
-                    {formatDate(patient.createdOn)}
-                  </span>
-                </div>
+                <Badge
+                  variant={
+                    patient.patientStatus === "current"
+                      ? "default"
+                      : "secondary"
+                  }
+                  className="ml-auto"
+                >
+                  {patient.patientStatus}
+                </Badge>
               </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="pt-4 space-y-4 px-10">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">Email:</span>
+                    <span className="text-sm">{patient.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">Created On:</span>
+                    <span className="text-sm">
+                      {formatDate(patient.createdOn)}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="pt-3 border-t flex gap-2">
-                <Button size="sm" variant="outline">
-                  Edit Patient
-                </Button>
-                <Button size="sm" variant="outline">
-                  View Details
-                </Button>
+                <div className="pt-3 border-t flex gap-2">
+                  <Button size="sm" variant="outline">
+                    Edit Patient
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    View Details
+                  </Button>
+                </div>
               </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+            </AccordionContent>
+          </AccordionItem>
+        </Card>
       ))}
     </Accordion>
   );
