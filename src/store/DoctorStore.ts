@@ -39,6 +39,11 @@ interface DoctorStore {
   addPatient: (patientId: string) => Promise<AxiosResponse | void>;
   searchPatients: (query: string) => Promise<void>;
   getPatientDetails: (patientId: string) => Promise<void>;
+  uploadLabResults: (
+    patientId: string,
+    file: File,
+    title: string
+  ) => Promise<void>;
 
   patientList: Patient[];
   searchPatientList: Searchpatient[];
@@ -102,6 +107,29 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error getting patient info";
+      toast.error(errorMessage);
+    }
+  },
+
+  uploadLabResults: async (patientId: string, file: File, title: string) => {
+    const formData = new FormData();
+    formData.append("labFile", file);
+    formData.append("title", title);
+    try {
+      const response = await axiosInstance.post(
+        `/doctor/uploadLabResults/${patientId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error uploading lab results";
       toast.error(errorMessage);
     }
   },
