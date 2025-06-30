@@ -34,6 +34,14 @@ interface PatientDetails {
   createdOn: string;
 }
 
+interface PatientLabResults {
+  _id: string;
+  title: string;
+  labResult: string;
+  patient: string;
+  createdOn: string;
+}
+
 interface DoctorStore {
   getPatientList: () => Promise<void>;
   addPatient: (patientId: string) => Promise<AxiosResponse | void>;
@@ -44,16 +52,19 @@ interface DoctorStore {
     file: File,
     title: string
   ) => Promise<void>;
+  getPatientLabResults: (patientId: string) => Promise<void>;
 
   patientList: Patient[];
   searchPatientList: Searchpatient[];
   patientDetailsList: PatientDetails[];
+  patientLabResults: PatientLabResults[];
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
   patientList: [],
   searchPatientList: [],
   patientDetailsList: [],
+  patientLabResults: [],
 
   getPatientList: async () => {
     try {
@@ -130,6 +141,20 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error uploading lab results";
+      toast.error(errorMessage);
+    }
+  },
+
+  getPatientLabResults: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/doctor/getPatientLabResults/${patientId}`
+      );
+      set({ patientLabResults: response.data.patientLabResults });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error fetching lab results";
       toast.error(errorMessage);
     }
   },
