@@ -39,7 +39,7 @@ const Dashboard = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search Patients"
+                placeholder="Search Patients by name"
                 className="pl-10"
               />
             </div>

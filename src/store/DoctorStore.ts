@@ -53,6 +53,13 @@ interface DoctorStore {
     title: string
   ) => Promise<void>;
   getPatientLabResults: (patientId: string) => Promise<void>;
+  addPatientDetails: (
+    patientId: string,
+    Disease: string,
+    symptom: string,
+    patientExperience: string,
+    medicationPrescribed: string
+  ) => Promise<void>;
 
   patientList: Patient[];
   searchPatientList: Searchpatient[];
@@ -155,6 +162,34 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error fetching lab results";
+      toast.error(errorMessage);
+    }
+  },
+
+  addPatientDetails: async (
+    patientId: string,
+    Disease: string,
+    symptom: string,
+    patientExperience: string,
+    medicationPrescribed: string
+  ) => {
+    const payload = {
+      Disease,
+      symptom,
+      patientExperience,
+      medicationPrescribed,
+    };
+    try {
+      const response = await axiosInstance.post(
+        `/doctor/addPatientDetails/${patientId}`,
+        payload
+      );
+      console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error fetching adding patient details";
       toast.error(errorMessage);
     }
   },
