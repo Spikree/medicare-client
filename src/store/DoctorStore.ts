@@ -185,6 +185,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         payload
       );
       console.log(response);
+      console.log("patient records added");
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

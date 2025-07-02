@@ -50,14 +50,20 @@ const PatientDetails = () => {
     uploadLabResults,
     getPatientLabResults,
     patientLabResults,
+    addPatientDetails,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUploadPatientsDialogOpen, setIsUploadPatientsDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [labResultTitle, setLabResultTitle] = useState("");
+  const [disease, setDisease] = useState("");
+  const [symptom, setSymptom] = useState("");
+  const [patientExperience, setPatientExperience] = useState("");
+  const [medicationPrescribed, setMedicationPrescribed] = useState("");
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -68,6 +74,24 @@ const PatientDetails = () => {
     if (file) {
       setSelectedFile(file);
       console.log("Selected file:", file.name);
+    }
+  };
+
+  const addPatientRecords = () => {
+    if (patientId && disease && symptom && medicationPrescribed) {
+      addPatientDetails(
+        patientId,
+        disease,
+        symptom,
+        patientExperience,
+        medicationPrescribed
+      );
+      setDisease("");
+      setSymptom("");
+      setPatientExperience("");
+      setMedicationPrescribed("");
+      getPatientDetails(patientId);
+      setIsUploadPatientsDialogOpen(false);
     }
   };
 
@@ -151,7 +175,7 @@ const PatientDetails = () => {
   const patientName = patientDetailsList[0]?.name || "Unknown Patient";
 
   return (
-    <Dialog>
+    <Dialog open={isUploadPatientsDialogOpen} onOpenChange={setIsUploadPatientsDialogOpen}>
       <div className="w-full p-6">
         <Tabs defaultValue="current">
           <TabsList>
@@ -177,7 +201,7 @@ const PatientDetails = () => {
                 <DialogTrigger asChild>
                   <Button className="flex items-center gap-2" variant={"green"}>
                     <Plus className="h-4 w-4" />
-                    Upload Lab Results
+                    Upload patient records
                   </Button>
                 </DialogTrigger>
               </div>
@@ -241,77 +265,70 @@ const PatientDetails = () => {
               </div>
 
               {/* Upload Dialog Content */}
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md flex flex-col gap-4 p-6">
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
+                  <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
                     <Upload className="h-5 w-5" />
-                    Upload Lab Results
+                    Upload patient records
                   </DialogTitle>
-                  <DialogDescription>
-                    Select a file to upload patient lab results or medical
-                    documents
-                  </DialogDescription>
-                  <span className="text-sm text-gray-500">Title</span>
-                  <Input
-                    value={labResultTitle}
-                    onChange={(e) => {
-                      setLabResultTitle(e.target.value);
-                    }}
-                    placeholder="Lab result title"
-                  />
                 </DialogHeader>
 
-                <div className="space-y-4">
-                  {/* File Upload Section */}
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      onChange={handleFileChange}
-                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    />
-
-                    <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
-
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">
-                        {selectedFile
-                          ? selectedFile.name
-                          : "Choose a file to upload"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Supported formats: PDF, JPG, PNG, DOC, DOCX
-                      </p>
-
-                      <Button
-                        onClick={handleClick}
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                      >
-                        {selectedFile ? "Change File" : "Select File"}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Selected File Info */}
-                  {selectedFile && (
-                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                      <FileText className="h-8 w-8 text-muted-foreground" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {selectedFile.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Disease
+                  </label>
+                  <Input
+                    required
+                    value={disease}
+                    onChange={(e) => setDisease(e.target.value)}
+                    placeholder="Enter disease"
+                    className="focus:ring-2 focus:ring-green-500"
+                  />
                 </div>
 
-                <Button onClick={handleFileUpload} variant={"green"}>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Symptoms
+                  </label>
+                  <Input
+                    required
+                    value={symptom}
+                    onChange={(e) => setSymptom(e.target.value)}
+                    placeholder="Enter symptoms"
+                    className="focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Patient Experience
+                  </label>
+                  <Input
+                    value={patientExperience}
+                    onChange={(e) => setPatientExperience(e.target.value)}
+                    placeholder="Enter patient experience"
+                    className="focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Medication Prescribed
+                  </label>
+                  <Input
+                    required
+                    value={medicationPrescribed}
+                    onChange={(e) => setMedicationPrescribed(e.target.value)}
+                    placeholder="Enter medication prescribed"
+                    className="focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <Button
+                  onClick={addPatientRecords}
+                  variant="green"
+                  className="mt-4"
+                >
                   Submit
                 </Button>
               </DialogContent>
@@ -462,81 +479,83 @@ const PatientDetails = () => {
                   </DialogTrigger>
                 </div>
 
-                              {/* Upload Dialog Content */}
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
-                    Upload Lab Results
-                  </DialogTitle>
-                  <DialogDescription>
-                    Select a file to upload patient lab results or medical
-                    documents
-                  </DialogDescription>
-                  <span className="text-sm text-gray-500">Title</span>
-                  <Input
-                    value={labResultTitle}
-                    onChange={(e) => {
-                      setLabResultTitle(e.target.value);
-                    }}
-                    placeholder="Lab result title"
-                  />
-                </DialogHeader>
-
-                <div className="space-y-4">
-                  {/* File Upload Section */}
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      onChange={handleFileChange}
-                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                {/* Upload Dialog Content */}
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Upload className="h-5 w-5" />
+                      Upload Lab Results
+                    </DialogTitle>
+                    <DialogDescription>
+                      Select a file to upload patient lab results or medical
+                      documents
+                    </DialogDescription>
+                    <span className="text-sm font-medium text-gray-700">
+                      Title
+                    </span>
+                    <Input
+                      value={labResultTitle}
+                      onChange={(e) => {
+                        setLabResultTitle(e.target.value);
+                      }}
+                      placeholder="Lab result title"
                     />
+                  </DialogHeader>
 
-                    <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                  <div className="space-y-4">
+                    {/* File Upload Section */}
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      />
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">
-                        {selectedFile
-                          ? selectedFile.name
-                          : "Choose a file to upload"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Supported formats: PDF, JPG, PNG, DOC, DOCX
-                      </p>
+                      <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
 
-                      <Button
-                        onClick={handleClick}
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                      >
-                        {selectedFile ? "Change File" : "Select File"}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Selected File Info */}
-                  {selectedFile && (
-                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                      <FileText className="h-8 w-8 text-muted-foreground" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {selectedFile.name}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">
+                          {selectedFile
+                            ? selectedFile.name
+                            : "Choose a file to upload"}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          Supported formats: PDF, JPG, PNG, DOC, DOCX
                         </p>
+
+                        <Button
+                          onClick={handleClick}
+                          variant="outline"
+                          size="sm"
+                          className="mt-2"
+                        >
+                          {selectedFile ? "Change File" : "Select File"}
+                        </Button>
                       </div>
                     </div>
-                  )}
-                </div>
 
-                <Button onClick={handleFileUpload} variant={"green"}>
-                  Submit
-                </Button>
-              </DialogContent>
+                    {/* Selected File Info */}
+                    {selectedFile && (
+                      <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                        <FileText className="h-8 w-8 text-muted-foreground" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {selectedFile.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button onClick={handleFileUpload} variant={"green"}>
+                    Submit
+                  </Button>
+                </DialogContent>
 
                 {patientLabResults && patientLabResults.length > 0 ? (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -606,7 +625,6 @@ const PatientDetails = () => {
                   </div>
                 )}
               </div>
-              
             </TabsContent>
           </Card>
         </Tabs>
