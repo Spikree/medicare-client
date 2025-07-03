@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AddPatientFeedbackDialog from "@/components/AddPatientFeedbackDialog";
 
 interface PatientDetails {
   _id: string;
@@ -64,12 +65,22 @@ const PatientDetails = () => {
   const [labResultTitle, setLabResultTitle] = useState("");
   const [disease, setDisease] = useState("");
   const [symptom, setSymptom] = useState("");
+  const [showPatientFeedbackModel, setShowPatientFeedbackModel] =
+    useState(false);
   const [patientExperience, setPatientExperience] = useState("");
   const [medicationPrescribed, setMedicationPrescribed] = useState("");
 
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  const patientFeedbackModelView = () => {
+    setShowPatientFeedbackModel((prev) => !prev);
+  };
+
+  const addPatientFeedback = (patientDetailId: string,  patientReview:string,sideEffects: string) => {
+    addPatientReview(patientDetailId,patientReview,sideEffects)
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -418,7 +429,7 @@ const PatientDetails = () => {
                             <div className="flex items-center gap-2 mb-2">
                               <MessageSquare className="h-4 w-4 text-orange-600" />
                               <span className="font-medium">
-                                Patient Feedback
+                                Patient Experience
                               </span>
                             </div>
                             <div className="border border-orange-200 rounded-md p-3 bg-orange-50">
@@ -458,7 +469,17 @@ const PatientDetails = () => {
                       </div>
                     </div>
                   )}
-                  <Button variant={"green"}>Add patient feedback</Button>
+                  <Button onClick={patientFeedbackModelView} variant={"green"}>
+                    Add patient feedback
+                  </Button>
+                  {showPatientFeedbackModel && (
+                    <AddPatientFeedbackDialog
+                      isOpen={showPatientFeedbackModel}
+                      onOpenChange={patientFeedbackModelView}
+                      onSubmit={addPatientFeedback}
+                      patientDetailId={selectedRecord?._id || ""}
+                    />
+                  )}
                 </DialogContent>
               </Dialog>
             </TabsContent>
