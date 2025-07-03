@@ -51,12 +51,14 @@ const PatientDetails = () => {
     getPatientLabResults,
     patientLabResults,
     addPatientDetails,
+    addPatientReview,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isUploadPatientsDialogOpen, setIsUploadPatientsDialogOpen] = useState(false);
+  const [isUploadPatientsDialogOpen, setIsUploadPatientsDialogOpen] =
+    useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [labResultTitle, setLabResultTitle] = useState("");
@@ -175,7 +177,10 @@ const PatientDetails = () => {
   const patientName = patientDetailsList[0]?.name || "Unknown Patient";
 
   return (
-    <Dialog open={isUploadPatientsDialogOpen} onOpenChange={setIsUploadPatientsDialogOpen}>
+    <Dialog
+      open={isUploadPatientsDialogOpen}
+      onOpenChange={setIsUploadPatientsDialogOpen}
+    >
       <div className="w-full p-6">
         <Tabs defaultValue="current">
           <TabsList>
@@ -453,6 +458,7 @@ const PatientDetails = () => {
                       </div>
                     </div>
                   )}
+                  <Button variant={"green"}>Add patient feedback</Button>
                 </DialogContent>
               </Dialog>
             </TabsContent>
