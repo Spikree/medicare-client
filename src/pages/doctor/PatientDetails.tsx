@@ -20,7 +20,6 @@ import {
   MessageSquare,
   Pill,
   Calendar,
-  ArrowLeft,
   FileText,
   Eye,
   Upload,
@@ -78,9 +77,13 @@ const PatientDetails = () => {
     setShowPatientFeedbackModel((prev) => !prev);
   };
 
-  const addPatientFeedback = (patientDetailId: string,  patientReview:string,sideEffects: string) => {
-    addPatientReview(patientDetailId,patientReview,sideEffects)
-  }
+  const addPatientFeedback = (
+    patientDetailId: string,
+    patientReview: string,
+    sideEffects: string
+  ) => {
+    addPatientReview(patientDetailId, patientReview, sideEffects);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,21 +140,18 @@ const PatientDetails = () => {
       <div className="w-full p-6">
         {/* Header */}
 
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
+        <div className="flex justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
               Patient Details
             </h1>
             <p className="text-muted-foreground">No records found</p>
           </div>
+
+          <Button onClick={() => setIsDialogOpen(false)} className="flex items-center gap-2" variant={"green"}>
+            <Plus className="h-4 w-4" />
+            Upload patient records
+          </Button>
         </div>
 
         {/* No Records Message */}
