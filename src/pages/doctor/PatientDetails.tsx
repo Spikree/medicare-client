@@ -137,36 +137,108 @@ const PatientDetails = () => {
 
   if (patientDetailsList.length === 0) {
     return (
-      <div className="w-full p-6">
-        {/* Header */}
-
-        <div className="flex justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              Patient Details
-            </h1>
-            <p className="text-muted-foreground">No records found</p>
+      <Dialog
+        open={isUploadPatientsDialogOpen}
+        onOpenChange={setIsUploadPatientsDialogOpen}
+      >
+        <div className="w-full p-6">
+          {/* Header */}
+          <div className="flex justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                Patient Details
+              </h1>
+              <p className="text-muted-foreground">No records found</p>
+            </div>
+  
+            {/* Wrap the button in DialogTrigger */}
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2" variant="green">
+                <Plus className="h-4 w-4" />
+                Upload patient records
+              </Button>
+            </DialogTrigger>
           </div>
-
-          <Button onClick={() => setIsDialogOpen(false)} className="flex items-center gap-2" variant={"green"}>
-            <Plus className="h-4 w-4" />
-            Upload patient records
-          </Button>
-        </div>
-
-        {/* No Records Message */}
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-            <h2 className="text-2xl font-semibold text-foreground mb-2">
-              No Records Yet
-            </h2>
-            <p className="text-muted-foreground">
-              This patient has no medical records yet.
-            </p>
+  
+          {/* No Records Message */}
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+              <h2 className="text-2xl font-semibold text-foreground mb-2">
+                No Records Yet
+              </h2>
+              <p className="text-muted-foreground">
+                This patient has no medical records yet.
+              </p>
+            </div>
           </div>
+  
+          {/* Dialog Content for Upload Patient Records */}
+          <DialogContent className="sm:max-w-md flex flex-col gap-4 p-6">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+                <Upload className="h-5 w-5" />
+                Upload patient records
+              </DialogTitle>
+            </DialogHeader>
+  
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Disease</label>
+              <Input
+                required
+                value={disease}
+                onChange={(e) => setDisease(e.target.value)}
+                placeholder="Enter disease"
+                className="focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+  
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Symptoms</label>
+              <Input
+                required
+                value={symptom}
+                onChange={(e) => setSymptom(e.target.value)}
+                placeholder="Enter symptoms"
+                className="focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+  
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Patient Experience
+              </label>
+              <Input
+                value={patientExperience}
+                onChange={(e) => setPatientExperience(e.target.value)}
+                placeholder="Enter patient experience"
+                className="focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+  
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Medication Prescribed
+              </label>
+              <Input
+                required
+                value={medicationPrescribed}
+                onChange={(e) => setMedicationPrescribed(e.target.value)}
+                placeholder="Enter medication prescribed"
+                className="focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+  
+            <Button
+              onClick={addPatientRecords}
+              variant="green"
+              className="mt-4"
+            >
+              Submit
+            </Button>
+          </DialogContent>
         </div>
-      </div>
+      </Dialog>
     );
   }
 
