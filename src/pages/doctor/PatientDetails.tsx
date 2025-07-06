@@ -56,7 +56,7 @@ const PatientDetails = () => {
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isUploadPatientsDialogOpen, setIsUploadPatientsDialogOpen] =
     useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -202,9 +202,9 @@ const PatientDetails = () => {
                             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                               Disease
                             </label>
-                            <Badge variant="destructive" className="text-sm">
+                            <p className="text-sm text-foreground">
                               {record.Disease}
-                            </Badge>
+                            </p>
                           </div>
 
                           {/* Symptoms */}
@@ -363,11 +363,6 @@ const PatientDetails = () => {
                             </span>
                           </div>
                           <div className="border border-red-200 rounded-md p-3 bg-red-50">
-                            <div className="mb-2">
-                              <Badge variant="destructive">
-                                {selectedRecord.Disease}
-                              </Badge>
-                            </div>
                             <p className="text-sm text-red-900">
                               {selectedRecord.symptom}
                             </p>
