@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPatientFeedbackDialog from "@/components/AddPatientFeedbackDialog";
+import BreadcrumbElement from "@/components/BreadcrumbElement";
 
 interface PatientDetails {
   _id: string;
@@ -150,6 +151,8 @@ const PatientDetails = () => {
     setIsDialogOpen(true);
   };
 
+  const breadcrumbItems: { name: string; link: string }[] = [];
+
   const patientName = patientDetailsList[0]?.name || "Unknown Patient";
 
   return (
@@ -157,6 +160,10 @@ const PatientDetails = () => {
       open={isUploadPatientsDialogOpen}
       onOpenChange={setIsUploadPatientsDialogOpen}
     >
+      <BreadcrumbElement
+        items={breadcrumbItems}
+        currentPage="Patient Details"
+      />
       <div className="w-full p-6">
         <Tabs defaultValue="current">
           <TabsList>
