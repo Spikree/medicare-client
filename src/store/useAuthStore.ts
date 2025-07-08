@@ -80,6 +80,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     try {
       const response = await axiosInstance.post("/auth/logout");
       toast.success(response.data.message)
+      set({authUser: null});
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

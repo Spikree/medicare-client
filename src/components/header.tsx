@@ -7,12 +7,14 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Menu, User, LogIn, UserPlus, X } from "lucide-react";
+import { Menu, User, LogIn, UserPlus, X, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const { authUser } = useAuthStore();
+  const { authUser, logout } = useAuthStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleItemClick = (): void => {
     setIsOpen(false);
@@ -20,16 +22,20 @@ export default function Header() {
 
   const handleLinkClick = (href: string): void => {
     if (href.startsWith("#")) {
-      // Smooth scroll for anchor links
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
     } else {
-      // Navigate to external links
       window.location.href = href;
     }
     handleItemClick();
+  };
+
+  const logoutUser = () => {
+    logout().then(() => {
+      navigate("/auth");
+    });
   };
 
   return (
@@ -46,7 +52,65 @@ export default function Header() {
           </div>
 
           {authUser ? (
-            ""
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
+                  aria-label="Open navigation menu"
+                >
+                  {isOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                sideOffset={8}
+              >
+                {/* <div className="py-1">
+                  <DropdownMenuItem
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                    onClick={() => handleLinkClick("#features")}
+                  >
+                    <User className="h-4 w-4 mr-3 text-gray-400" />
+                    Features
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                    onClick={() => handleLinkClick("#testimonials")}
+                  >
+                    <User className="h-4 w-4 mr-3 text-gray-400" />
+                    Testimonials
+                  </DropdownMenuItem>
+                </div> */}
+
+                {/* <DropdownMenuSeparator className="h-px bg-gray-200" /> */}
+
+                <div className="py-1">
+                  <DropdownMenuItem
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                    onClick={() => logoutUser()}
+                  >
+                    <LogOut className="h-4 w-4 mr-3 text-gray-400" />
+                    Log out
+                  </DropdownMenuItem>
+
+                  {/* <DropdownMenuItem
+                    className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
+                    onClick={() => handleLinkClick("/auth")}
+                  >
+                    <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
+                    Get Started
+                  </DropdownMenuItem> */}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <nav className="hidden md:block">
               <div className="flex items-center space-x-6">
