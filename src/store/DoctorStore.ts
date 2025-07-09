@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import type { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-interface Patient {
+export interface Patient {
   _id: string;
   name: string;
   email: string;
