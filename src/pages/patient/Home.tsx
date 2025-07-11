@@ -3,12 +3,13 @@ import { useEffect } from "react";
 
 const Home = () => {
 
-    const {getDoctorList,getLabResults} = PatientStore();
+    const {getDoctorList,getLabResults,getPatientDetails} = PatientStore();
 
     useEffect(() => {
         getDoctorList();
         getLabResults();
-    },[getDoctorList,getLabResults])
+        getPatientDetails();
+    },[getDoctorList,getLabResults,getPatientDetails])
 
   return <div>Home</div>;
 };
