@@ -7,7 +7,11 @@ interface DoctorInterface {
   _id: string;
   name: string;
   email: string;
-  doctor: string;
+  doctor: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   patient: string;
   patientStatus: string;
   createdOn: string;
