@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
-interface DoctorInterface {
+export interface DoctorInterface {
   _id: string;
   name: string;
   email: string;
