@@ -28,8 +28,12 @@ const Home = () => {
       <Card className="max-w-auto max-h-full p-10 m-4">
         <Tabs defaultValue="current">
           <TabsList>
-            <TabsTrigger value="current">Current Doctors ({currentDoctorList.length})</TabsTrigger>
-            <TabsTrigger value="old">Old DOctors ({oldDoctorList.length})</TabsTrigger>
+            <TabsTrigger value="current">
+              Current Doctors ({currentDoctorList.length})
+            </TabsTrigger>
+            <TabsTrigger value="old">
+              Old DOctors ({oldDoctorList.length})
+            </TabsTrigger>
           </TabsList>
 
           <Card className="py-2 mt-4 border-0 shadow-none">

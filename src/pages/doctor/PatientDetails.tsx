@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   User,
-  Stethoscope,
   Activity,
   AlertCircle,
   MessageSquare,
@@ -349,14 +348,6 @@ const PatientDetails = () => {
                             <span className="text-muted-foreground">Name:</span>
                             <p className="font-medium">{selectedRecord.name}</p>
                           </div>
-                          <div>
-                            <span className="text-muted-foreground">
-                              Patient ID:
-                            </span>
-                            <p className="font-mono text-xs">
-                              {selectedRecord.patient}
-                            </p>
-                          </div>
                         </div>
                       </div>
 
@@ -407,20 +398,6 @@ const PatientDetails = () => {
                             </div>
                           </div>
                         )}
-
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Stethoscope className="h-4 w-4 text-green-600" />
-                            <span className="font-medium">
-                              Doctor Information
-                            </span>
-                          </div>
-                          <div className="border border-green-200 rounded-md p-3 bg-green-50">
-                            <p className="text-sm text-green-900">
-                              Doctor ID: {selectedRecord.doctor}
-                            </p>
-                          </div>
-                        </div>
                       </div>
 
                       {/* Record Metadata */}
