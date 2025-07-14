@@ -22,7 +22,7 @@ interface Searchpatient {
   createdOn: string;
 }
 
-interface PatientDetails {
+export interface PatientDetails {
   _id: string;
   name: string;
   doctor: string;
@@ -163,7 +163,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
           },
         }
       );
-      console.log(response);
+      toast.success(response.data.message);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

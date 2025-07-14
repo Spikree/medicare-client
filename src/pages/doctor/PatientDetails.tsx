@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   User,
@@ -28,8 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPatientFeedbackDialog from "@/components/AddPatientFeedbackDialog";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Checkbox } from "@/components/ui/checkbox";
+import MedicalRecords from "@/components/MedicalRecords";
+import { toast } from "sonner";
 
 interface PatientDetails {
   _id: string;
@@ -46,7 +45,6 @@ interface PatientDetails {
 
 const PatientDetails = () => {
   const { patientId } = useParams();
-  const { authUser } = useAuthStore();
   const {
     getPatientDetails,
     patientDetailsList,
@@ -56,12 +54,13 @@ const PatientDetails = () => {
     addPatientDetails,
     addPatientReview,
     getPatientReviews,
-    patientReview,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isUploadLabResultsDialogOpen, setIsUploadLabResultsDialogOpen] =
+    useState<boolean>(false);
   const [isUploadPatientsDialogOpen, setIsUploadPatientsDialogOpen] =
     useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,17 +82,12 @@ const PatientDetails = () => {
   };
 
   const getPatientReviewsForMedicalRecord = (patientDetailId: string) => {
-    getPatientReviews(patientDetailId)
-  }
+    getPatientReviews(patientDetailId);
+  };
 
   const patientFeedbackModelView = () => {
     setShowPatientFeedbackModel((prev) => !prev);
   };
-
-  const patientDetailsByCurrentDoctor = patientDetailsList.filter(
-    (medicalRecord) =>
-      medicalRecord.doctor?.toString() === authUser?._id.toString()
-  );
 
   const addPatientFeedback = (
     patientDetailId: string,
@@ -111,9 +105,9 @@ const PatientDetails = () => {
     }
   };
 
-  const addPatientRecords = () => {
+  const addPatientRecords = async () => {
     if (patientId && disease && symptom && medicationPrescribed) {
-      addPatientDetails(
+      await addPatientDetails(
         patientId,
         disease,
         symptom,
@@ -124,17 +118,24 @@ const PatientDetails = () => {
       setSymptom("");
       setPatientExperience("");
       setMedicationPrescribed("");
-      getPatientDetails(patientId);
+      await getPatientDetails(patientId);
       setIsUploadPatientsDialogOpen(false);
     }
   };
 
   const handleFileUpload = () => {
     if (patientId && selectedFile && labResultTitle) {
-      uploadLabResults(patientId, selectedFile, labResultTitle);
+      uploadLabResults(patientId, selectedFile, labResultTitle)
+        .then(() => {
+          setSelectedFile(null);
+          setLabResultTitle("");
+          setIsUploadLabResultsDialogOpen(false);
+          getPatientLabResults(patientId || "");
+        })
+        .catch(() => {});
+    } else {
+      toast.error("All the fields are required");
     }
-    setSelectedFile(null);
-    setLabResultTitle("");
   };
 
   useEffect(() => {
@@ -170,12 +171,10 @@ const PatientDetails = () => {
 
   const breadcrumbItems: { name: string; link: string }[] = [];
 
-  const patientName = patientDetailsList[0]?.name || "Unknown Patient";
-
   return (
     <Dialog
-      open={isUploadPatientsDialogOpen}
-      onOpenChange={setIsUploadPatientsDialogOpen}
+    // open={isUploadPatientsDialogOpen}
+    // onOpenChange={setIsUploadPatientsDialogOpen}
     >
       <BreadcrumbElement
         items={breadcrumbItems}
@@ -190,166 +189,27 @@ const PatientDetails = () => {
 
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex flex-col items-center gap-4">
-                  <div>
-                    <h1 className="text-3xl font-bold text-foreground">
-                      {patientName}
-                    </h1>
-                    <p className="text-muted-foreground">
-                      Medical Records ({patientDetailsList.length} entries)
-                    </p>
-                    <hr className="mt-2" />
-                    <div className="flex items-center text-muted-foreground mt-2">
-                      <span className="mr-2">By you</span>
-                      <Checkbox
-                        checked={showPatientDetailsByCurrentDoctor}
-                        onCheckedChange={(checked) =>
-                          setShowPatientDetailsByCurrentDoctor(!!checked)
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Upload Dialog Button */}
-                <DialogTrigger asChild>
-                  <Button className="flex items-center gap-2" variant={"green"}>
-                    <Plus className="h-4 w-4" />
-                    Upload patient records
-                  </Button>
-                </DialogTrigger>
-              </div>
-
-              {/* Patient Records List */}
-              <div className="space-y-4">
-                {(showPatientDetailsByCurrentDoctor
-                  ? patientDetailsByCurrentDoctor
-                  : patientDetailsList
-                ).map((record: PatientDetails) => (
-                  <Card
-                    key={record._id}
-                    className="hover:shadow-md transition-shadow"
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 grid md:grid-cols-3 gap-4">
-                          {/* Disease */}
-                          <div className="space-y-1">
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                              Disease
-                            </label>
-                            <p className="text-sm text-foreground">
-                              {record.Disease}
-                            </p>
-                          </div>
-
-                          {/* Symptoms */}
-                          <div className="space-y-1">
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                              Symptoms
-                            </label>
-                            <p className="text-sm text-foreground">
-                              {record.symptom}
-                            </p>
-                          </div>
-
-                          {/* Date */}
-                          <div className="space-y-1">
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                              Date
-                            </label>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {new Date(record.createdOn).toLocaleDateString()}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* View More Button */}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewMore(record)}
-                          className="flex items-center gap-2 ml-4"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View More
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Upload Dialog Content */}
-              <DialogContent className="sm:max-w-md flex flex-col gap-4 p-6">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
-                    <Upload className="h-5 w-5" />
-                    Upload patient records
-                  </DialogTitle>
-                </DialogHeader>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Disease
-                  </label>
-                  <Input
-                    required
-                    value={disease}
-                    onChange={(e) => setDisease(e.target.value)}
-                    placeholder="Enter disease"
-                    className="focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Symptoms
-                  </label>
-                  <Input
-                    required
-                    value={symptom}
-                    onChange={(e) => setSymptom(e.target.value)}
-                    placeholder="Enter symptoms"
-                    className="focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Patient Experience
-                  </label>
-                  <Input
-                    value={patientExperience}
-                    onChange={(e) => setPatientExperience(e.target.value)}
-                    placeholder="Enter patient experience"
-                    className="focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Medication Prescribed
-                  </label>
-                  <Input
-                    required
-                    value={medicationPrescribed}
-                    onChange={(e) => setMedicationPrescribed(e.target.value)}
-                    placeholder="Enter medication prescribed"
-                    className="focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-
-                <Button
-                  onClick={addPatientRecords}
-                  variant="green"
-                  className="mt-4"
-                >
-                  Submit
-                </Button>
-              </DialogContent>
+              <MedicalRecords
+                handleViewMore={handleViewMore}
+                disease={disease}
+                symptom={symptom}
+                patientExperience={patientExperience}
+                medicationPrescribed={medicationPrescribed}
+                setSymptom={setSymptom}
+                setPatientExperience={setPatientExperience}
+                setMedicationPrescribed={setMedicationPrescribed}
+                setDisease={setDisease}
+                addPatientRecords={addPatientRecords}
+                patientDetailsList={patientDetailsList}
+                setShowPatientDetailsByCurrentDoctor={
+                  setShowPatientDetailsByCurrentDoctor
+                }
+                showPatientDetailsByCurrentDoctor={
+                  showPatientDetailsByCurrentDoctor
+                }
+                isUploadPatientsDialogOpen={isUploadPatientsDialogOpen}
+                setIsUploadPatientsDialogOpen={setIsUploadPatientsDialogOpen}
+              />
 
               {/* Details Dialog */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -447,7 +307,16 @@ const PatientDetails = () => {
                   <Button onClick={patientFeedbackModelView} variant={"green"}>
                     Add patient feedback
                   </Button>
-                  <Button onClick={() => getPatientReviewsForMedicalRecord(selectedRecord?._id || "")} variant={"green"}>show patient feedback</Button>
+                  <Button
+                    onClick={() =>
+                      getPatientReviewsForMedicalRecord(
+                        selectedRecord?._id || ""
+                      )
+                    }
+                    variant={"green"}
+                  >
+                    show patient feedback
+                  </Button>
                   {showPatientFeedbackModel && (
                     <AddPatientFeedbackDialog
                       isOpen={showPatientFeedbackModel}
@@ -471,94 +340,107 @@ const PatientDetails = () => {
                       {patientLabResults?.length || 0} lab results available
                     </p>
                   </div>
-                  <DialogTrigger asChild>
-                    <Button
-                      className="flex items-center gap-2"
-                      variant={"green"}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Upload Lab Results
-                    </Button>
-                  </DialogTrigger>
+
+                  <Button
+                    onClick={() => {
+                      setIsUploadLabResultsDialogOpen(
+                        !isUploadLabResultsDialogOpen
+                      );
+                    }}
+                    className="flex items-center gap-2"
+                    variant={"green"}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Upload Lab Results
+                  </Button>
                 </div>
 
                 {/* Upload Dialog Content */}
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                      <Upload className="h-5 w-5" />
-                      Upload Lab Results
-                    </DialogTitle>
-                    <DialogDescription>
-                      Select a file to upload patient lab results or medical
-                      documents
-                    </DialogDescription>
-                    <span className="text-sm font-medium text-gray-700">
-                      Title
-                    </span>
-                    <Input
-                      value={labResultTitle}
-                      onChange={(e) => {
-                        setLabResultTitle(e.target.value);
-                      }}
-                      placeholder="Lab result title"
-                    />
-                  </DialogHeader>
-
-                  <div className="space-y-4">
-                    {/* File Upload Section */}
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        onChange={handleFileChange}
-                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                <Dialog
+                  open={isUploadLabResultsDialogOpen}
+                  onOpenChange={() => {
+                    setIsUploadLabResultsDialogOpen(
+                      !isUploadLabResultsDialogOpen
+                    );
+                  }}
+                >
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Upload className="h-5 w-5" />
+                        Upload Lab Results
+                      </DialogTitle>
+                      <DialogDescription>
+                        Select a file to upload patient lab results or medical
+                        documents
+                      </DialogDescription>
+                      <span className="text-sm font-medium text-gray-700">
+                        Title
+                      </span>
+                      <Input
+                        value={labResultTitle}
+                        onChange={(e) => {
+                          setLabResultTitle(e.target.value);
+                        }}
+                        placeholder="Lab result title"
                       />
+                    </DialogHeader>
 
-                      <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                    <div className="space-y-4">
+                      {/* File Upload Section */}
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="hidden"
+                          onChange={handleFileChange}
+                          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        />
 
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">
-                          {selectedFile
-                            ? selectedFile.name
-                            : "Choose a file to upload"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Supported formats: PDF, JPG, PNG, DOC, DOCX
-                        </p>
+                        <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
 
-                        <Button
-                          onClick={handleClick}
-                          variant="outline"
-                          size="sm"
-                          className="mt-2"
-                        >
-                          {selectedFile ? "Change File" : "Select File"}
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Selected File Info */}
-                    {selectedFile && (
-                      <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                        <FileText className="h-8 w-8 text-muted-foreground" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {selectedFile.name}
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">
+                            {selectedFile
+                              ? selectedFile.name
+                              : "Choose a file to upload"}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                            Supported formats: PDF, JPG, PNG, DOC, DOCX
                           </p>
+
+                          <Button
+                            onClick={handleClick}
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                          >
+                            {selectedFile ? "Change File" : "Select File"}
+                          </Button>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  <Button onClick={handleFileUpload} variant={"green"}>
-                    Submit
-                  </Button>
-                </DialogContent>
+                      {/* Selected File Info */}
+                      {selectedFile && (
+                        <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                          <FileText className="h-8 w-8 text-muted-foreground" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {selectedFile.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button onClick={handleFileUpload} variant={"green"}>
+                      Submit
+                    </Button>
+                  </DialogContent>
+                </Dialog>
 
                 {patientLabResults && patientLabResults.length > 0 ? (
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
