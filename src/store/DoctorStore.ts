@@ -42,6 +42,18 @@ interface PatientLabResults {
   createdOn: string;
 }
 
+interface PatientReview {
+  _id: string;
+  name: string;
+  patient: string; 
+  doctor: string;  
+  patientDetail: string; 
+  patientReview: string;
+  sideEffects: string;
+  createdOn: string; 
+  __v: number;
+}
+
 interface DoctorStore {
   getPatientList: () => Promise<void>;
   addPatient: (patientId: string) => Promise<AxiosResponse | void>;
@@ -65,11 +77,13 @@ interface DoctorStore {
     patientReview: string,
     sideEffects: string
   ) => Promise<void>;
+  getPatientReviews: (patientDetailId: string) => Promise<void>;
 
   patientList: Patient[];
   searchPatientList: Searchpatient[];
   patientDetailsList: PatientDetails[];
   patientLabResults: PatientLabResults[];
+  patientReview: PatientReview[];
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -77,6 +91,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   searchPatientList: [],
   patientDetailsList: [],
   patientLabResults: [],
+  patientReview:[],
 
   getPatientList: async () => {
     try {
@@ -216,6 +231,21 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         payload
       );
       console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error fetching adding patient details";
+      toast.error(errorMessage);
+    }
+  },
+
+  getPatientReviews: async (patientDetailId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/doctor/getPatientReviews/${patientDetailId}`
+      );
+      set({ patientReview: response.data.patientReview });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

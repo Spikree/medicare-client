@@ -28,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPatientFeedbackDialog from "@/components/AddPatientFeedbackDialog";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PatientDetails {
   _id: string;
@@ -44,6 +46,7 @@ interface PatientDetails {
 
 const PatientDetails = () => {
   const { patientId } = useParams();
+  const { authUser } = useAuthStore();
   const {
     getPatientDetails,
     patientDetailsList,
@@ -52,6 +55,8 @@ const PatientDetails = () => {
     patientLabResults,
     addPatientDetails,
     addPatientReview,
+    getPatientReviews,
+    patientReview,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
@@ -68,14 +73,27 @@ const PatientDetails = () => {
     useState(false);
   const [patientExperience, setPatientExperience] = useState("");
   const [medicationPrescribed, setMedicationPrescribed] = useState("");
+  const [
+    showPatientDetailsByCurrentDoctor,
+    setShowPatientDetailsByCurrentDoctor,
+  ] = useState<boolean>(false);
 
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
+  const getPatientReviewsForMedicalRecord = (patientDetailId: string) => {
+    getPatientReviews(patientDetailId)
+  }
+
   const patientFeedbackModelView = () => {
     setShowPatientFeedbackModel((prev) => !prev);
   };
+
+  const patientDetailsByCurrentDoctor = patientDetailsList.filter(
+    (medicalRecord) =>
+      medicalRecord.doctor?.toString() === authUser?._id.toString()
+  );
 
   const addPatientFeedback = (
     patientDetailId: string,
@@ -181,6 +199,16 @@ const PatientDetails = () => {
                     <p className="text-muted-foreground">
                       Medical Records ({patientDetailsList.length} entries)
                     </p>
+                    <hr className="mt-2" />
+                    <div className="flex items-center text-muted-foreground mt-2">
+                      <span className="mr-2">By you</span>
+                      <Checkbox
+                        checked={showPatientDetailsByCurrentDoctor}
+                        onCheckedChange={(checked) =>
+                          setShowPatientDetailsByCurrentDoctor(!!checked)
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -195,7 +223,10 @@ const PatientDetails = () => {
 
               {/* Patient Records List */}
               <div className="space-y-4">
-                {patientDetailsList.map((record: PatientDetails) => (
+                {(showPatientDetailsByCurrentDoctor
+                  ? patientDetailsByCurrentDoctor
+                  : patientDetailsList
+                ).map((record: PatientDetails) => (
                   <Card
                     key={record._id}
                     className="hover:shadow-md transition-shadow"
@@ -416,6 +447,7 @@ const PatientDetails = () => {
                   <Button onClick={patientFeedbackModelView} variant={"green"}>
                     Add patient feedback
                   </Button>
+                  <Button onClick={() => getPatientReviewsForMedicalRecord(selectedRecord?._id || "")} variant={"green"}>show patient feedback</Button>
                   {showPatientFeedbackModel && (
                     <AddPatientFeedbackDialog
                       isOpen={showPatientFeedbackModel}
