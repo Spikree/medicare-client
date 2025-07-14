@@ -30,6 +30,7 @@ export interface PatientDetails {
   Disease: string;
   symptom: string;
   patientFeedback: string;
+  patientExperience?: string;
   medicationPrescribed: string;
   createdOn: string;
 }
