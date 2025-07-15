@@ -35,7 +35,7 @@ export interface PatientDetails {
   createdOn: string;
 }
 
-interface PatientLabResults {
+export interface PatientLabResults {
   _id: string;
   title: string;
   labResult: string;
