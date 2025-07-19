@@ -25,6 +25,21 @@ interface PatientLabResults {
   createdOn: string;
 }
 
+export interface RequestInterface {
+  _id: string;
+  sender: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  receiver: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdOn: string;
+}
+
 interface PatientStore {
   getDoctorList: () => Promise<void>;
   getLabResults: () => Promise<void>;
@@ -39,14 +54,17 @@ interface PatientStore {
     patientReview: string,
     sideEffects: string
   ) => Promise<void>;
+  getAllAddRequests: () => void;
 
   doctorList: DoctorInterface[];
   patientLabResultList: PatientLabResults[];
+  addRequests: RequestInterface[];
 }
 
 export const PatientStore = create<PatientStore>((set) => ({
   doctorList: [],
   patientLabResultList: [],
+  addRequests: [],
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -144,6 +162,19 @@ export const PatientStore = create<PatientStore>((set) => ({
         formData
       );
       console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error uploading allergies and general health info";
+      toast.error(errorMessage);
+    }
+  },
+
+  getAllAddRequests: async () => {
+    try {
+      const response = await axiosInstance.get("/patient/getAllAddRequests");
+      set({ addRequests: response.data.requests });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

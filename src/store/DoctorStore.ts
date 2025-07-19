@@ -46,12 +46,12 @@ export interface PatientLabResults {
 interface PatientReview {
   _id: string;
   name: string;
-  patient: string; 
-  doctor: string;  
-  patientDetail: string; 
+  patient: string;
+  doctor: string;
+  patientDetail: string;
   patientReview: string;
   sideEffects: string;
-  createdOn: string; 
+  createdOn: string;
   __v: number;
 }
 
@@ -92,7 +92,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   searchPatientList: [],
   patientDetailsList: [],
   patientLabResults: [],
-  patientReview:[],
+  patientReview: [],
 
   getPatientList: async () => {
     try {
@@ -123,9 +123,9 @@ export const DoctorStore = create<DoctorStore>((set) => ({
 
   addPatient: async (patientId: string) => {
     try {
-      const response = await axiosInstance.post("/doctor/addPatient", {
-        patientId,
-      });
+      const response = await axiosInstance.post(
+        `/doctor/addPatientRequest/${patientId}`
+      );
       toast(response.data.message);
       return response;
     } catch (error) {
