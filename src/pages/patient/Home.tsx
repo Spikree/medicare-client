@@ -19,6 +19,7 @@ const Home = () => {
     doctorList,
     getAllAddRequests,
     addRequests,
+    acceptAddRequest,
   } = PatientStore();
   const [isAddDoctorDialog, setIsAddDoctorDialog] = useState<boolean>(false);
 
@@ -110,6 +111,7 @@ const Home = () => {
           </Tabs>
         </Card>
         <AddNewDoctorDialog
+          acceptAddRequest={acceptAddRequest}
           open={isAddDoctorDialog}
           setOpen={setIsAddDoctorDialog}
           addRequests={addRequests}

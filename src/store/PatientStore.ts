@@ -40,6 +40,14 @@ export interface RequestInterface {
   createdOn: string;
 }
 
+interface SearchDoctors {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdOn: string;
+}
+
 interface PatientStore {
   getDoctorList: () => Promise<void>;
   getLabResults: () => Promise<void>;
@@ -55,16 +63,20 @@ interface PatientStore {
     sideEffects: string
   ) => Promise<void>;
   getAllAddRequests: () => void;
+  acceptAddRequest: (requestId: string) => void;
+  searchDoctors: (query: string) => void;
 
   doctorList: DoctorInterface[];
   patientLabResultList: PatientLabResults[];
   addRequests: RequestInterface[];
+  searchDoctorsList: SearchDoctors[];
 }
 
-export const PatientStore = create<PatientStore>((set) => ({
+export const PatientStore = create<PatientStore>((set, get) => ({
   doctorList: [],
   patientLabResultList: [],
   addRequests: [],
+  searchDoctorsList: [],
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -166,7 +178,7 @@ export const PatientStore = create<PatientStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message ||
-        "Error uploading allergies and general health info";
+        "Error uploading review on medication";
       toast.error(errorMessage);
     }
   },
@@ -175,6 +187,41 @@ export const PatientStore = create<PatientStore>((set) => ({
     try {
       const response = await axiosInstance.get("/patient/getAllAddRequests");
       set({ addRequests: response.data.requests });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error getting all the requests";
+      toast.error(errorMessage);
+    }
+  },
+
+  acceptAddRequest: async (requestId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/acceptAddRequest/${requestId}`
+      );
+      set((state) => ({
+        addRequests: state.addRequests.filter(
+          (request) => request._id !== requestId
+        ),
+      }));
+      toast.success(response.data.message);
+      get().getDoctorList();
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error while accepting request";
+      toast.error(errorMessage);
+    }
+  },
+
+  searchDoctors: async (query: string) => {
+    try {
+      const response = await axiosInstance.post("/patient/searchDoctors", {
+        doctorName: query,
+        doctorEmail: query,
+      });
+      set({searchDoctorsList: response.data.doctors});
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
