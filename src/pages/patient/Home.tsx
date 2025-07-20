@@ -15,10 +15,10 @@ const Home = () => {
   const {
     getDoctorList,
     getLabResults,
-    getPatientDetails,
+    // getPatientDetails,
     doctorList,
     getAllAddRequests,
-    addRequests,
+    IncomingAddRequests,
     acceptAddRequest,
   } = PatientStore();
   const [isAddDoctorDialog, setIsAddDoctorDialog] = useState<boolean>(false);
@@ -26,9 +26,9 @@ const Home = () => {
   useEffect(() => {
     getDoctorList();
     getLabResults();
-    getPatientDetails();
+    // getPatientDetails();
     getAllAddRequests();
-  }, [getDoctorList, getLabResults, getPatientDetails, getAllAddRequests]);
+  }, [getDoctorList, getLabResults, getAllAddRequests]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchDoctorList, setSearchDoctorList] = useState<DoctorInterface[]>(
     []
@@ -54,7 +54,12 @@ const Home = () => {
   );
 
   return (
-    <Dialog>
+    <Dialog
+      open={isAddDoctorDialog}
+      onOpenChange={() => {
+        setIsAddDoctorDialog((prev) => !prev);
+      }}
+    >
       <div>
         <Card className=" max-w-auto max-h-full p-10 m-4 flex flex-wrap gap-2 justify-between">
           <div className="flex gap-2 max-w-96">
@@ -114,7 +119,7 @@ const Home = () => {
           acceptAddRequest={acceptAddRequest}
           open={isAddDoctorDialog}
           setOpen={setIsAddDoctorDialog}
-          addRequests={addRequests}
+          addRequests={IncomingAddRequests}
         />
       </div>
     </Dialog>

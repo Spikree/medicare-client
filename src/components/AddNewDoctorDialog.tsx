@@ -19,20 +19,20 @@ interface Props {
 }
 
 const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
-  const { searchDoctors, searchDoctorsList } = PatientStore();
+  const { searchDoctors, searchDoctorsList, addDoctorRequest } = PatientStore();
   const [searchDoctorsQuery, setSearchDoctorsQuery] = useState("");
 
   useEffect(() => {
     if (open === false) {
       setSearchDoctorsQuery("");
     }
+    console.log(open)
   }, [open]);
 
   const searchDoctorsFunction = () => {
     searchDoctors(searchDoctorsQuery);
-  }
+  };
 
-  // You will need to implement these functions
   const handleAcceptRequest = (requestId: string) => {
     acceptAddRequest(requestId);
   };
@@ -43,8 +43,8 @@ const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
   };
 
   const addDoctor = (doctorId: string) => {
-    console.log("Add doctor:", doctorId)
-  }
+    addDoctorRequest(doctorId);
+  };
 
   return (
     <DialogContent className="w-full max-w-2xl mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
@@ -72,7 +72,10 @@ const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 value={searchDoctorsQuery}
-                onChange={(e) => {setSearchDoctorsQuery(e.target.value); searchDoctorsFunction()}}
+                onChange={(e) => {
+                  setSearchDoctorsQuery(e.target.value);
+                  searchDoctorsFunction();
+                }}
                 placeholder="Search Doctors with name or email"
                 className="pl-10"
               />

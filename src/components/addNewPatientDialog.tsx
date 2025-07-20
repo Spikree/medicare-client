@@ -16,16 +16,17 @@ interface Props {
   open: boolean;
 }
 
-// Mock data for demonstration purposes
-const incomingPatientRequests = [
-  { _id: "req1", name: "Charles Davis", email: "charles.d@example.com" },
-  { _id: "req2", name: "Diana Prince", email: "diana.p@example.com" },
-];
-
 const AddNewPatientDialog = ({ setOpen, open }: Props) => {
   const [searchPatient, setSearchPatient] = useState("");
-  const { searchPatients, searchPatientList, addPatient, getPatientList } =
-    DoctorStore();
+  const {
+    searchPatients,
+    searchPatientList,
+    addPatient,
+    getPatientList,
+    getAllAddRequests,
+    incomingAddRequests,
+    acceptAddRequest,
+  } = DoctorStore();
 
   const searchPatientFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
     searchPatients(e.target.value);
@@ -40,6 +41,18 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
       }
     });
   };
+
+  const acceptIncomingRequest = (requestId: string) => {
+    acceptAddRequest(requestId).then(() => {
+      setOpen(false);
+      setSearchPatient("");
+      getPatientList();
+    });
+  };
+
+  useEffect(() => {
+    getAllAddRequests();
+  }, [getAllAddRequests]);
 
   useEffect(() => {
     if (open === false) {
@@ -64,7 +77,7 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
           <TabsTrigger value="requests">
             Incoming Requests
             <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
-              {incomingPatientRequests.length}
+              {incomingAddRequests.length}
             </span>
           </TabsTrigger>
         </TabsList>
@@ -133,22 +146,26 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
         {/* 4. Create the "Requests" tab content */}
         <TabsContent value="requests" className="mt-4">
           <div className="space-y-3">
-            {incomingPatientRequests.length > 0 ? (
-              incomingPatientRequests.map((request) => (
+            {incomingAddRequests.length > 0 ? (
+              incomingAddRequests.map((request) => (
                 <Card
                   key={request._id}
                   className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 sm:p-4 gap-3"
                 >
                   <div>
                     <span className="text-base font-medium">
-                      {request.name}
+                      {request.sender.name}
                     </span>
                     <p className="text-sm text-muted-foreground">
-                      {request.email}
+                      {request.sender.email}
                     </p>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto">
-                    <Button variant="green" className="flex-1">
+                    <Button
+                      onClick={() => acceptIncomingRequest(request?._id)}
+                      variant="green"
+                      className="flex-1"
+                    >
                       Accept
                     </Button>
                     <Button variant="destructive" className="flex-1">

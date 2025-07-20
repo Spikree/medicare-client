@@ -65,17 +65,18 @@ interface PatientStore {
   getAllAddRequests: () => void;
   acceptAddRequest: (requestId: string) => void;
   searchDoctors: (query: string) => void;
+  addDoctorRequest: (doctorId: string) => void;
 
   doctorList: DoctorInterface[];
   patientLabResultList: PatientLabResults[];
-  addRequests: RequestInterface[];
+  IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
 }
 
 export const PatientStore = create<PatientStore>((set, get) => ({
   doctorList: [],
   patientLabResultList: [],
-  addRequests: [],
+  IncomingAddRequests: [],
   searchDoctorsList: [],
   getDoctorList: async () => {
     try {
@@ -186,7 +187,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   getAllAddRequests: async () => {
     try {
       const response = await axiosInstance.get("/patient/getAllAddRequests");
-      set({ addRequests: response.data.requests });
+      set({ IncomingAddRequests: response.data.requests });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
@@ -201,7 +202,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         `/patient/acceptAddRequest/${requestId}`
       );
       set((state) => ({
-        addRequests: state.addRequests.filter(
+        IncomingAddRequests: state.IncomingAddRequests.filter(
           (request) => request._id !== requestId
         ),
       }));
@@ -221,12 +222,27 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         doctorName: query,
         doctorEmail: query,
       });
-      set({searchDoctorsList: response.data.doctors});
+      set({ searchDoctorsList: response.data.doctors });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message ||
-        "Error uploading allergies and general health info";
+        "Error searching for doctors";
+      toast.error(errorMessage);
+    }
+  },
+
+  addDoctorRequest: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/addDoctorRequest/${doctorId}`
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error adding doctor";
       toast.error(errorMessage);
     }
   },
