@@ -24,6 +24,7 @@ const PatientDetails = () => {
     addPatientDetails,
     addPatientReview,
     getPatientReviews,
+    
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null

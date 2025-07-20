@@ -46,10 +46,9 @@ const MedicalRecords = ({
   showPatientDetailsByCurrentDoctor,
   setShowPatientDetailsByCurrentDoctor,
   isUploadPatientsDialogOpen,
-  setIsUploadPatientsDialogOpen
+  setIsUploadPatientsDialogOpen,
 }: Props) => {
   const { authUser } = useAuthStore();
-  
 
   const patientDetailsByCurrentDoctor = patientDetailsList.filter(
     (medicalRecord) =>

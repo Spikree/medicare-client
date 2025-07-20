@@ -47,7 +47,11 @@ interface PatientReview {
   _id: string;
   name: string;
   patient: string;
-  doctor: string;
+  doctor: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   patientDetail: string;
   patientReview: string;
   sideEffects: string;
@@ -250,7 +254,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         `/doctor/addPatientReview/${patientDetailId}`,
         payload
       );
-      console.log(response);
+      toast.success(response.data.message);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

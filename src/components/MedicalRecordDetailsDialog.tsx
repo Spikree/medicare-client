@@ -16,6 +16,8 @@ import {
 import type { PatientDetails } from "@/store/DoctorStore";
 import AddPatientFeedbackDialog from "./AddPatientFeedbackDialog";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import PatientReviewsList from "./PatientReviewsList";
 
 interface Props {
   selectedRecord: PatientDetails;
@@ -49,6 +51,9 @@ const MedicalRecordDetailsDialog = ({
       minute: "2-digit",
     });
   };
+
+  const [showPatientReviewList, setShowPatientReviewList] =
+    useState<boolean>(false);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -86,9 +91,7 @@ const MedicalRecordDetailsDialog = ({
                 <span className="font-medium">Disease & Symptoms</span>
               </div>
               <div className="border border-red-200 rounded-md p-3 bg-red-50">
-                <p className="text-sm text-red-900">
-                  {selectedRecord.symptom}
-                </p>
+                <p className="text-sm text-red-900">{selectedRecord.symptom}</p>
               </div>
             </div>
 
@@ -138,9 +141,10 @@ const MedicalRecordDetailsDialog = ({
           Add patient feedback
         </Button>
         <Button
-          onClick={() =>
-            getPatientReviewsForMedicalRecord(selectedRecord?._id || "")
-          }
+          onClick={() => {
+            getPatientReviewsForMedicalRecord(selectedRecord?._id || "");
+            setShowPatientReviewList(true);
+          }}
           variant="green"
         >
           Show patient feedback
@@ -154,6 +158,7 @@ const MedicalRecordDetailsDialog = ({
           />
         )}
       </DialogContent>
+      <PatientReviewsList isOpen={showPatientReviewList} setIsOpen={setShowPatientReviewList}/>
     </Dialog>
   );
 };
