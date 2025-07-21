@@ -10,7 +10,8 @@ interface props {
   onSubmit: (
     patientDetailId: string,
     patientReview: string,
-    sideEffects: string
+    sideEffects: string,
+    reviewBy: string,
   ) => void | Promise<void>;
   patientDetailId: string;
 }
@@ -23,10 +24,11 @@ const AddPatientFeedbackDialog = ({
 }: props) => {
   const [patientReview, setPatientReview] = useState("");
   const [sideEffects, setSideEffects] = useState("");
+  const reviewBy = localStorage.getItem("user_role") || ""
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Promise.resolve(onSubmit(patientDetailId, patientReview, sideEffects)).then(
+    Promise.resolve(onSubmit(patientDetailId, patientReview, sideEffects, reviewBy)).then(
       () => {
         setPatientReview("");
         setSideEffects("");

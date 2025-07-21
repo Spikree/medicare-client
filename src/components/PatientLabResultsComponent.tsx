@@ -5,11 +5,11 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { Plus, Upload, FileText, Calendar, Eye } from "lucide-react";
+import { Plus, Upload, FileText, Calendar, Eye, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import type { PatientLabResults } from "@/store/DoctorStore";
+import { DoctorStore, type PatientLabResults } from "@/store/DoctorStore";
 import type React from "react";
 import { Badge } from "@/components/ui/badge";
 
@@ -38,6 +38,8 @@ const PatientLabResultsComponent = ({
   handleClick,
   handleFileUpload,
 }: Props) => {
+  const { isUploadingLabResults } = DoctorStore();
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -131,8 +133,17 @@ const PatientLabResultsComponent = ({
             )}
           </div>
 
-          <Button onClick={handleFileUpload} variant="green">
-            Submit
+          <Button
+            onClick={handleFileUpload}
+            variant="green"
+            disabled={isUploadingLabResults}
+          >
+            {isUploadingLabResults ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              // 3. Show only text when not uploading
+              "Submit"
+            )}
           </Button>
         </DialogContent>
       </Dialog>

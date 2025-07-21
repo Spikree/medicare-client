@@ -63,9 +63,10 @@ const PatientDetails = () => {
   const addPatientFeedback = (
     patientDetailId: string,
     patientReview: string,
-    sideEffects: string
+    sideEffects: string,
+    reviewBy: string,
   ) => {
-    addPatientReview(patientDetailId, patientReview, sideEffects);
+    addPatientReview(patientDetailId, patientReview, sideEffects, reviewBy);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -29,7 +29,8 @@ interface Props {
   addPatientFeedback: (
     patientDetailId: string,
     patientReview: string,
-    sideEffects: string
+    sideEffects: string,
+    reviewBy: string,
   ) => void;
 }
 
