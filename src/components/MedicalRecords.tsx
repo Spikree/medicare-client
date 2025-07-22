@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Eye, Plus, Upload } from "lucide-react";
+import { Calendar, Eye, FileText, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -92,51 +92,72 @@ const MedicalRecords = ({
         </DialogTrigger>
       </div>
 
-      <div className="space-y-4">
-        {(showPatientDetailsByCurrentDoctor
-          ? patientDetailsByCurrentDoctor
-          : patientDetailsList
-        ).map((record: PatientDetails) => (
-          <Card key={record._id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 grid md:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Disease
-                    </label>
-                    <p className="text-sm text-foreground">{record.Disease}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Symptoms
-                    </label>
-                    <p className="text-sm text-foreground">{record.symptom}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      Date
-                    </label>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(record.createdOn).toLocaleDateString()}
+      {patientDetailsList?.length > 0 ? (
+        <div className="space-y-4">
+          {(showPatientDetailsByCurrentDoctor
+            ? patientDetailsByCurrentDoctor
+            : patientDetailsList
+          ).map((record: PatientDetails) => (
+            <Card
+              key={record._id}
+              className="hover:shadow-md transition-shadow"
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 grid md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Disease
+                      </label>
+                      <p className="text-sm text-foreground">
+                        {record.Disease}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Symptoms
+                      </label>
+                      <p className="text-sm text-foreground">
+                        {record.symptom}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Date
+                      </label>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(record.createdOn).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleViewMore(record)}
+                    className="flex items-center gap-2 ml-4"
+                  >
+                    <Eye className="h-4 w-4" />
+                    View More
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewMore(record)}
-                  className="flex items-center gap-2 ml-4"
-                >
-                  <Eye className="h-4 w-4" />
-                  View More
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[347px]">
+          <div className="text-center">
+            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              No Medical Records Yet
+            </h3>
+            <p className="text-muted-foreground">
+              No medical records have been uploaded for this patient.
+            </p>
+          </div>
+        </div>
+      )}
 
       <DialogContent className="sm:max-w-md flex flex-col gap-4 p-6">
         <DialogHeader>

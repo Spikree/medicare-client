@@ -46,7 +46,11 @@ export interface PatientLabResults {
 interface PatientReview {
   _id: string;
   name: string;
-  patient: string;
+  patient: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   doctor: {
     _id: string;
     name: string;
@@ -55,6 +59,7 @@ interface PatientReview {
   patientDetail: string;
   patientReview: string;
   sideEffects: string;
+  reviewBy: string;
   createdOn: string;
   __v: number;
 }
@@ -96,7 +101,7 @@ interface DoctorStore {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => Promise<void>;
   getPatientReviews: (patientDetailId: string) => Promise<void>;
   getAllAddRequests: () => Promise<void>;
@@ -177,7 +182,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   uploadLabResults: async (patientId: string, file: File, title: string) => {
-    set({isUploadingLabResults: true});
+    set({ isUploadingLabResults: true });
     const formData = new FormData();
     formData.append("labFile", file);
     formData.append("title", title);
@@ -198,7 +203,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         axiosError.response?.data?.message || "Error uploading lab results";
       toast.error(errorMessage);
     } finally {
-      set({isUploadingLabResults: false});
+      set({ isUploadingLabResults: false });
     }
   },
 
@@ -249,7 +254,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => {
     const payload = {
       patientReview: patientReview,

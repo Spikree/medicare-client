@@ -45,23 +45,41 @@ const PatientReviewsList = ({ isOpen, setIsOpen }: Props) => {
                   key={review._id}
                   className="shadow-md hover:shadow-lg transition-shadow duration-300 dark:bg-slate-800"
                 >
-                  <CardHeader className="flex flex-row items-start space-x-4 pb-3">
-                    <div className="flex flex-col gap-2">
-                      <p className=" text-gray-500 dark:text-gray-400">
-                        {review.doctor.name}
-                      </p>
+                  {review?.reviewBy === "doctor" ? (
+                    <CardHeader className="flex flex-row items-start space-x-4 pb-3">
                       <div className="flex flex-col gap-2">
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {review.doctor.email}
-                      </p>
-                      <hr />
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Reviewed on {formatDate(review.createdOn)}
-                      </p>
+                        <p className=" text-gray-500 dark:text-gray-400">
+                          {review.doctor.name}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {review.doctor.email}
+                          </p>
+                          <hr />
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Reviewed on {formatDate(review.createdOn)}
+                          </p>
+                        </div>
                       </div>
-                      
-                    </div>
-                  </CardHeader>
+                    </CardHeader>
+                  ) : (
+                    <CardHeader>
+                      <div className="flex flex-col gap-2">
+                        <p className=" text-gray-500 dark:text-gray-400">
+                          {review.patient.name}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {review.patient.email}
+                          </p>
+                          <hr />
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Reviewed on {formatDate(review.createdOn)}
+                          </p>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  )}
                   <CardContent>
                     <div>
                       <h4 className="font-semibold mb-1 text-gray-800 dark:text-gray-200">
