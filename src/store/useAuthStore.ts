@@ -19,7 +19,7 @@ interface AuthStore {
     email: string,
     password: string,
     name: string,
-    role: string
+    role: "doctor" | "patient"
   ) => Promise<void>;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
@@ -87,6 +87,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
         axiosError.response?.data?.message ||
         "Error logging out";
       toast.error(errorMessage);
+    } finally {
+      set({authUser: null});
+      localStorage.removeItem("user_role")
     }
   },
 
@@ -96,11 +99,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const response = await axiosInstance.get("/auth/checkAuth");
       set({ authUser: response.data });
     } catch (error) {
-      // const axiosError = error as AxiosError<{ message: string }>;
-      // const errorMessage =
-      //   axiosError.response?.data?.message ||
-      //   "Signup failed. Please try again.";
-      // toast.error(errorMessage);
       console.log(error)
     } finally {
       set({ isCheckingAuth: false });

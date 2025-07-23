@@ -16,15 +16,6 @@ interface Props {
 }
 
 const RenderDoctorAccordion = ({ doctors }: Props) => {
-  //   const formatDate = (dateString: string) => {
-  //     return new Date(dateString).toLocaleDateString("en-US", {
-  //       year: "numeric",
-  //       month: "long",
-  //       day: "numeric",
-  //       hour: "2-digit",
-  //       minute: "2-digit",
-  //     });
-  //   };
 
   if (doctors.length === 0) {
     return (
@@ -72,18 +63,6 @@ const RenderDoctorAccordion = ({ doctors }: Props) => {
                     <span className="text-sm text-gray-600">Doctor:</span>
                     <span className="text-sm">{doctor.doctor.name}</span>
                   </div>
-                  {/* <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Doctor Email:</span>
-                    <span className="text-sm">{doctor.doctor.email}</span>
-                  </div> */}
-                  {/* <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Created On:</span>
-                    <span className="text-sm">
-                      {formatDate(doctor.createdOn)}
-                    </span>
-                  </div> */}
                 </div>
 
                 <div className="pt-3 border-t flex gap-2">
