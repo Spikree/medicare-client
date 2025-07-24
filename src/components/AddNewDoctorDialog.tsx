@@ -26,7 +26,6 @@ const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
     if (open === false) {
       setSearchDoctorsQuery("");
     }
-    console.log(open)
   }, [open]);
 
   const searchDoctorsFunction = () => {

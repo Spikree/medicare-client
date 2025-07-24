@@ -9,8 +9,9 @@ import DoctorRoutes from "./routes/DoctorRoute";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import PatientRoutes from "./routes/PatientRoutes";
 import SidebarLayout from "./layouts/NavbarLayout";
-import PatientDetails from "./pages/doctor/PatientDetails";
 import Home from "./pages/patient/Home";
+import PatientDetails from "./pages/doctor/PatientDetails";
+import DoctorDetails from "./pages/patient/DoctorDetails";
 
 const App = () => {
   const { checkAuth } = useAuthStore();
@@ -38,6 +39,7 @@ const App = () => {
 
             <Route element={<PatientRoutes />}>
               <Route path="/home" element={<Home />} />
+              <Route path="/doctorDetails/:doctorId" element={<DoctorDetails/>} />
             </Route>
           </Route>
         </Route>

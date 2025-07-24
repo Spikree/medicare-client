@@ -40,6 +40,22 @@ export interface RequestInterface {
   createdOn: string;
 }
 
+interface DoctorDetails {
+  _id: string;
+  name: string;
+  doctor: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  patient: string;
+  Disease: string;
+  symptom: string;
+  patientExperience: string;
+  medicationPrescribed: string;
+  createdOn: string;
+}
+
 interface SearchDoctors {
   _id: string;
   name: string;
@@ -66,11 +82,14 @@ interface PatientStore {
   acceptAddRequest: (requestId: string) => void;
   searchDoctors: (query: string) => void;
   addDoctorRequest: (doctorId: string) => void;
+  getDoctorDetails: (doctorId: string) => void;
 
   doctorList: DoctorInterface[];
+
   patientLabResultList: PatientLabResults[];
   IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
+  doctorDetailsList: DoctorDetails[];
 }
 
 export const PatientStore = create<PatientStore>((set, get) => ({
@@ -78,6 +97,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   patientLabResultList: [],
   IncomingAddRequests: [],
   searchDoctorsList: [],
+  doctorDetailsList: [],
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -226,8 +246,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
-        axiosError.response?.data?.message ||
-        "Error searching for doctors";
+        axiosError.response?.data?.message || "Error searching for doctors";
       toast.error(errorMessage);
     }
   },
@@ -241,8 +260,21 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
-        axiosError.response?.data?.message ||
-        "Error adding doctor";
+        axiosError.response?.data?.message || "Error adding doctor";
+      toast.error(errorMessage);
+    }
+  },
+
+  getDoctorDetails: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/patient/getDoctorDetails/${doctorId}`
+      );
+      set({ doctorDetailsList: response.data.patientDetails });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error getting patient info";
       toast.error(errorMessage);
     }
   },
