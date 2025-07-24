@@ -40,7 +40,7 @@ export interface RequestInterface {
   createdOn: string;
 }
 
-interface DoctorDetails {
+export interface DoctorDetailsInterface {
   _id: string;
   name: string;
   doctor: {
@@ -89,7 +89,7 @@ interface PatientStore {
   patientLabResultList: PatientLabResults[];
   IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
-  doctorDetailsList: DoctorDetails[];
+  doctorDetailsList: DoctorDetailsInterface[];
 }
 
 export const PatientStore = create<PatientStore>((set, get) => ({
@@ -270,7 +270,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       const response = await axiosInstance.get(
         `/patient/getDoctorDetails/${doctorId}`
       );
-      set({ doctorDetailsList: response.data.patientDetails });
+      set({ doctorDetailsList: response.data.doctorDetails });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

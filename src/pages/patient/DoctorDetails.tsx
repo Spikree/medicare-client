@@ -1,4 +1,5 @@
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import DoctorDetailsComponent from "@/components/DoctorDetailsComponent";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -21,7 +22,10 @@ const DoctorDetails = () => {
 
   return (
     <Dialog>
-      <BreadcrumbElement items={breadcrumbItems} currentPage="Patient Details" />
+      <BreadcrumbElement
+        items={breadcrumbItems}
+        currentPage="Patient Details"
+      />
       <div className="w-full p-6">
         <Tabs defaultValue="current">
           <TabsList>
@@ -31,7 +35,7 @@ const DoctorDetails = () => {
 
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
-                
+              <DoctorDetailsComponent doctorDetailsList={doctorDetailsList} />
             </TabsContent>
 
             <TabsContent className="p-6" value="old"></TabsContent>
