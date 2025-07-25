@@ -114,6 +114,9 @@ interface DoctorStore {
   patientLabResults: PatientLabResults[];
   patientReview: PatientReview[];
   incomingAddRequests: RequestInterface[];
+
+  isFetchingPatinetList : boolean;
+  
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -124,6 +127,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   patientReview: [],
   incomingAddRequests: [],
   isUploadingLabResults: false,
+  isFetchingPatinetList: false,
 
   getPatientList: async () => {
     try {

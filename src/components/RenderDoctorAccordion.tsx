@@ -16,7 +16,6 @@ interface Props {
 }
 
 const RenderDoctorAccordion = ({ doctors }: Props) => {
-
   if (doctors.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -69,7 +68,9 @@ const RenderDoctorAccordion = ({ doctors }: Props) => {
                   <Button size="sm" variant="outline">
                     Edit Doctor
                   </Button>
-                  <Link to={`/doctorDetails/${doctor.doctor._id}`}>
+                  <Link
+                    to={`/doctorDetails/${doctor.doctor._id}/${doctor?.doctor?.name}`}
+                  >
                     <Button size="sm" variant="outline">
                       View Details
                     </Button>

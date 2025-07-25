@@ -95,7 +95,9 @@ const PatientAccordion = ({ patients }: props) => {
                   <Button size="sm" variant="outline">
                     Edit Patient
                   </Button>
-                  <Link to={`/patientDetails/${patient?.patient}`}>
+                  <Link
+                    to={`/patientDetails/${patient?.patient}/${patient?.name}`}
+                  >
                     <Button size="sm" variant="outline">
                       View Details
                     </Button>

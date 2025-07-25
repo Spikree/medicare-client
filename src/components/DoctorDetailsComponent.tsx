@@ -3,13 +3,14 @@ import { Dialog } from "./ui/dialog";
 import { Card, CardContent } from "./ui/card";
 import { Calendar, Eye, FileText } from "lucide-react";
 import { Button } from "./ui/button";
+import { useParams } from "react-router-dom";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
 }
 
 const DoctorDetailsComponent = ({ doctorDetailsList }: Props) => {
-  const doctorName = doctorDetailsList[0]?.doctor?.name || "Unknown Doctor";
+  const { doctorName } = useParams();
 
   return (
     <Dialog>

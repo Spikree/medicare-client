@@ -12,6 +12,7 @@ import type { PatientDetails } from "@/store/DoctorStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useParams } from "react-router-dom";
 
 interface Props {
   patientDetailsList: PatientDetails[];
@@ -55,7 +56,7 @@ const MedicalRecords = ({
       medicalRecord.doctor?.toString() === authUser?._id.toString()
   );
 
-  const patientName = patientDetailsList[0]?.name || "Unknown Patient";
+  const { patientName } = useParams();
 
   return (
     <Dialog
