@@ -29,7 +29,6 @@ export interface PatientDetails {
   patient: string;
   Disease: string;
   symptom: string;
-  patientFeedback: string;
   patientExperience?: string;
   medicationPrescribed: string;
   createdOn: string;
@@ -115,8 +114,7 @@ interface DoctorStore {
   patientReview: PatientReview[];
   incomingAddRequests: RequestInterface[];
 
-  isFetchingPatinetList : boolean;
-  
+  isFetchingPatinetList: boolean;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({

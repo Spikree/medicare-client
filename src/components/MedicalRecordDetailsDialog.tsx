@@ -18,9 +18,10 @@ import AddPatientFeedbackDialog from "./AddPatientFeedbackDialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import PatientReviewsList from "./PatientReviewsList";
+import type { DoctorDetailsInterface } from "@/store/PatientStore";
 
 interface Props {
-  selectedRecord: PatientDetails;
+  selectedRecord: PatientDetails | DoctorDetailsInterface;
   showPatientFeedbackModel: boolean;
   isDialogOpen: boolean;
   patientFeedbackModelView: () => void;
@@ -30,7 +31,7 @@ interface Props {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => void;
 }
 
@@ -108,8 +109,7 @@ const MedicalRecordDetailsDialog = ({
               </div>
             </div>
 
-            {(selectedRecord.patientFeedback ||
-              selectedRecord.patientExperience) && (
+            {selectedRecord.patientExperience && (
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <MessageSquare className="h-4 w-4 text-orange-600" />
@@ -117,8 +117,7 @@ const MedicalRecordDetailsDialog = ({
                 </div>
                 <div className="border border-orange-200 rounded-md p-3 bg-orange-50">
                   <p className="text-sm text-orange-900">
-                    {selectedRecord.patientFeedback ||
-                      selectedRecord.patientExperience}
+                    {selectedRecord.patientExperience}
                   </p>
                 </div>
               </div>
@@ -159,7 +158,10 @@ const MedicalRecordDetailsDialog = ({
           />
         )}
       </DialogContent>
-      <PatientReviewsList isOpen={showPatientReviewList} setIsOpen={setShowPatientReviewList}/>
+      <PatientReviewsList
+        isOpen={showPatientReviewList}
+        setIsOpen={setShowPatientReviewList}
+      />
     </Dialog>
   );
 };

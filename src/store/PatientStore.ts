@@ -43,11 +43,7 @@ export interface RequestInterface {
 export interface DoctorDetailsInterface {
   _id: string;
   name: string;
-  doctor: {
-    _id: string;
-    name: string;
-    email: string;
-  };
+  doctor: string;
   patient: string;
   Disease: string;
   symptom: string;

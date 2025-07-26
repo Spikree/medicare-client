@@ -7,9 +7,10 @@ import { useParams } from "react-router-dom";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
+  handleViewMore: (record: DoctorDetailsInterface) => void;
 }
 
-const DoctorDetailsComponent = ({ doctorDetailsList }: Props) => {
+const DoctorDetailsComponent = ({ doctorDetailsList, handleViewMore }: Props) => {
   const { doctorName } = useParams();
 
   return (
@@ -66,7 +67,7 @@ const DoctorDetailsComponent = ({ doctorDetailsList }: Props) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    // onClick={() => handleViewMore(record)}
+                    onClick={() => handleViewMore(record)}
                     className="flex items-center gap-2 ml-4"
                   >
                     <Eye className="h-4 w-4" />
