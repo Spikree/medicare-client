@@ -12,12 +12,13 @@ import MedicalRecordDetailsDialog from "@/components/MedicalRecordDetailsDialog"
 
 const DoctorDetails = () => {
   const { doctorId } = useParams();
-  const { getDoctorDetails, doctorDetailsList } = PatientStore();
+  const { getDoctorDetails, doctorDetailsList, getPatientReviews, addPatientReview, patientReview } = PatientStore();
 
-  const [selectedRecord, setSelectedRecord] = useState<DoctorDetailsInterface | null>(
-    null
-  );
+  const [selectedRecord, setSelectedRecord] =
+    useState<DoctorDetailsInterface | null>(null);
   const [isViewMoreDialogOpen, setIsViewMoreDialogOpen] =
+    useState<boolean>(false);
+  const [showPatientFeedbackModel, setShowPatientFeedbackModel] =
     useState<boolean>(false);
 
   useEffect(() => {
@@ -26,11 +27,27 @@ const DoctorDetails = () => {
     }
   }, [doctorId, getDoctorDetails]);
 
-  const handleViewMore = (record : DoctorDetailsInterface) => {
+  const handleViewMore = (record: DoctorDetailsInterface) => {
     setSelectedRecord(record);
     setIsViewMoreDialogOpen(true);
+  };
 
-  }
+  const patientFeedbackModelView = () => {
+    setShowPatientFeedbackModel((prev) => !prev);
+  };
+
+  const getPatientReviewsForMedicalRecord = (patientDetailId: string) => {
+    getPatientReviews(patientDetailId);
+  };
+
+  const addPatientFeedback = (
+    patientDetailId: string,
+    patientReview: string,
+    sideEffects: string,
+    reviewBy: string,
+  ) => {
+    addPatientReview(patientDetailId, patientReview, sideEffects, reviewBy);
+  };
 
   const breadcrumbItems: { name: string; link: string }[] = [];
 
@@ -49,13 +66,21 @@ const DoctorDetails = () => {
 
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
-              <DoctorDetailsComponent doctorDetailsList={doctorDetailsList} handleViewMore={handleViewMore} />
+              <DoctorDetailsComponent
+                doctorDetailsList={doctorDetailsList}
+                handleViewMore={handleViewMore}
+              />
 
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
                   setIsDialogOpen={setIsViewMoreDialogOpen}
                   isDialogOpen={isViewMoreDialogOpen}
                   selectedRecord={selectedRecord}
+                  showPatientFeedbackModel={showPatientFeedbackModel}
+                  patientFeedbackModelView={patientFeedbackModelView}
+                  getPatientReviewsForMedicalRecord={getPatientReviewsForMedicalRecord}
+                  addPatientFeedback={addPatientFeedback}
+                  patientReview={patientReview}
                 />
               )}
             </TabsContent>

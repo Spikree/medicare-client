@@ -60,6 +60,27 @@ interface SearchDoctors {
   createdOn: string;
 }
 
+export interface PatientReview {
+  _id: string;
+  name: string;
+  patient: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  doctor: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  patientDetail: string;
+  patientReview: string;
+  sideEffects: string;
+  reviewBy: string;
+  createdOn: string;
+  __v: number;
+}
+
 interface PatientStore {
   getDoctorList: () => Promise<void>;
   getLabResults: () => Promise<void>;
@@ -79,6 +100,13 @@ interface PatientStore {
   searchDoctors: (query: string) => void;
   addDoctorRequest: (doctorId: string) => void;
   getDoctorDetails: (doctorId: string) => void;
+  addPatientReview: (
+    patientDetailId: string,
+    patientReview: string,
+    sideEffects: string,
+    reviewBy: string
+  ) => void;
+  getPatientReviews: (patientDetailId: string) => void;
 
   doctorList: DoctorInterface[];
 
@@ -86,6 +114,7 @@ interface PatientStore {
   IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
   doctorDetailsList: DoctorDetailsInterface[];
+  patientReview: PatientReview[];
 }
 
 export const PatientStore = create<PatientStore>((set, get) => ({
@@ -94,6 +123,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   IncomingAddRequests: [],
   searchDoctorsList: [],
   doctorDetailsList: [],
+  patientReview: [],
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -271,6 +301,47 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error getting patient info";
+      toast.error(errorMessage);
+    }
+  },
+
+  // TODO : add patient reviews
+  addPatientReview: async (
+    patientDetailId: string,
+    patientReview: string,
+    sideEffects: string,
+    reviewBy: string
+  ) => {
+    const payload = {
+      patientReview,
+      sideEffects,
+      reviewBy,
+    };
+    try {
+      const response = await axiosInstance.post(
+        `/patient/addPatientReview/${patientDetailId}`,
+        payload
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error adding patient review";
+      toast.error(errorMessage);
+    }
+  },
+
+  // TODO : get patient reviews
+  getPatientReviews: async (patientDetailId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/patient/getPatientReviews/${patientDetailId}`
+      );
+      set({ patientReview: response.data.patientReviews });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error adding patient review";
       toast.error(errorMessage);
     }
   },

@@ -7,15 +7,15 @@ import {
 } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { DoctorStore } from "@/store/DoctorStore";
+import type { PatientReview } from "@/store/PatientStore";
 
 interface Props {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  patientReview: PatientReview[];
 }
 
-const PatientReviewsList = ({ isOpen, setIsOpen }: Props) => {
-  const { patientReview } = DoctorStore();
+const PatientReviewsList = ({ isOpen, setIsOpen, patientReview }: Props) => {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {

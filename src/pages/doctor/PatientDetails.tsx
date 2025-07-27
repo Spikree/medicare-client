@@ -24,6 +24,7 @@ const PatientDetails = () => {
     addPatientDetails,
     addPatientReview,
     getPatientReviews,
+    patientReview
     
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
@@ -173,6 +174,7 @@ const PatientDetails = () => {
               {/* Details Dialog */}
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
+                patientReview={patientReview}
                   setIsDialogOpen={setIsDialogOpen}
                   isDialogOpen={isDialogOpen}
                   selectedRecord={selectedRecord}

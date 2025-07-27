@@ -19,9 +19,11 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import PatientReviewsList from "./PatientReviewsList";
 import type { DoctorDetailsInterface } from "@/store/PatientStore";
+import type { PatientReview } from "@/store/PatientStore";
 
 interface Props {
   selectedRecord: PatientDetails | DoctorDetailsInterface;
+  patientReview: PatientReview[];
   showPatientFeedbackModel: boolean;
   isDialogOpen: boolean;
   patientFeedbackModelView: () => void;
@@ -43,6 +45,7 @@ const MedicalRecordDetailsDialog = ({
   addPatientFeedback,
   isDialogOpen,
   setIsDialogOpen,
+  patientReview,
 }: Props) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -159,6 +162,7 @@ const MedicalRecordDetailsDialog = ({
         )}
       </DialogContent>
       <PatientReviewsList
+      patientReview={patientReview}
         isOpen={showPatientReviewList}
         setIsOpen={setShowPatientReviewList}
       />
