@@ -12,7 +12,7 @@ import SidebarLayout from "./layouts/NavbarLayout";
 import Home from "./pages/patient/Home";
 import PatientDetails from "./pages/doctor/PatientDetails";
 import DoctorDetails from "./pages/patient/DoctorDetails";
-import DoctorProfile from "./pages/doctor/DoctorProfile";
+import DoctorProfile from "./pages/Profile";
 
 const App = () => {
   const { checkAuth } = useAuthStore();
@@ -36,8 +36,8 @@ const App = () => {
                 path="/patientDetails/:patientId/:patientName"
                 element={<PatientDetails />}
               />
-              <Route path="/profile" element={<DoctorProfile />} />
             </Route>
+            <Route path="/profile" element={<DoctorProfile />} />
 
             <Route element={<PatientRoutes />}>
               <Route path="/home" element={<Home />} />
