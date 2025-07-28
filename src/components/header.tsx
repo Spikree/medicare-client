@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Menu, User, LogIn, UserPlus, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card } from "./ui/card";
 
 export default function Header() {
   const { authUser, logout } = useAuthStore();
@@ -95,19 +96,30 @@ export default function Header() {
                 <div className="py-1">
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                    onClick={() => navigate("/profile")}
+                  >
+                    <Card>
+                      <img
+                        src={
+                          authUser?.profilePicture ||
+                          "https://ui.shadcn.com/avatars/shadcn.jpg"
+                        }
+                        alt=""
+                        className="h-8 w-auto rounded-full"
+                      />
+                    </Card>
+                    <div>
+                      <p>{authUser.name}</p>
+                      <p className="text-xs">{authUser.email}</p>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
                     onClick={() => logoutUser()}
                   >
                     <LogOut className="h-4 w-4 mr-3 text-gray-400" />
                     Log out
                   </DropdownMenuItem>
-
-                  {/* <DropdownMenuItem
-                    className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick("/auth")}
-                  >
-                    <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
-                    Get Started
-                  </DropdownMenuItem> */}
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>

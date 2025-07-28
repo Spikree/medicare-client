@@ -241,8 +241,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         `/doctor/addPatientDetails/${patientId}`,
         payload
       );
-      console.log(response);
-      console.log("patient records added");
+      toast.success(response.data.message)
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
@@ -298,7 +297,6 @@ export const DoctorStore = create<DoctorStore>((set) => ({
     try {
       const response = await axiosInstance.get("/doctor/getAllAddRequests");
       set({ incomingAddRequests: response.data.requests });
-      console.log(response);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

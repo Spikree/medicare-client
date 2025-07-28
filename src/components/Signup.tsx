@@ -34,9 +34,8 @@ export function SignupForm({setShowLogin} : props) {
     e.preventDefault()
     setIsLoading(true)
 
-    signup(formData.name, formData.email, formData.password, formData.role);
+    signup(formData.name, formData.email, formData.password, formData.role as "doctor" | "patient");
 
-    console.log("Signup attempt:", formData)
     setIsLoading(false)
   }
 

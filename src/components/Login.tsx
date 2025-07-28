@@ -28,8 +28,6 @@ export function LoginForm({ setShowLogin }: props) {
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
     login(formData.email, formData.password);
-
-    console.log("Login attempt:", formData);
     setIsLoading(false);
   };
 

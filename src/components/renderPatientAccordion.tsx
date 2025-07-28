@@ -50,9 +50,8 @@ const PatientAccordion = ({ patients }: props) => {
       className="w-full flex flex-col gap-4 p-4"
     >
       {patients.map((patient) => (
-        <Card>
+        <Card key={patient._id}>
           <AccordionItem
-            key={patient._id}
             value={patient._id}
             className="px-10 border-b-0"
           >
