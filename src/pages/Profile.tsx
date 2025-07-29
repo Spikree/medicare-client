@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   Camera,
   Edit2,
@@ -24,31 +23,44 @@ import {
   Mail,
   Stethoscope,
   Heart,
+  Shield,
 } from "lucide-react";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import { DoctorStore } from "@/store/DoctorStore";
 
 const ProfilePage = () => {
-  const { authUser } = useAuthStore();
+  const { authUser, checkAuth } = useAuthStore();
+  const { updateProfile } = DoctorStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState(authUser?.bio || "");
   const [editedProfilePicture, setEditedProfilePicture] = useState(
     authUser?.profilePicture || ""
   );
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
+    null
+  );
 
   if (!authUser) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-background to-muted/20">
-        <p className="text-muted-foreground text-lg font-medium">
-          Please log in to view your profile.
-        </p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center pt-6 pb-6">
+            <Shield className="h-12 w-12 text-gray-400 mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Access Required
+            </h2>
+            <p className="text-gray-600 text-center">
+              Please log in to view your profile information.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   const handleSave = () => {
-    console.log("Saving profile:", {
-      bio: editedBio,
-      profilePicture: editedProfilePicture,
+    updateProfile(editedBio, profilePictureFile!).then(() => {
+      checkAuth();
     });
     setIsEditing(false);
   };
@@ -56,6 +68,7 @@ const ProfilePage = () => {
   const handleCancel = () => {
     setEditedBio(authUser.bio || "");
     setEditedProfilePicture(authUser.profilePicture || "");
+    setProfilePictureFile(null);
     setIsEditing(false);
   };
 
@@ -64,6 +77,7 @@ const ProfilePage = () => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setEditedProfilePicture(imageUrl);
+      setProfilePictureFile(file);
     }
   };
 
@@ -86,35 +100,29 @@ const ProfilePage = () => {
 
   const getRoleColor = (role: string) => {
     return role === "doctor"
-      ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
-      : "bg-green-500/10 text-green-600 border-green-500/20";
+      ? "bg-blue-50 text-blue-700 border-blue-200"
+      : "bg-purple-50 text-purple-700 border-purple-200";
   };
 
   const breadcrumbItems: { name: string; link: string }[] = [];
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-4">
-        <BreadcrumbElement
-          items={breadcrumbItems}
-          currentPage="Patient Details"
-        />
-        <div className="space-y-8 mt-4">
-          {/* Header */}
-          <div className="flex flex-col items-start justify-between bg-background/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-border/50 space-y-4 sm:flex-row sm:items-center sm:space-y-0">
-            <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-foreground">
-                Profile
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Manage your account information
-              </p>
-            </div>
+    <div className="min-h-screen ">
+      <div className=" mx-auto px-4 py-2 ">
+        <BreadcrumbElement items={breadcrumbItems} currentPage="Profile" />
+
+        {/* Header Section */}
+        <div className="mb-8 mt-6">
+         
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="w-full">
+            <h1 className="text-4xl font-extrabold">Profile</h1>
+          </div>
             {!isEditing ? (
               <Button
+              variant={"green"}
                 onClick={() => setIsEditing(true)}
-                variant="outline"
-                className="border-border hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="text-white"
               >
                 <Edit2 className="h-4 w-4 mr-2" />
                 Edit Profile
@@ -123,17 +131,15 @@ const ProfilePage = () => {
               <div className="flex gap-3">
                 <Button
                   onClick={handleSave}
-                  size="sm"
-                  className="bg-primary hover:bg-primary/90 transition-colors"
+                  className="bg-green-500 hover:bg-green-600 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  Save
+                  Save Changes
                 </Button>
                 <Button
                   onClick={handleCancel}
                   variant="outline"
-                  size="sm"
-                  className="border-border hover:bg-accent hover:text-accent-foreground transition-colors"
+                  className="border-gray-300 hover:bg-gray-50"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -141,18 +147,22 @@ const ProfilePage = () => {
               </div>
             )}
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Profile Picture & Basic Info */}
           <div className="space-y-6">
             {/* Profile Picture Card */}
-            <Card className="bg-background/80 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            <Card className="bg-white shadow-sm border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">
+                <CardTitle className="text-lg font-semibold">
                   Profile Picture
                 </CardTitle>
+                <CardDescription>Update your profile image</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col items-center space-y-4">
                 <div className="relative group">
-                  <Avatar className="h-36 w-36 ring-4 ring-border/50 transition-transform group-hover:scale-105">
+                  <Avatar className="h-32 w-32 ring-4 ring-gray-100 shadow-md">
                     <AvatarImage
                       src={
                         isEditing
@@ -162,7 +172,7 @@ const ProfilePage = () => {
                       alt={authUser.name}
                       className="object-cover"
                     />
-                    <AvatarFallback className="text-3xl font-semibold bg-muted/50">
+                    <AvatarFallback className="text-2xl font-semibold bg-gray-100 text-gray-700">
                       {getInitials(authUser.name)}
                     </AvatarFallback>
                   </Avatar>
@@ -172,7 +182,7 @@ const ProfilePage = () => {
                         htmlFor="profile-upload"
                         className="cursor-pointer"
                       >
-                        <Camera className="h-10 w-10 text-white/90" />
+                        <Camera className="h-8 w-8 text-white" />
                         <Input
                           id="profile-upload"
                           type="file"
@@ -185,88 +195,141 @@ const ProfilePage = () => {
                   )}
                 </div>
                 {isEditing && (
-                  <p className="text-sm text-muted-foreground text-center">
-                    Click the camera icon to upload a new profile picture
+                  <p className="text-sm text-gray-600 text-center">
+                    Click the camera icon to upload a new photo
                   </p>
                 )}
               </CardContent>
             </Card>
 
-            {/* Profile Information Card */}
-            <Card className="bg-background/80 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            {/* Quick Info Card */}
+            <Card className="bg-white shadow-sm border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">
+                <CardTitle className="text-lg font-semibold">
+                  Account Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <User className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Full Name
+                    </p>
+                    <p className="text-sm text-gray-600">{authUser.name}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Email</p>
+                    <p className="text-sm text-gray-600">{authUser.email}</p>
+                  </div>
+                </div>
+
+                {authUser.doctorId && (
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Shield className="h-5 w-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        Professional ID
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {authUser.doctorId}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Detailed Information */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Personal Information */}
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
                   Personal Information
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Your account details and role information
+                <CardDescription>
+                  Manage your personal details and account settings
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-8">
-                {/* Basic Info */}
-                <div className="grid gap-6 sm:grid-cols-2">
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-sm font-medium">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      Name
+                    <Label className="text-sm font-medium text-gray-700">
+                      Full Name
                     </Label>
                     <Input
                       value={authUser.name}
                       disabled
-                      className="bg-muted/50 border-border/50 text-foreground font-medium"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-2 text-sm font-medium">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      Email
+                    <Label className="text-sm font-medium text-gray-700">
+                      Email Address
                     </Label>
                     <Input
                       value={authUser.email}
                       disabled
-                      className="bg-muted/50 border-border/50 text-foreground font-medium"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                     />
                   </div>
                 </div>
 
-                {/* Role and Doctor ID */}
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      Role & Account Type
+                    <Label className="text-sm font-medium text-gray-700">
+                      Account Type
                     </Label>
-                    <div className="space-y-2">
+                    <div className="flex items-center gap-2">
                       <Badge
-                        className={`px-3 py-1 font-medium border ${getRoleColor(
+                        className={`px-3 py-1 font-medium ${getRoleColor(
                           authUser.role
                         )}`}
                       >
                         {getRoleIcon(authUser.role)}
-                        <span className="ml-1 capitalize">{authUser.role}</span>
+                        <span className="ml-2 capitalize">{authUser.role}</span>
                       </Badge>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {authUser.role} Account
-                      </p>
                     </div>
                   </div>
                   {authUser.doctorId && (
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Doctor ID</Label>
+                      <Label className="text-sm font-medium text-gray-700">
+                        Professional ID
+                      </Label>
                       <Input
                         value={authUser.doctorId}
                         disabled
-                        className="bg-muted/50 border-border/50 text-foreground font-medium"
+                        className="bg-gray-50 border-gray-200 text-gray-900"
                       />
                     </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
 
-                <Separator className="bg-border/50" />
-
-                {/* Bio Section */}
+            {/* Bio Section */}
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Professional Bio
+                </CardTitle>
+                <CardDescription>
+                  Share your background, experience, and specializations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-sm font-medium">
-                    Bio
+                  <Label
+                    htmlFor="bio"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    About You
                   </Label>
                   {isEditing ? (
                     <Textarea
@@ -274,18 +337,24 @@ const ProfilePage = () => {
                       placeholder={`Tell us about yourself as a ${authUser.role}...`}
                       value={editedBio}
                       onChange={(e) => setEditedBio(e.target.value)}
-                      className="min-h-[140px] border-border/50 bg-background/50 text-foreground focus:ring-primary/50"
+                      className="min-h-[150px] border-gray-200 focus:ring-blue-500 focus:border-blue-500 resize-none"
                     />
                   ) : (
-                    <div className="min-h-[140px] p-4 border border-border/50 rounded-lg bg-muted/30 shadow-inner">
+                    <div className="min-h-[150px] p-4 border border-gray-200 rounded-lg bg-gray-50">
                       {authUser.bio ? (
-                        <p className="text-sm leading-relaxed text-foreground">
+                        <p className="text-sm leading-relaxed text-gray-900">
                           {authUser.bio}
                         </p>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">
-                          No bio added yet. Click "Edit Profile" to add one.
-                        </p>
+                        <div className="flex flex-col items-center justify-center h-full text-center">
+                          <User className="h-8 w-8 text-gray-300 mb-2" />
+                          <p className="text-sm text-gray-500 font-medium">
+                            No bio added yet
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Click "Edit Profile" to add your professional bio
+                          </p>
+                        </div>
                       )}
                     </div>
                   )}
