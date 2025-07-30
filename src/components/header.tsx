@@ -11,6 +11,7 @@ import { Menu, User, LogIn, UserPlus, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
+import { defaultProfileImage } from "@/assets/assets";
 
 export default function Header() {
   const { authUser, logout } = useAuthStore();
@@ -98,14 +99,14 @@ export default function Header() {
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
                     onClick={() => navigate("/profile")}
                   >
-                    <Card>
+                    <Card className="h-10 w-10 rounded-full">
                       <img
                         src={
                           authUser?.profilePicture ||
-                          "https://ui.shadcn.com/avatars/shadcn.jpg"
+                          defaultProfileImage
                         }
                         alt=""
-                        className="h-8 w-auto rounded-full"
+                        className="h-10 w-10 rounded-full"
                       />
                     </Card>
                     <div>

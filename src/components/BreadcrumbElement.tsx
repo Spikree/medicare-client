@@ -15,7 +15,7 @@ interface BreadcrumbItems {
 
 type Props = {
   items?: BreadcrumbItems[];
-  currentPage: string
+  currentPage: string;
 };
 
 const BreadcrumbElement = ({ items, currentPage }: Props) => {

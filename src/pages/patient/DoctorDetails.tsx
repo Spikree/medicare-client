@@ -55,7 +55,7 @@ const DoctorDetails = () => {
     <Dialog>
       <BreadcrumbElement
         items={breadcrumbItems}
-        currentPage="Patient Details"
+        currentPage="Doctor Details"
       />
       <div className="w-full p-6">
         <Tabs defaultValue="current">

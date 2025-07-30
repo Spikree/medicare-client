@@ -113,14 +113,13 @@ const ProfilePage = () => {
 
         {/* Header Section */}
         <div className="mb-8 mt-6">
-         
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="w-full">
-            <h1 className="text-4xl font-extrabold">Profile</h1>
-          </div>
+            <div className="w-full">
+              <h1 className="text-4xl font-extrabold">Profile</h1>
+            </div>
             {!isEditing ? (
               <Button
-              variant={"green"}
+                variant={"green"}
                 onClick={() => setIsEditing(true)}
                 className="text-white"
               >
@@ -319,9 +318,15 @@ const ProfilePage = () => {
                 <CardTitle className="text-lg font-semibold">
                   Professional Bio
                 </CardTitle>
-                <CardDescription>
-                  Share your background, experience, and specializations
-                </CardDescription>
+                {authUser.role === "doctor" ? (
+                  <CardDescription>
+                    Share your background, experience, and specializations
+                  </CardDescription>
+                ) : (
+                  <CardDescription>
+                    Share your background
+                  </CardDescription>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
