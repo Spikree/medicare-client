@@ -17,11 +17,12 @@ export interface DoctorInterface {
   createdOn: string;
 }
 
-interface PatientLabResults {
+export interface PatientLabResults {
   _id: string;
   title: string;
   labResult: string;
   patient: string;
+  addedBy: string;
   createdOn: string;
 }
 
@@ -100,6 +101,7 @@ interface PatientStore {
   searchDoctors: (query: string) => void;
   addDoctorRequest: (doctorId: string) => void;
   getDoctorDetails: (doctorId: string) => void;
+  getLabResultsByDoctor: (doctorId: string) => void;
   addPatientReview: (
     patientDetailId: string,
     patientReview: string,
@@ -111,6 +113,7 @@ interface PatientStore {
   doctorList: DoctorInterface[];
 
   patientLabResultList: PatientLabResults[];
+  LabResultsByDoctorList : PatientLabResults[];
   IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
   doctorDetailsList: DoctorDetailsInterface[];
@@ -124,6 +127,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   searchDoctorsList: [],
   doctorDetailsList: [],
   patientReview: [],
+  LabResultsByDoctorList: [],
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -331,7 +335,6 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     }
   },
 
-  // TODO : get patient reviews
   getPatientReviews: async (patientDetailId: string) => {
     try {
       const response = await axiosInstance.get(
@@ -342,6 +345,22 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error adding patient review";
+      toast.error(errorMessage);
+    }
+  },
+
+  // TODO : add get lab results uploaded by doctor
+  getLabResultsByDoctor: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/patient/getLabResultsByDoctor/${doctorId}`
+      );
+      set({LabResultsByDoctorList: response.data.labResultsByDoctor})
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error getting lab results by doctor";
       toast.error(errorMessage);
     }
   },
