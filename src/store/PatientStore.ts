@@ -110,6 +110,8 @@ interface PatientStore {
   ) => void;
   getPatientReviews: (patientDetailId: string) => void;
 
+  isUploadingLabResults: boolean;
+
   doctorList: DoctorInterface[];
 
   patientLabResultList: PatientLabResults[];
@@ -128,6 +130,8 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   doctorDetailsList: [],
   patientReview: [],
   LabResultsByDoctorList: [],
+
+  isUploadingLabResults: false,
   getDoctorList: async () => {
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
@@ -165,6 +169,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   },
 
   uploadLabResults: async (file: File, title: string) => {
+    set({ isUploadingLabResults: true });
     const formData = new FormData();
     formData.append("labFile", file);
     formData.append("title", title);
@@ -178,12 +183,14 @@ export const PatientStore = create<PatientStore>((set, get) => ({
           },
         }
       );
-      console.log(response);
+      toast.success(response.data.message);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error uploading lab results";
       toast.error(errorMessage);
+    } finally {
+      set({ isUploadingLabResults: false });
     }
   },
 
