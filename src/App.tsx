@@ -10,7 +10,7 @@ import ProtectedRoutes from "./routes/ProtectedRoutes";
 import PatientRoutes from "./routes/PatientRoutes";
 import SidebarLayout from "./layouts/NavbarLayout";
 import Home from "./pages/patient/Home";
-import PatientDetails from "./pages/doctor/PatientDetails";
+import PatientDetailsPage from "./pages/doctor/PatientDetails";
 import DoctorDetails from "./pages/patient/DoctorDetails";
 import DoctorProfile from "./pages/Profile";
 
@@ -34,7 +34,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route
                 path="/patientDetails/:patientId/:patientName"
-                element={<PatientDetails />}
+                element={<PatientDetailsPage />}
               />
             </Route>
             <Route path="/profile" element={<DoctorProfile />} />

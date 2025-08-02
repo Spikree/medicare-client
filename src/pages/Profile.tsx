@@ -26,11 +26,11 @@ import {
   Shield,
 } from "lucide-react";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
-import { DoctorStore } from "@/store/DoctorStore";
+import { CommonStore } from "@/store/CommonStore";
 
 const ProfilePage = () => {
   const { authUser, checkAuth } = useAuthStore();
-  const { updateProfile } = DoctorStore();
+  const {updateProfile} = CommonStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState(authUser?.bio || "");
   const [editedProfilePicture, setEditedProfilePicture] = useState(

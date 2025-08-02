@@ -105,7 +105,6 @@ interface DoctorStore {
   getPatientReviews: (patientDetailId: string) => Promise<void>;
   getAllAddRequests: () => Promise<void>;
   acceptAddRequest: (requestId: string) => Promise<void>;
-  updateProfile: (bio: string, profilePicture: File) => Promise<void>;
 
   patientList: Patient[];
   isUploadingLabResults: boolean;
@@ -317,31 +316,6 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error accepting add request";
-      toast.error(errorMessage);
-    }
-  },
-
-  updateProfile: async (bio: string, profilePicture: File) => {
-    const formData = new FormData();
-
-    formData.append("bio", bio);
-    formData.append("profilePicture", profilePicture);
-
-    try {
-      const response = await axiosInstance.post(
-        `/doctor/editProfile`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
-      const errorMessage =
-        axiosError.response?.data?.message || "Error updating profile";
       toast.error(errorMessage);
     }
   },

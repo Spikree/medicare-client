@@ -13,7 +13,7 @@ import MedicalRecordDetailsDialog from "@/components/MedicalRecordDetailsDialog"
 import type { PatientDetails } from "@/store/DoctorStore";
 import PatientLabResultsComponent from "@/components/PatientLabResultsComponent";
 
-const PatientDetails = () => {
+const PatientDetailsPage = () => {
   const { patientId } = useParams();
   const {
     getPatientDetails,
@@ -211,4 +211,4 @@ const PatientDetails = () => {
   );
 };
 
-export default PatientDetails;
+export default PatientDetailsPage;
