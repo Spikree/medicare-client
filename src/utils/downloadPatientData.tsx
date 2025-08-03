@@ -1,7 +1,14 @@
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable"; // Import autoTable as a function
+import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
-import type { PatientAllData } from "@/store/PatientStore"; // Adjust the import path as needed
+import type { PatientAllData } from "@/store/PatientStore";
+
+// Add this interface to avoid TypeScript errors with lastAutoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable?: {
+    finalY?: number;
+  };
+}
 
 /**
  * Generates and downloads a PDF file containing the patient's medical records.
@@ -15,10 +22,10 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
       return;
     }
 
-    const doc = new jsPDF();
+    const doc: jsPDFWithAutoTable = new jsPDF(); // Use the extended interface
     let yPos = 20;
 
-    // Header
+    // Header (No changes)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.text("Patient Medical Report", 105, yPos, { align: "center" });
@@ -34,7 +41,7 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     );
     yPos += 20;
 
-    // User Information
+    // User Information (No changes)
     doc.setFontSize(16);
     doc.setTextColor(0);
     doc.text("Personal Information", 20, yPos);
@@ -45,18 +52,17 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     doc.text(`Email: ${patientData.userInfo?.email || "N/A"}`, 110, yPos);
     yPos += 7;
     doc.text(`Bio: ${patientData.userInfo?.bio || "N/A"}`, 20, yPos);
-    yPos += 10;
-
+    
     // Medical Records (Patient Details)
     if (patientData.patientDetails && patientData.patientDetails.length > 0) {
-      yPos += 10;
+      yPos += 20;
       doc.setFontSize(16);
       doc.text("Medical Records", 20, yPos);
       doc.line(20, yPos + 2, 190, yPos + 2);
       yPos += 10;
 
       patientData.patientDetails.forEach((detail, index) => {
-        if (yPos > doc.internal.pageSize.height - 30) {
+        if (yPos > doc.internal.pageSize.height - 40) { // Increased margin for safety
           doc.addPage();
           yPos = 20;
         }
@@ -82,15 +88,18 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
       });
     }
 
-    // Lab Results
+    // Lab Results (MODIFIED SECTION)
     if (patientData.labResults && patientData.labResults.length > 0) {
+      // Check for page break before adding a new section
+      if (yPos > doc.internal.pageSize.height - 40) {
+          doc.addPage();
+          yPos = 20;
+      }
       yPos += 10;
       doc.setFontSize(16);
       doc.text("Lab Results", 20, yPos);
       doc.line(20, yPos + 2, 190, yPos + 2);
-      yPos += 5;
 
-      // Use the function-based call for jspdf-autotable
       autoTable(doc, {
         startY: yPos + 5,
         head: [["Title", "Added By", "Date"]],
@@ -117,11 +126,20 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
           );
         },
       });
+      
+      // **CRITICAL FIX: Update yPos to the position after the table**
+      yPos = doc.lastAutoTable?.finalY || yPos + 10;
     }
 
-    // Add Patient Reviews section if available
+    // Add Patient Reviews section (MODIFIED SECTION)
     if (patientData.patientReviews && patientData.patientReviews.length > 0) {
-      yPos += 20;
+      // Check if there is enough space for the new section header and some content
+      if (yPos > doc.internal.pageSize.height - 40) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      yPos += 15; // Add some margin after the previous section
       doc.setFontSize(16);
       doc.text("Patient Reviews", 20, yPos);
       doc.line(20, yPos + 2, 190, yPos + 2);
