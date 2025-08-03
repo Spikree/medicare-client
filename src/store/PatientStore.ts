@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axiosInstance from "@/utils/axios";
+import type { AxiosResponse } from "axios";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
@@ -82,6 +83,88 @@ export interface PatientReview {
   __v: number;
 }
 
+export interface PatientAllData {
+  userInfo: {
+    _id: string;
+    name: string;
+    email: string;
+    role: "patient";
+    createdOn: string;
+    __v: number;
+    bio: string;
+    profilePicture: string;
+  };
+  patientDetails: {
+    _id: string;
+    name: string;
+    doctor: {
+      _id: string;
+      name: string;
+      email: string;
+      profilePicture: string;
+    };
+    patient: string;
+    Disease: string;
+    symptom: string;
+    patientExperience: string;
+    medicationPrescribed: string;
+    createdOn: string;
+    __v: number;
+  }[];
+  allergiesAndHealthInfo: [];
+  labResults: {
+    _id: string;
+    title: string;
+    labResult: string;
+    patient: string;
+    addedBy?: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+    createdOn: string;
+    __v: number;
+  }[];
+  patientReviews: {
+    _id: string;
+    name: string;
+    patient: string;
+    doctor?: string;
+    patientDetail: {
+      _id: string;
+      Disease: string;
+      symptom: string;
+      medicationPrescribed: string;
+    };
+    patientReview: string;
+    sideEffects: string;
+    reviewBy: string;
+    createdOn: string;
+    __v: number;
+  }[];
+  doctorList: {
+    _id: string;
+    name: string;
+    email: string;
+    doctor: {
+      _id: string;
+      name: string;
+      email: string;
+      bio: string;
+    };
+    patient: string;
+    patientStatus: string;
+    createdOn: string;
+    __v: number;
+  }[];
+  summary: {
+    totalMedicalRecords: number;
+    totalLabResults: number;
+    totalReviews: number;
+    totalDoctors: number;
+  };
+}
+
 interface PatientStore {
   getDoctorList: () => Promise<void>;
   getLabResults: () => Promise<void>;
@@ -108,18 +191,20 @@ interface PatientStore {
     sideEffects: string,
     reviewBy: string
   ) => void;
-  getPatientReviews: (patientDetailId: string) => void;
+  getPatientReviews: (patientDetailId: string) => void
+  getAllYourData: () => Promise<AxiosResponse | void>;
 
   isUploadingLabResults: boolean;
 
   doctorList: DoctorInterface[];
 
   patientLabResultList: PatientLabResults[];
-  LabResultsByDoctorList : PatientLabResults[];
+  LabResultsByDoctorList: PatientLabResults[];
   IncomingAddRequests: RequestInterface[];
   searchDoctorsList: SearchDoctors[];
   doctorDetailsList: DoctorDetailsInterface[];
   patientReview: PatientReview[];
+  allPatientData: PatientAllData[];
 }
 
 export const PatientStore = create<PatientStore>((set, get) => ({
@@ -130,6 +215,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   doctorDetailsList: [],
   patientReview: [],
   LabResultsByDoctorList: [],
+  allPatientData:[],
 
   isUploadingLabResults: false,
   getDoctorList: async () => {
@@ -356,18 +442,30 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     }
   },
 
-  // TODO : add get lab results uploaded by doctor
   getLabResultsByDoctor: async (doctorId: string) => {
     try {
       const response = await axiosInstance.get(
         `/patient/getLabResultsByDoctor/${doctorId}`
       );
-      set({LabResultsByDoctorList: response.data.labResultsByDoctor})
+      set({ LabResultsByDoctorList: response.data.labResultsByDoctor });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message ||
         "Error getting lab results by doctor";
+      toast.error(errorMessage);
+    }
+  },
+
+  getAllYourData: async () => {
+    try {
+      const response = await axiosInstance.get("/patient/getAllInfo");
+      set({allPatientData: response.data.allPatientInfo});
+      return response.data.allPatientInfo
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error getting all your data";
       toast.error(errorMessage);
     }
   },

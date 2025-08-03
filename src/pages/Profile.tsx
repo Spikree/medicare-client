@@ -27,10 +27,13 @@ import {
 } from "lucide-react";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 import { CommonStore } from "@/store/CommonStore";
+import { PatientStore, type PatientAllData } from "@/store/PatientStore";
+import { downloadPatientDataPdf } from "@/utils/downloadPatientData";
 
 const ProfilePage = () => {
   const { authUser, checkAuth } = useAuthStore();
-  const {updateProfile} = CommonStore();
+  const { getAllYourData } = PatientStore();
+  const { updateProfile } = CommonStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState(authUser?.bio || "");
   const [editedProfilePicture, setEditedProfilePicture] = useState(
@@ -39,6 +42,18 @@ const ProfilePage = () => {
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
     null
   );
+
+  const getAllPatientData = () => {
+    getAllYourData()
+      .then((patientData) => {
+        if (patientData) {
+          downloadPatientDataPdf(patientData as unknown as PatientAllData);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch patient data:", error);
+      });
+  };
 
   if (!authUser) {
     return (
@@ -117,34 +132,42 @@ const ProfilePage = () => {
             <div className="w-full">
               <h1 className="text-4xl font-extrabold">Profile</h1>
             </div>
-            {!isEditing ? (
-              <Button
-                variant={"green"}
-                onClick={() => setIsEditing(true)}
-                className="text-white"
-              >
-                <Edit2 className="h-4 w-4 mr-2" />
-                Edit Profile
-              </Button>
-            ) : (
-              <div className="flex gap-3">
+            <div className="flex gap-2">
+              {!isEditing ? (
                 <Button
-                  onClick={handleSave}
-                  className="bg-green-500 hover:bg-green-600 text-white"
+                  variant={"green"}
+                  onClick={() => setIsEditing(true)}
+                  className="text-white"
                 >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Profile
                 </Button>
-                <Button
-                  onClick={handleCancel}
-                  variant="outline"
-                  className="border-gray-300 hover:bg-gray-50"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Cancel
+              ) : (
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleSave}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </Button>
+                  <Button
+                    onClick={handleCancel}
+                    variant="outline"
+                    className="border-gray-300 hover:bg-gray-50"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                </div>
+              )}
+
+              {authUser?.role === "patient" && (
+                <Button onClick={getAllPatientData} variant={"green"}>
+                  Download your data
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -323,9 +346,7 @@ const ProfilePage = () => {
                     Share your background, experience, and specializations
                   </CardDescription>
                 ) : (
-                  <CardDescription>
-                    Share your background
-                  </CardDescription>
+                  <CardDescription>Share your background</CardDescription>
                 )}
               </CardHeader>
               <CardContent>
