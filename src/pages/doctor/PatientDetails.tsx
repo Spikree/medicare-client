@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import MedicalRecordDetailsDialog from "@/components/MedicalRecordDetailsDialog";
 import type { PatientDetails } from "@/store/DoctorStore";
 import PatientLabResultsComponent from "@/components/PatientLabResultsComponent";
+import { downloadPatientDataPdf } from "@/utils/downloadPatientData";
+import { type PatientAllData } from "@/store/PatientStore";
 
 const PatientDetailsPage = () => {
   const { patientId } = useParams();
@@ -24,8 +26,8 @@ const PatientDetailsPage = () => {
     addPatientDetails,
     addPatientReview,
     getPatientReviews,
-    patientReview
-    
+    patientReview,
+    getAllPatientInfo,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
@@ -53,6 +55,20 @@ const PatientDetailsPage = () => {
     fileInputRef.current?.click();
   };
 
+  const getAllPatientData = () => {
+    if (patientId) {
+      getAllPatientInfo(patientId)
+        .then((patientData) => {
+          if (patientData) {
+            downloadPatientDataPdf(patientData as unknown as PatientAllData);
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to fetch patient data:", error);
+        });
+    }
+  };
+
   const getPatientReviewsForMedicalRecord = (patientDetailId: string) => {
     getPatientReviews(patientDetailId);
   };
@@ -65,7 +81,7 @@ const PatientDetailsPage = () => {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => {
     addPatientReview(patientDetailId, patientReview, sideEffects, reviewBy);
   };
@@ -169,12 +185,13 @@ const PatientDetailsPage = () => {
                 }
                 isUploadPatientsDialogOpen={isUploadPatientsDialogOpen}
                 setIsUploadPatientsDialogOpen={setIsUploadPatientsDialogOpen}
+                getAllPatientData={getAllPatientData}
               />
 
               {/* Details Dialog */}
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
-                patientReview={patientReview}
+                  patientReview={patientReview}
                   setIsDialogOpen={setIsDialogOpen}
                   isDialogOpen={isDialogOpen}
                   selectedRecord={selectedRecord}

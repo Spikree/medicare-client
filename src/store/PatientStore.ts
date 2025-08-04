@@ -402,7 +402,6 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     }
   },
 
-  // TODO : add patient reviews
   addPatientReview: async (
     patientDetailId: string,
     patientReview: string,

@@ -30,6 +30,7 @@ interface Props {
   addPatientRecords: () => void;
   isUploadPatientsDialogOpen: boolean;
   setIsUploadPatientsDialogOpen: (value: boolean) => void;
+  getAllPatientData : () => void;
 }
 
 const MedicalRecords = ({
@@ -48,6 +49,7 @@ const MedicalRecords = ({
   setShowPatientDetailsByCurrentDoctor,
   isUploadPatientsDialogOpen,
   setIsUploadPatientsDialogOpen,
+  getAllPatientData,
 }: Props) => {
   const { authUser } = useAuthStore();
 
@@ -85,12 +87,15 @@ const MedicalRecords = ({
           </div>
         </div>
 
-        <DialogTrigger asChild>
-          <Button className="flex items-center gap-2" variant="green">
-            <Plus className="h-4 w-4" />
-            Upload patient records
-          </Button>
-        </DialogTrigger>
+        <div className="flex gap-2">
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2" variant="green">
+              <Plus className="h-4 w-4" />
+              Upload patient records
+            </Button>
+          </DialogTrigger>
+          <Button onClick={getAllPatientData} variant={"green"}>Download all patient data</Button>
+        </div>
       </div>
 
       {patientDetailsList?.length > 0 ? (

@@ -105,6 +105,7 @@ interface DoctorStore {
   getPatientReviews: (patientDetailId: string) => Promise<void>;
   getAllAddRequests: () => Promise<void>;
   acceptAddRequest: (requestId: string) => Promise<void>;
+  getAllPatientInfo: (patientId: string) => Promise<AxiosResponse | void>;
 
   patientList: Patient[];
   isUploadingLabResults: boolean;
@@ -316,6 +317,20 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error accepting add request";
+      toast.error(errorMessage);
+    }
+  },
+
+  getAllPatientInfo: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/doctor/getAllPatientInfo/${patientId}`
+      );
+      return response.data.allPatientInfo
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error get All Patient Info";
       toast.error(errorMessage);
     }
   },
