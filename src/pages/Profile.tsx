@@ -24,6 +24,7 @@ import {
   Stethoscope,
   Heart,
   Shield,
+  Download,
 } from "lucide-react";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 import { CommonStore } from "@/store/CommonStore";
@@ -164,6 +165,7 @@ const ProfilePage = () => {
 
               {authUser?.role === "patient" && (
                 <Button onClick={getAllPatientData} variant={"green"}>
+                  <Download/>
                   Download your data
                 </Button>
               )}

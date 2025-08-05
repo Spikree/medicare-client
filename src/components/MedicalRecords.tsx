@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Eye, FileText, Plus, Upload } from "lucide-react";
+import { Calendar, Download, Eye, FileText, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,7 +30,7 @@ interface Props {
   addPatientRecords: () => void;
   isUploadPatientsDialogOpen: boolean;
   setIsUploadPatientsDialogOpen: (value: boolean) => void;
-  getAllPatientData : () => void;
+  getAllPatientData: () => void;
 }
 
 const MedicalRecords = ({
@@ -94,7 +94,10 @@ const MedicalRecords = ({
               Upload patient records
             </Button>
           </DialogTrigger>
-          <Button onClick={getAllPatientData} variant={"green"}>Download all patient data</Button>
+          <Button onClick={getAllPatientData} variant={"green"}>
+            <Download/>
+            Download all patient data
+          </Button>
         </div>
       </div>
 

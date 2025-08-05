@@ -51,10 +51,7 @@ const PatientAccordion = ({ patients }: props) => {
     >
       {patients.map((patient) => (
         <Card key={patient._id}>
-          <AccordionItem
-            value={patient._id}
-            className="px-10 border-b-0"
-          >
+          <AccordionItem value={patient._id} className="px-10 border-b-0">
             <AccordionTrigger>
               <div className="flex items-center justify-between w-full mr-4">
                 <div className="flex items-center gap-3">
@@ -91,9 +88,12 @@ const PatientAccordion = ({ patients }: props) => {
                 </div>
 
                 <div className="pt-3 border-t flex gap-2">
-                  <Button size="sm" variant="outline">
-                    Edit Patient
-                  </Button>
+                  <Link to={`/patientAiSummary/${patient?._id}`}>
+                    <Button size="sm" variant="outline">
+                      Ai summary
+                    </Button>
+                  </Link>
+
                   <Link
                     to={`/patientDetails/${patient?.patient}/${patient?.name}`}
                   >

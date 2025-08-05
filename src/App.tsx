@@ -13,6 +13,7 @@ import Home from "./pages/patient/Home";
 import PatientDetailsPage from "./pages/doctor/PatientDetails";
 import DoctorDetails from "./pages/patient/DoctorDetails";
 import DoctorProfile from "./pages/Profile";
+import PatientAiSummary from "./pages/doctor/PatientAiSummary";
 
 const App = () => {
   const { checkAuth } = useAuthStore();
@@ -35,6 +36,10 @@ const App = () => {
               <Route
                 path="/patientDetails/:patientId/:patientName"
                 element={<PatientDetailsPage />}
+              />
+              <Route
+                path="/patientAiSummary/:patientId"
+                element={<PatientAiSummary />}
               />
             </Route>
             <Route path="/profile" element={<DoctorProfile />} />
