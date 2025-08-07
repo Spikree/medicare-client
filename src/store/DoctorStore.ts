@@ -106,6 +106,7 @@ interface DoctorStore {
   getAllAddRequests: () => Promise<void>;
   acceptAddRequest: (requestId: string) => Promise<void>;
   getAllPatientInfo: (patientId: string) => Promise<AxiosResponse | void>;
+  askAi: (patientId: string, query: string) => Promise<string>;
 
   patientList: Patient[];
   isUploadingLabResults: boolean;
@@ -116,6 +117,8 @@ interface DoctorStore {
   incomingAddRequests: RequestInterface[];
 
   isFetchingPatinetList: boolean;
+
+  aiResponse: string;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -127,6 +130,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   incomingAddRequests: [],
   isUploadingLabResults: false,
   isFetchingPatinetList: false,
+  aiResponse: "",
 
   getPatientList: async () => {
     try {
@@ -326,11 +330,28 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const response = await axiosInstance.get(
         `/doctor/getAllPatientInfo/${patientId}`
       );
-      return response.data.allPatientInfo
+      return response.data.allPatientInfo;
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error get All Patient Info";
+      toast.error(errorMessage);
+    }
+  },
+
+  askAi: async (patientId: string, query: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/gemini/ai-chat/${patientId}`,
+        {
+          query,
+        }
+      );
+      return response.data.response;
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error generating ai response";
       toast.error(errorMessage);
     }
   },
