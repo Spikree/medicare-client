@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DoctorStore } from "@/store/DoctorStore";
 import { Send, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -13,7 +13,13 @@ const PatientAiSummary = () => {
   const [aiQuery, setAiQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { askAi } = DoctorStore();
+  const { askAi, getAiChatHistory,  } = DoctorStore();
+
+  useEffect(() => {
+    if (patientId) {
+      getAiChatHistory(patientId);
+    }
+  }, [patientId, getAiChatHistory]);
 
   const askAiQuestions = async () => {
     if (!patientId) {

@@ -78,6 +78,21 @@ export interface RequestInterface {
   createdOn: string;
 }
 
+interface AiChatHistory {
+  _id: string;
+  patientId: string;
+  history: {
+    role: "model" | "user";
+    parts: {
+      text: string;
+      _id: string;
+    };
+    _id: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface DoctorStore {
   getPatientList: () => Promise<void>;
   addPatient: (patientId: string) => Promise<AxiosResponse | void>;
@@ -107,6 +122,7 @@ interface DoctorStore {
   acceptAddRequest: (requestId: string) => Promise<void>;
   getAllPatientInfo: (patientId: string) => Promise<AxiosResponse | void>;
   askAi: (patientId: string, query: string) => Promise<string>;
+  getAiChatHistory: (patientId: string) => Promise<void>;
 
   patientList: Patient[];
   isUploadingLabResults: boolean;
@@ -115,6 +131,7 @@ interface DoctorStore {
   patientLabResults: PatientLabResults[];
   patientReview: PatientReview[];
   incomingAddRequests: RequestInterface[];
+  aiChatHistoryList: AiChatHistory[];
 
   isFetchingPatinetList: boolean;
 
@@ -128,6 +145,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   patientLabResults: [],
   patientReview: [],
   incomingAddRequests: [],
+  aiChatHistoryList: [],
   isUploadingLabResults: false,
   isFetchingPatinetList: false,
   aiResponse: "",
@@ -352,6 +370,20 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error generating ai response";
+      toast.error(errorMessage);
+    }
+  },
+
+  getAiChatHistory: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/gemini/getAiChatHistory/${patientId}`
+      );
+      set({ aiChatHistoryList: response.data.aiChatHistory });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error fetching ai chat history";
       toast.error(errorMessage);
     }
   },
