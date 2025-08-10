@@ -2,20 +2,25 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DoctorStore } from "@/store/DoctorStore";
-import { Send, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Send, Loader2, Bot, User } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store/useAuthStore";
+import BreadcrumbElement from "@/components/BreadcrumbElement";
 
 const PatientAiSummary = () => {
   const { patientId } = useParams();
   const [aiQuery, setAiQuery] = useState<string>("");
   const { authUser } = useAuthStore();
-
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { askAi, getAiChatHistory, aiChatHistoryList, aiResponseLoading } =
     DoctorStore();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (patientId) {
@@ -23,117 +28,132 @@ const PatientAiSummary = () => {
     }
   }, [patientId, getAiChatHistory]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [aiChatHistoryList?.history, aiResponseLoading]);
+
   const askAiQuestions = async () => {
     if (!patientId) {
       toast.error("Patient ID is missing");
       return;
     }
     if (!aiQuery.trim()) {
-      toast.error("Please enter a query");
-      return;
+      return; // No need for toast, just prevent sending
     }
-
     askAi(patientId, aiQuery).then(() => {
       setAiQuery("");
     });
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey && !aiResponseLoading) {
+      e.preventDefault();
+      askAiQuestions();
+    }
+  };
+
   return (
-    <Card className="h-full w-full flex flex-col p-4">
-      {/* Header */}
-
-      {/* Response - Takes up remaining space */}
-      <Card className="flex-1 mb-1 p-6 bg-gradient-to-b overflow-hidden from-gray-50 to-white shadow-lg rounded-2xl border border-gray-100">
-        <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300">
-          {aiChatHistoryList?.history?.map((msg, index) => {
-            const isModel = msg.role === "model";
-            return (
-              <div
-                key={index}
-                className={`flex items-end gap-3 transition-all duration-300 ${
-                  isModel ? "flex-row" : "flex-row-reverse"
-                }`}
-              >
-                <Avatar className="shadow-sm border border-gray-200">
-                  {isModel ? (
-                    <AvatarFallback className="font-bold bg-blue-500 text-white">AI</AvatarFallback>
-                  ) : (
-                    <>
-                      <AvatarImage
-                        src={authUser?.profilePicture}
-                        alt="User profile picture"
-                      />
-                      <AvatarFallback className="font-bold bg-gray-300 text-gray-800">
-                        U
-                      </AvatarFallback>
-                    </>
-                  )}
-                </Avatar>
-
-                <div
-                  className={`rounded-2xl px-5 py-3 max-w-[75%] shadow-sm text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                    isModel
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {msg.parts[0].text}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+    <Card className="flex flex-col gap-2 p-2 h-full">
+      
+      <Card className="flex-shrink-0 bg-white border-b border-gray px-6 py-3">
+        <BreadcrumbElement currentPage={"AI Summary"} />
       </Card>
 
-      {/* <Card className="flex-1 mb-6 p-6 bg-white shadow-sm rounded-lg">
-        <div className="flex items-center justify-center h-full">
-          {isLoading ? (
-            <div className="flex items-center gap-2 text-gray-600">
-              <Loader2 size={18} className="animate-spin" />
-              <span>Generating response...</span>
-            </div>
-          ) : aiResponse ? (
-            <div className="w-full h-full">
-              <div className="bg-gray-50 rounded-md p-4 border-l-3 border-blue-500 h-full overflow-auto">
-                <pre className="text-gray-700 whitespace-pre-wrap font-sans leading-relaxed text-sm">
-                  {aiResponse}
-                </pre>
-              </div>
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {aiChatHistoryList?.history?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Avatar className="w-12 h-12 mb-4 bg-blue-100">
+                <AvatarFallback className="bg-transparent">
+                  <Bot className="w-6 h-6 text-blue-600" />
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                AI Assistant Ready
+              </h3>
+              <p className="text-sm text-gray-500 max-w-md">
+                Ask me anything about this patient's medical history, symptoms, or treatment plans.
+              </p>
             </div>
           ) : (
-            <p className="text-gray-500 italic text-center">
-              Ask the AI a question to see insights here.
-            </p>
+            aiChatHistoryList?.history?.map((msg, index) => {
+              const isModel = msg.role === "model";
+              return (
+                <div
+                  key={index}
+                  className={`flex items-start gap-4 ${!isModel && "flex-row-reverse"}`}
+                >
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    {isModel ? (
+                      <AvatarFallback className="bg-green-600 text-white">
+                        <Bot className="w-4 h-4" />
+                      </AvatarFallback>
+                    ) : (
+                      <>
+                        <AvatarImage src={authUser?.profilePicture} alt="User" />
+                        <AvatarFallback className="bg-gray-200">
+                          <User className="w-4 h-4 text-gray-700" />
+                        </AvatarFallback>
+                      </>
+                    )}
+                  </Avatar>
+                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                    isModel ? 'bg-white border' : 'bg-green-600 text-white'
+                  }`}>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                      {msg.parts[0].text}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
           )}
-        </div>
-      </Card> */}
 
-      {/* Input - Fixed at bottom */}
-      <Card className="p-2 bg-white shadow-sm rounded-lg">
-        <div className="flex items-center gap-3">
-          <Input
-            value={aiQuery}
-            onChange={(e) => setAiQuery(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && !aiResponseLoading && askAiQuestions()
-            }
-            placeholder="e.g., 'Summarize the patient's last visit.'"
-            className="flex-1 border-gray-300 focus:ring-2 focus:ring-blue-500"
-            title="AI query input"
-            disabled={aiResponseLoading}
-          />
-          <Button
-            onClick={askAiQuestions}
-            disabled={aiResponseLoading || !aiQuery.trim()}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 disabled:opacity-50"
-          >
-            {aiResponseLoading ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Send size={16} />
-            )}
-            {aiResponseLoading ? "Processing..." : "Send"}
-          </Button>
+          {aiResponseLoading && (
+            <div className="flex items-start gap-4">
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                 <AvatarFallback className="bg-green-600 text-white">
+                    <Bot className="w-4 h-4" />
+                  </AvatarFallback>
+              </Avatar>
+              <div className="max-w-[80%] rounded-lg px-4 py-3 bg-white border">
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">AI is thinking...</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        <div className="flex-shrink-0 border-t bg-white px-6 py-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-3">
+              <Input
+                value={aiQuery}
+                onChange={(e) => setAiQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Ask about patient history..."
+                className="flex-1 h-11"
+                disabled={aiResponseLoading}
+              />
+              <Button
+                onClick={askAiQuestions}
+                disabled={aiResponseLoading || !aiQuery.trim()}
+                size="icon"
+                className="h-11 w-11 bg-green-600 hover:bg-green-700"
+              >
+                {aiResponseLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Press Enter to send, Shift+Enter for a new line.
+            </p>
+          </div>
         </div>
       </Card>
     </Card>
