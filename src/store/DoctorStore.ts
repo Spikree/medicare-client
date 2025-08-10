@@ -86,9 +86,10 @@ interface AiChatHistory {
     parts: {
       text: string;
       _id: string;
-    };
+    }[]
     _id: string;
   }[];
+  message: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -121,7 +122,7 @@ interface DoctorStore {
   getAllAddRequests: () => Promise<void>;
   acceptAddRequest: (requestId: string) => Promise<void>;
   getAllPatientInfo: (patientId: string) => Promise<AxiosResponse | void>;
-  askAi: (patientId: string, query: string) => Promise<string>;
+  askAi: (patientId: string, query: string) => Promise<void>;
   getAiChatHistory: (patientId: string) => Promise<void>;
 
   patientList: Patient[];
@@ -131,11 +132,13 @@ interface DoctorStore {
   patientLabResults: PatientLabResults[];
   patientReview: PatientReview[];
   incomingAddRequests: RequestInterface[];
-  aiChatHistoryList: AiChatHistory[];
+  aiChatHistoryList: AiChatHistory;
 
   isFetchingPatinetList: boolean;
 
   aiResponse: string;
+  
+  aiResponseLoading: boolean;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -145,9 +148,10 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   patientLabResults: [],
   patientReview: [],
   incomingAddRequests: [],
-  aiChatHistoryList: [],
+  aiChatHistoryList: {} as AiChatHistory,
   isUploadingLabResults: false,
   isFetchingPatinetList: false,
+  aiResponseLoading: false,
   aiResponse: "",
 
   getPatientList: async () => {
@@ -358,6 +362,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   askAi: async (patientId: string, query: string) => {
+    set({aiResponseLoading: true})
     try {
       const response = await axiosInstance.post(
         `/gemini/ai-chat/${patientId}`,
@@ -365,12 +370,14 @@ export const DoctorStore = create<DoctorStore>((set) => ({
           query,
         }
       );
-      return response.data.response;
+      set({aiChatHistoryList: response.data.newChatHistory})
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error generating ai response";
       toast.error(errorMessage);
+    } finally {
+      set({aiResponseLoading: false})
     }
   },
 
@@ -379,6 +386,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const response = await axiosInstance.get(
         `/gemini/getAiChatHistory/${patientId}`
       );
+      console.log(response.data.aiChatHistory.history[0].parts[0].text)
       set({ aiChatHistoryList: response.data.aiChatHistory });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;

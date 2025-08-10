@@ -6,14 +6,16 @@ import { Send, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const PatientAiSummary = () => {
   const { patientId } = useParams();
-  const [aiResponse, setAiResponse] = useState<string>("");
   const [aiQuery, setAiQuery] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { authUser } = useAuthStore();
 
-  const { askAi, getAiChatHistory,  } = DoctorStore();
+  const { askAi, getAiChatHistory, aiChatHistoryList, aiResponseLoading } =
+    DoctorStore();
 
   useEffect(() => {
     if (patientId) {
@@ -31,34 +33,59 @@ const PatientAiSummary = () => {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const responseString: string = await askAi(patientId, aiQuery);
-
-      if (responseString) {
-        setAiResponse(responseString);
-        setAiQuery("");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    askAi(patientId, aiQuery).then(() => {
+      setAiQuery("");
+    });
   };
 
   return (
     <Card className="h-full w-full flex flex-col p-4">
       {/* Header */}
-      <Card className="mb-6 p-6 bg-white shadow-sm rounded-lg">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-2xl font-bold text-gray-800">AI Insights</h1>
-        </div>
-        <p className="text-gray-600">
-          Use AI to uncover missing insights and recognize patterns for the
-          patient
-        </p>
-      </Card>
 
       {/* Response - Takes up remaining space */}
-      <Card className="flex-1 mb-6 p-6 bg-white shadow-sm rounded-lg">
+      <Card className="flex-1 mb-1 p-6 bg-gradient-to-b overflow-hidden from-gray-50 to-white shadow-lg rounded-2xl border border-gray-100">
+        <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300">
+          {aiChatHistoryList?.history?.map((msg, index) => {
+            const isModel = msg.role === "model";
+            return (
+              <div
+                key={index}
+                className={`flex items-end gap-3 transition-all duration-300 ${
+                  isModel ? "flex-row" : "flex-row-reverse"
+                }`}
+              >
+                <Avatar className="shadow-sm border border-gray-200">
+                  {isModel ? (
+                    <AvatarFallback className="font-bold bg-blue-500 text-white">AI</AvatarFallback>
+                  ) : (
+                    <>
+                      <AvatarImage
+                        src={authUser?.profilePicture}
+                        alt="User profile picture"
+                      />
+                      <AvatarFallback className="font-bold bg-gray-300 text-gray-800">
+                        U
+                      </AvatarFallback>
+                    </>
+                  )}
+                </Avatar>
+
+                <div
+                  className={`rounded-2xl px-5 py-3 max-w-[75%] shadow-sm text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                    isModel
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-900"
+                  }`}
+                >
+                  {msg.parts[0].text}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* <Card className="flex-1 mb-6 p-6 bg-white shadow-sm rounded-lg">
         <div className="flex items-center justify-center h-full">
           {isLoading ? (
             <div className="flex items-center gap-2 text-gray-600">
@@ -79,41 +106,33 @@ const PatientAiSummary = () => {
             </p>
           )}
         </div>
-      </Card>
+      </Card> */}
 
       {/* Input - Fixed at bottom */}
-      <Card className="p-4 bg-white shadow-sm rounded-lg">
-        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-md">
-          <p className="text-xs text-amber-800">
-            <strong>⚠️ Important:</strong> AI responses are for informational
-            purposes only and may contain errors. Do not use for prescriptions,
-            diagnoses, or critical medical decisions. Always verify with
-            clinical judgment.
-          </p>
-        </div>
+      <Card className="p-2 bg-white shadow-sm rounded-lg">
         <div className="flex items-center gap-3">
           <Input
             value={aiQuery}
             onChange={(e) => setAiQuery(e.target.value)}
             onKeyDown={(e) =>
-              e.key === "Enter" && !isLoading && askAiQuestions()
+              e.key === "Enter" && !aiResponseLoading && askAiQuestions()
             }
             placeholder="e.g., 'Summarize the patient's last visit.'"
             className="flex-1 border-gray-300 focus:ring-2 focus:ring-blue-500"
             title="AI query input"
-            disabled={isLoading}
+            disabled={aiResponseLoading}
           />
           <Button
             onClick={askAiQuestions}
-            disabled={isLoading || !aiQuery.trim()}
+            disabled={aiResponseLoading || !aiQuery.trim()}
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 disabled:opacity-50"
           >
-            {isLoading ? (
+            {aiResponseLoading ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <Send size={16} />
             )}
-            {isLoading ? "Processing..." : "Send"}
+            {aiResponseLoading ? "Processing..." : "Send"}
           </Button>
         </div>
       </Card>
