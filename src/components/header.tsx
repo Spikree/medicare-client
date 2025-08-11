@@ -74,25 +74,6 @@ export default function Header() {
                 className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
                 sideOffset={8}
               >
-                {/* <div className="py-1">
-                  <DropdownMenuItem
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick("#features")}
-                  >
-                    <User className="h-4 w-4 mr-3 text-gray-400" />
-                    Features
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => handleLinkClick("#testimonials")}
-                  >
-                    <User className="h-4 w-4 mr-3 text-gray-400" />
-                    Testimonials
-                  </DropdownMenuItem>
-                </div> */}
-
-                {/* <DropdownMenuSeparator className="h-px bg-gray-200" /> */}
 
                 <div className="py-1">
                   <DropdownMenuItem
@@ -165,7 +146,7 @@ export default function Header() {
             </nav>
           )}
 
-          <div className="md:hidden">
+          {authUser ? null :<div className="md:hidden">
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -230,7 +211,7 @@ export default function Header() {
                 </DropdownMenuContent>
               )}
             </DropdownMenu>
-          </div>
+          </div>}
         </div>
       </div>
     </header>
