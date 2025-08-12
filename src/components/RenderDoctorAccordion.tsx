@@ -13,9 +13,10 @@ import type { DoctorInterface as Doctor } from "@/store/PatientStore";
 
 interface Props {
   doctors: Doctor[];
+  doctorStatus: "current" | "old";
 }
 
-const RenderDoctorAccordion = ({ doctors }: Props) => {
+const RenderDoctorAccordion = ({ doctors, doctorStatus }: Props) => {
   if (doctors.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -69,7 +70,7 @@ const RenderDoctorAccordion = ({ doctors }: Props) => {
                     Edit Doctor
                   </Button>
                   <Link
-                    to={`/doctorDetails/${doctor.doctor._id}/${doctor?.doctor?.name}`}
+                    to={`/doctorDetails/${doctor.doctor._id}/${doctor?.doctor?.name}/${doctorStatus}`}
                   >
                     <Button size="sm" variant="outline">
                       View Details

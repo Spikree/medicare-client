@@ -191,8 +191,10 @@ interface PatientStore {
     sideEffects: string,
     reviewBy: string
   ) => void;
-  getPatientReviews: (patientDetailId: string) => void
+  getPatientReviews: (patientDetailId: string) => void;
   getAllYourData: () => Promise<AxiosResponse | void>;
+  removeDoctor: (doctorId: string) => Promise<void>;
+  reassignDoctor: (doctorId: string) => Promise<void>;
 
   isUploadingLabResults: boolean;
 
@@ -215,7 +217,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   doctorDetailsList: [],
   patientReview: [],
   LabResultsByDoctorList: [],
-  allPatientData:[],
+  allPatientData: [],
 
   isUploadingLabResults: false,
   getDoctorList: async () => {
@@ -459,12 +461,40 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   getAllYourData: async () => {
     try {
       const response = await axiosInstance.get("/patient/getAllInfo");
-      set({allPatientData: response.data.allPatientInfo});
-      return response.data.allPatientInfo
+      set({ allPatientData: response.data.allPatientInfo });
+      return response.data.allPatientInfo;
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error getting all your data";
+      toast.error(errorMessage);
+    }
+  },
+
+  removeDoctor: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/removeDoctor/${doctorId}`
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error removing doctor";
+      toast.error(errorMessage);
+    }
+  },
+
+  reassignDoctor: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/reassignDoctor/${doctorId}`
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error reassigining doctor";
       toast.error(errorMessage);
     }
   },

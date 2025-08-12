@@ -1,11 +1,10 @@
 import { PatientStore } from "@/store/PatientStore";
 import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { TabsList } from "@radix-ui/react-tabs";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { FileText, Loader2, Search, Upload, X } from "lucide-react";
-import type { DoctorInterface } from "@/store/PatientStore";
+// Removed unused DoctorInterface import
 import RenderDoctorAccordion from "@/components/RenderDoctorAccordion";
 import {
   Dialog,
@@ -55,7 +54,7 @@ const Home = () => {
         setSelectedFile(null);
         setLabResultTitle("");
         setIsUploadLabResultsDialogOpen(false);
-      })
+      });
     } else {
       toast.error("All the fields are required");
     }
@@ -68,20 +67,11 @@ const Home = () => {
     getAllAddRequests();
   }, [getDoctorList, getLabResults, getAllAddRequests]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchDoctorList, setSearchDoctorList] = useState<DoctorInterface[]>(
-    []
-  );
+  // Derived filtering per tab; no separate state needed
 
   const clearSearch = () => {
     setSearchQuery("");
   };
-
-  useEffect(() => {
-    const filteredList = doctorList.filter((doctor) =>
-      doctor.doctor.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setSearchDoctorList(filteredList);
-  }, [searchQuery, doctorList]);
 
   const currentDoctorList = doctorList.filter(
     (doctor) => doctor.patientStatus === "current"
@@ -89,6 +79,14 @@ const Home = () => {
 
   const oldDoctorList = doctorList.filter(
     (doctor) => doctor.patientStatus === "old"
+  );
+
+  const filteredCurrentDoctorList = currentDoctorList.filter((doctor) =>
+    doctor.doctor.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredOldDoctorList = oldDoctorList.filter((doctor) =>
+    doctor.doctor.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -229,16 +227,13 @@ const Home = () => {
             <Card className="py-2 mt-4 border-0 shadow-none">
               <TabsContent value="current">
                 <RenderDoctorAccordion
-                  doctors={
-                    searchDoctorList.length === 0
-                      ? currentDoctorList
-                      : searchDoctorList
-                  }
-                />
+                
+                  doctors={filteredCurrentDoctorList} doctorStatus={"current"}                />
               </TabsContent>
 
               <TabsContent value="old">
-                <RenderDoctorAccordion doctors={oldDoctorList} />
+                <RenderDoctorAccordion
+                  doctors={filteredOldDoctorList} doctorStatus={"old"}                />
               </TabsContent>
             </Card>
           </Tabs>

@@ -22,9 +22,10 @@ interface Patient {
 
 interface props {
   patients: Patient[];
+  patientStatus: "current" | "old";
 }
 
-const PatientAccordion = ({ patients }: props) => {
+const PatientAccordion = ({ patients, patientStatus }: props) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -89,9 +90,11 @@ const PatientAccordion = ({ patients }: props) => {
 
                 <div className="pt-3 border-t flex gap-2">
                   <Link to={`/patientAiSummary/${patient?.patient}`}>
-                    <Button size="sm" variant="outline">
-                      Ai summary
-                    </Button>
+                    {patientStatus === "current" && (
+                      <Button size="sm" variant="outline">
+                        Ai summary
+                      </Button>
+                    )}
                   </Link>
 
                   <Link

@@ -13,6 +13,7 @@ import PatientLabResultsByDoctor from "@/components/PatientLabResultsByDoctor";
 
 const DoctorDetails = () => {
   const { doctorId } = useParams();
+  const { doctorStatus } = useParams();
   const {
     getDoctorDetails,
     doctorDetailsList,
@@ -72,10 +73,11 @@ const DoctorDetails = () => {
 
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
-              <DoctorDetailsComponent
+              {doctorStatus && <DoctorDetailsComponent
                 doctorDetailsList={doctorDetailsList}
                 handleViewMore={handleViewMore}
-              />
+                doctorStatus={doctorStatus}
+              />}
 
               {selectedRecord && (
                 <MedicalRecordDetailsDialog

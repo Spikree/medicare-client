@@ -1,22 +1,50 @@
-import type { DoctorDetailsInterface } from "@/store/PatientStore";
+import {
+  PatientStore,
+  type DoctorDetailsInterface,
+} from "@/store/PatientStore";
 import { Dialog } from "./ui/dialog";
 import { Card, CardContent } from "./ui/card";
 import { Calendar, Eye, FileText } from "lucide-react";
 import { Button } from "./ui/button";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
   handleViewMore: (record: DoctorDetailsInterface) => void;
+  doctorStatus: string
 }
 
-const DoctorDetailsComponent = ({ doctorDetailsList, handleViewMore }: Props) => {
+const DoctorDetailsComponent = ({
+  doctorDetailsList,
+  handleViewMore,
+  doctorStatus,
+}: Props) => {
+  const { removeDoctor, reassignDoctor } = PatientStore();
   const { doctorName } = useParams();
+  const navigate = useNavigate();
+
+  const { doctorId } = useParams();
+
+  const handleRemoveDoctor = () => {
+    if (doctorId) {
+      removeDoctor(doctorId).then(() => {
+        navigate("/home")
+      })
+    }
+  };
+
+  const handleReassignDoctor = () => {
+    if(doctorId) {
+      reassignDoctor(doctorId).then(() => {
+        navigate("/home")
+      })
+    }
+  }
 
   return (
     <Dialog>
       <div className="flex justify-between items-start mb-6">
-        <div className="flex flex-col items-center gap-4">
+        <div className="sm:flex w-full   justify-between items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">{doctorName}</h1>
             <p className="text-muted-foreground">
@@ -25,6 +53,14 @@ const DoctorDetailsComponent = ({ doctorDetailsList, handleViewMore }: Props) =>
             <hr className="mt-2" />
             <div className="flex items-center text-muted-foreground mt-2"></div>
           </div>
+
+          {doctorStatus === "current" ? (
+            <Button onClick={handleRemoveDoctor} variant={"green"}>
+              Remove Doctor
+            </Button>
+          ) : (
+            <Button onClick={handleReassignDoctor} variant={"green"}>Reassign Doctor</Button>
+          )}
         </div>
       </div>
 
