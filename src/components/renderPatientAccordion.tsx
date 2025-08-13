@@ -89,7 +89,7 @@ const PatientAccordion = ({ patients, patientStatus }: props) => {
                 </div>
 
                 <div className="pt-3 border-t flex gap-2">
-                  <Link to={`/patientAiSummary/${patient?.patient}`}>
+                  <Link to={`/patientAiSummary/${patient?.patient}/${patient.name}`}>
                     {patientStatus === "current" && (
                       <Button size="sm" variant="outline">
                         Ai summary

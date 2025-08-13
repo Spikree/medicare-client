@@ -38,7 +38,7 @@ const App = () => {
                 element={<PatientDetailsPage />}
               />
               <Route
-                path="/patientAiSummary/:patientId"
+                path="/patientAiSummary/:patientId/:patientName"
                 element={<PatientAiSummary />}
               />
             </Route>

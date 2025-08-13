@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 
 const PatientAiSummary = () => {
-  const { patientId } = useParams();
+  const { patientId, patientName } = useParams();
   const [aiQuery, setAiQuery] = useState<string>("");
   const { authUser } = useAuthStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ const PatientAiSummary = () => {
       return;
     }
     if (!aiQuery.trim()) {
-      return; // No need for toast, just prevent sending
+      return;
     }
     askAi(patientId, aiQuery).then(() => {
       setAiQuery("");
@@ -55,8 +55,9 @@ const PatientAiSummary = () => {
   return (
     <Card className="flex flex-col gap-2 p-2 h-full">
       
-      <Card className="flex-shrink-0 bg-white border-b border-gray px-6 py-3">
+      <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"AI Summary"} />
+        <p className="text-gray-600">{patientName}</p>
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
