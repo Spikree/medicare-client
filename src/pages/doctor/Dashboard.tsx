@@ -1,5 +1,5 @@
 import AddNewPatientDialog from "@/components/AddNewPatientDialog";
-import PatientAccordion from "@/components/renderPatientAccordion";
+import PatientAccordion from "@/components/PatientAccordian";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
