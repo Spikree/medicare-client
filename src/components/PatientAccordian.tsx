@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Mail, User } from "lucide-react";
+import { Calendar, Loader, Mail, User } from "lucide-react";
 import { Card } from "./ui/card";
 import { Link } from "react-router-dom";
 
@@ -23,9 +23,14 @@ interface Patient {
 interface props {
   patients: Patient[];
   patientStatus: "current" | "old";
+  fetchingPatientList: boolean;
 }
 
-const PatientAccordion = ({ patients, patientStatus }: props) => {
+const PatientAccordion = ({
+  patients,
+  patientStatus,
+  fetchingPatientList,
+}: props) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -36,81 +41,93 @@ const PatientAccordion = ({ patients, patientStatus }: props) => {
     });
   };
 
-  if (patients.length === 0) {
+  if (fetchingPatientList) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        <p>No patients found</p>
+      <div className="p-4 m-4 flex justify-center">
+        <Loader className="animate-spin h-8 w-8" />
       </div>
     );
   }
 
   return (
-    <Accordion
-      type="single"
-      collapsible
-      className="w-full flex flex-col gap-4 p-4"
-    >
-      {patients.map((patient) => (
-        <Card key={patient._id}>
-          <AccordionItem value={patient._id} className="px-10 border-b-0">
-            <AccordionTrigger>
-              <div className="flex items-center justify-between w-full mr-4">
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium">{patient.name}</span>
-                </div>
-                <Badge
-                  variant={
-                    patient.patientStatus === "current"
-                      ? "default"
-                      : "secondary"
-                  }
-                  className="ml-auto"
-                >
-                  {patient.patientStatus}
-                </Badge>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="pt-4 space-y-4 px-10">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Email:</span>
-                    <span className="text-sm">{patient.email}</span>
+    <>
+      {patients.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          <p>No patients found</p>
+        </div>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full flex flex-col gap-4 p-4"
+        >
+          {patients.map((patient) => (
+            <Card key={patient._id}>
+              <AccordionItem value={patient._id} className="px-10 border-b-0">
+                <AccordionTrigger>
+                  <div className="flex items-center justify-between w-full mr-4">
+                    <div className="flex items-center gap-3">
+                      <User className="h-4 w-4 text-gray-500" />
+                      <span className="font-medium">{patient.name}</span>
+                    </div>
+                    <Badge
+                      variant={
+                        patient.patientStatus === "current"
+                          ? "default"
+                          : "secondary"
+                      }
+                      className="ml-auto"
+                    >
+                      {patient.patientStatus}
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Created On:</span>
-                    <span className="text-sm">
-                      {formatDate(patient.createdOn)}
-                    </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="pt-4 space-y-4 px-10">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">Email:</span>
+                        <span className="text-sm">{patient.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">
+                          Created On:
+                        </span>
+                        <span className="text-sm">
+                          {formatDate(patient.createdOn)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t flex gap-2">
+                      <Link
+                        to={`/patientAiSummary/${patient?.patient}/${patient.name}`}
+                      >
+                        {patientStatus === "current" && (
+                          <Button size="sm" variant="outline">
+                            Ai summary
+                          </Button>
+                        )}
+                      </Link>
+
+                      <Link
+                        to={`/patientDetails/${patient?.patient}/${patient?.name}`}
+                      >
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-
-                <div className="pt-3 border-t flex gap-2">
-                  <Link to={`/patientAiSummary/${patient?.patient}/${patient.name}`}>
-                    {patientStatus === "current" && (
-                      <Button size="sm" variant="outline">
-                        Ai summary
-                      </Button>
-                    )}
-                  </Link>
-
-                  <Link
-                    to={`/patientDetails/${patient?.patient}/${patient?.name}`}
-                  >
-                    <Button size="sm" variant="outline">
-                      View Details
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Card>
-      ))}
-    </Accordion>
+                </AccordionContent>
+              </AccordionItem>
+            </Card>
+          ))}
+        </Accordion>
+      )}
+    </>
   );
 };
 

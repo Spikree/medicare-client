@@ -139,6 +139,8 @@ interface DoctorStore {
   aiResponse: string;
   
   aiResponseLoading: boolean;
+
+  fetchingPatientList: boolean;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -152,9 +154,11 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   isUploadingLabResults: false,
   isFetchingPatinetList: false,
   aiResponseLoading: false,
+  fetchingPatientList: false,
   aiResponse: "",
 
   getPatientList: async () => {
+    set({fetchingPatientList: true});
     try {
       const response = await axiosInstance.get("/doctor/getPatientList");
       set({ patientList: response.data.patientList });
@@ -163,6 +167,8 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const errorMessage =
         axiosError.response?.data?.message || "Error fecthing patient list";
       toast.error(errorMessage);
+    } finally {
+      set({fetchingPatientList: false})
     }
   },
 

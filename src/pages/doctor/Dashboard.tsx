@@ -10,7 +10,7 @@ import { Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const { getPatientList, patientList } = DoctorStore();
+  const { getPatientList, patientList, fetchingPatientList } = DoctorStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -80,11 +80,19 @@ const Dashboard = () => {
 
             <Card className="py-2 mt-4 border-0 shadow-none">
               <TabsContent value="current">
-                <PatientAccordion patientStatus="current" patients={filteredCurrentPatientList} />
+                <PatientAccordion
+                  fetchingPatientList={fetchingPatientList}
+                  patientStatus="current"
+                  patients={filteredCurrentPatientList}
+                />
               </TabsContent>
 
               <TabsContent value="old">
-                <PatientAccordion patientStatus="old" patients={filteredOldPatientList} />
+                <PatientAccordion
+                  fetchingPatientList={fetchingPatientList}
+                  patientStatus="old"
+                  patients={filteredOldPatientList}
+                />
               </TabsContent>
             </Card>
           </Tabs>
