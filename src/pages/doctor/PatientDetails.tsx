@@ -28,6 +28,7 @@ const PatientDetailsPage = () => {
     getPatientReviews,
     patientReview,
     getAllPatientInfo,
+    fetchingPatientDetails,
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
@@ -166,6 +167,7 @@ const PatientDetailsPage = () => {
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
               <MedicalRecords
+              fetchingPatientDetails={fetchingPatientDetails}
                 handleViewMore={handleViewMore}
                 disease={disease}
                 symptom={symptom}

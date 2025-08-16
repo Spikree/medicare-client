@@ -1,5 +1,13 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Download, Eye, FileText, Plus, Upload } from "lucide-react";
+import {
+  Calendar,
+  Download,
+  Eye,
+  FileText,
+  Loader,
+  Plus,
+  Upload,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,6 +39,7 @@ interface Props {
   isUploadPatientsDialogOpen: boolean;
   setIsUploadPatientsDialogOpen: (value: boolean) => void;
   getAllPatientData: () => void;
+  fetchingPatientDetails: boolean;
 }
 
 const MedicalRecords = ({
@@ -50,6 +59,7 @@ const MedicalRecords = ({
   isUploadPatientsDialogOpen,
   setIsUploadPatientsDialogOpen,
   getAllPatientData,
+  fetchingPatientDetails,
 }: Props) => {
   const { authUser } = useAuthStore();
 
@@ -95,13 +105,15 @@ const MedicalRecords = ({
             </Button>
           </DialogTrigger>
           <Button onClick={getAllPatientData} variant={"green"}>
-            <Download/>
+            <Download />
             Download all patient data
           </Button>
         </div>
       </div>
 
-      {patientDetailsList?.length > 0 ? (
+      {fetchingPatientDetails ? (
+        <Loader className="animate-spin" />
+      ) : patientDetailsList?.length > 0 ? (
         <div className="space-y-4">
           {(showPatientDetailsByCurrentDoctor
             ? patientDetailsByCurrentDoctor

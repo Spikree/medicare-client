@@ -141,6 +141,8 @@ interface DoctorStore {
   aiResponseLoading: boolean;
 
   fetchingPatientList: boolean;
+
+  fetchingPatientDetails : boolean;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -155,6 +157,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   isFetchingPatinetList: false,
   aiResponseLoading: false,
   fetchingPatientList: false,
+  fetchingPatientDetails: false,
   aiResponse: "",
 
   getPatientList: async () => {
@@ -203,6 +206,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   getPatientDetails: async (patientId: string) => {
+    set({fetchingPatientDetails: true});
     try {
       const response = await axiosInstance.get(
         `/doctor/getPatientDetails/${patientId}`
@@ -213,6 +217,8 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const errorMessage =
         axiosError.response?.data?.message || "Error getting patient info";
       toast.error(errorMessage);
+    } finally {
+      set({fetchingPatientDetails: false});
     }
   },
 
