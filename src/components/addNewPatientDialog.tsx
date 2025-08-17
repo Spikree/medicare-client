@@ -9,7 +9,7 @@ import { Search } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { DoctorStore } from "@/store/DoctorStore";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // 1. Import Tabs components
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Props {
   setOpen: (value: boolean) => void;
@@ -57,13 +57,12 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
   useEffect(() => {
     if (open === false) {
       setSearchPatient("");
-      // When the dialog closes, clear the search results in the store
       searchPatients("");
     }
   }, [open, searchPatients]);
 
   return (
-    <DialogContent className="w-full max-w-2xl mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+    <DialogContent className="w-full max-w-2xl mx-2 sm:mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
       <DialogHeader className="mb-4">
         <DialogTitle className="text-xl sm:text-2xl">
           Manage Patients
@@ -73,16 +72,19 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
       {/* 2. Implement Tabs component */}
       <Tabs defaultValue="search" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="search">Search & Add</TabsTrigger>
-          <TabsTrigger value="requests">
-            Incoming Requests
-            <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+          <TabsTrigger value="search" className="text-sm">
+            <span className="hidden sm:inline">Search & Add</span>
+            <span className="sm:hidden">Search</span>
+          </TabsTrigger>
+          <TabsTrigger value="requests" className="text-sm">
+            <span className="hidden sm:inline">Incoming Requests</span>
+            <span className="sm:hidden">Requests</span>
+            <span className="ml-1 sm:ml-2 inline-flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
               {incomingAddRequests.length}
             </span>
           </TabsTrigger>
         </TabsList>
 
-        {/* 3. Move existing search functionality into the first tab */}
         <TabsContent value="search" className="mt-4">
           <Card className="p-3 sm:p-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <div className="relative w-full">
@@ -97,10 +99,9 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
                 className="pl-10"
               />
             </div>
-            {/* The search button can be removed if search happens on type, or kept for manual search */}
-            <Button variant="green" className="w-full sm:w-auto">
+            {/* <Button variant="green" className="w-full sm:w-auto">
               Search
-            </Button>
+            </Button> */}
           </Card>
 
           <div className="space-y-3 mt-4">
@@ -115,7 +116,7 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
                       <span className="text-base sm:text-lg font-medium">
                         {patient.name}
                       </span>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground break-all sm:break-normal">
                         {patient.email}
                       </p>
                     </div>
@@ -129,13 +130,15 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
                   </Card>
                 ))
               ) : (
-                <Card className="flex justify-center p-10">
-                  <span className="text-gray-600">No patients found</span>
+                <Card className="flex justify-center p-6 sm:p-10">
+                  <span className="text-gray-600 text-center">
+                    No patients found
+                  </span>
                 </Card>
               )
             ) : (
               <Card className="flex justify-center p-6">
-                <span className="text-gray-600">
+                <span className="text-gray-600 text-center">
                   Search results will appear here
                 </span>
               </Card>
@@ -143,7 +146,6 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
           </div>
         </TabsContent>
 
-        {/* 4. Create the "Requests" tab content */}
         <TabsContent value="requests" className="mt-4">
           <div className="space-y-3">
             {incomingAddRequests.length > 0 ? (
@@ -152,11 +154,11 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
                   key={request._id}
                   className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 sm:p-4 gap-3"
                 >
-                  <div>
-                    <span className="text-base font-medium">
+                  <div className="min-w-0 flex-1">
+                    <span className="text-base font-medium block truncate">
                       {request.sender.name}
                     </span>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground break-all sm:break-normal">
                       {request.sender.email}
                     </p>
                   </div>
@@ -164,19 +166,24 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
                     <Button
                       onClick={() => acceptIncomingRequest(request?._id)}
                       variant="green"
-                      className="flex-1"
+                      className="flex-1 sm:flex-none"
                     >
                       Accept
                     </Button>
-                    <Button variant="destructive" className="flex-1">
+                    <Button
+                      variant="destructive"
+                      className="flex-1 sm:flex-none"
+                    >
                       Decline
                     </Button>
                   </div>
                 </Card>
               ))
             ) : (
-              <Card className="flex justify-center p-10">
-                <span className="text-gray-600">No incoming requests</span>
+              <Card className="flex justify-center p-6 sm:p-10">
+                <span className="text-gray-600 text-center">
+                  No incoming requests
+                </span>
               </Card>
             )}
           </div>

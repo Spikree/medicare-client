@@ -39,7 +39,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Dialog  open={open} onOpenChange={setOpen} >
+      <Dialog open={open} onOpenChange={setOpen}>
         <Card className="max-w-auto max-h-full p-4 sm:p-10 m-2  sm:m-4 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-2 justify-between">
           <div className="flex gap-2 w-full sm:max-w-96">
             <div className="relative w-full">
@@ -62,7 +62,9 @@ const Dashboard = () => {
 
           <div className="w-full sm:w-auto">
             <DialogTrigger asChild>
-              <Button variant={"green"} className="w-full sm:w-auto">Add Patient</Button>
+              <Button variant={"green"} className="w-full sm:w-auto">
+                Add Patient
+              </Button>
             </DialogTrigger>
           </div>
         </Card>
@@ -71,16 +73,22 @@ const Dashboard = () => {
           <Tabs defaultValue="current">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="current" className="text-xs sm:text-sm">
-                <span className="hidden sm:inline">Current Patients ({currentPatients.length})</span>
-                <span className="sm:hidden">Current ({currentPatients.length})</span>
+                <span className="hidden sm:inline">
+                  Current Patients ({currentPatients.length})
+                </span>
+                <span className="sm:hidden">
+                  Current ({currentPatients.length})
+                </span>
               </TabsTrigger>
               <TabsTrigger value="old" className="text-xs sm:text-sm">
-                <span className="hidden sm:inline">Old Patients ({oldPatients.length})</span>
+                <span className="hidden sm:inline">
+                  Old Patients ({oldPatients.length})
+                </span>
                 <span className="sm:hidden">Old ({oldPatients.length})</span>
               </TabsTrigger>
             </TabsList>
 
-            <Card className="py-2 mt-4 border-0 shadow-none">
+            <Card className=" mt-4 border-0 shadow-none">
               <TabsContent value="current">
                 <PatientAccordion
                   fetchingPatientList={fetchingPatientList}
