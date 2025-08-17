@@ -75,10 +75,10 @@ const MedicalRecords = ({
       open={isUploadPatientsDialogOpen}
       onOpenChange={setIsUploadPatientsDialogOpen}
     >
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+        <div className="flex flex-col items-start gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               {patientName}
             </h1>
             <p className="text-muted-foreground">
@@ -97,22 +97,26 @@ const MedicalRecords = ({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2" variant="green">
+            <Button className="flex items-center gap-2 w-full sm:w-auto" variant="green">
               <Plus className="h-4 w-4" />
-              Upload patient records
+              <span className="hidden sm:inline">Upload patient records</span>
+              <span className="sm:hidden">Upload Records</span>
             </Button>
           </DialogTrigger>
-          <Button onClick={getAllPatientData} variant={"green"}>
+          <Button onClick={getAllPatientData} variant={"green"} className="w-full sm:w-auto">
             <Download />
-            Download all patient data
+            <span className="hidden sm:inline">Download all patient data</span>
+            <span className="sm:hidden">Download Data</span>
           </Button>
         </div>
       </div>
 
       {fetchingPatientDetails ? (
-        <Loader className="animate-spin" />
+        <div className="flex justify-center p-8 m-8">
+          <Loader className="animate-spin" />
+        </div>
       ) : patientDetailsList?.length > 0 ? (
         <div className="space-y-4">
           {(showPatientDetailsByCurrentDoctor
@@ -123,14 +127,14 @@ const MedicalRecords = ({
               key={record._id}
               className="hover:shadow-md transition-shadow"
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 grid md:grid-cols-3 gap-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Disease
                       </label>
-                      <p className="text-sm text-foreground">
+                      <p className="text-sm text-foreground break-words">
                         {record.Disease}
                       </p>
                     </div>
@@ -138,16 +142,16 @@ const MedicalRecords = ({
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Symptoms
                       </label>
-                      <p className="text-sm text-foreground">
+                      <p className="text-sm text-foreground break-words">
                         {record.symptom}
                       </p>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 sm:col-span-2 lg:col-span-1">
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Date
                       </label>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
                         {new Date(record.createdOn).toLocaleDateString()}
                       </div>
                     </div>
@@ -156,7 +160,7 @@ const MedicalRecords = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handleViewMore(record)}
-                    className="flex items-center gap-2 ml-4"
+                    className="flex items-center gap-2 w-full sm:w-auto lg:ml-4"
                   >
                     <Eye className="h-4 w-4" />
                     View More
@@ -180,7 +184,7 @@ const MedicalRecords = ({
         </div>
       )}
 
-      <DialogContent className="sm:max-w-md flex flex-col gap-4 p-6">
+      <DialogContent className="sm:max-w-md flex flex-col gap-4 p-4 sm:p-6 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
             <Upload className="h-5 w-5" />
@@ -235,7 +239,7 @@ const MedicalRecords = ({
             addPatientRecords();
           }}
           variant="green"
-          className="mt-4"
+          className="mt-4 w-full"
         >
           Submit
         </Button>

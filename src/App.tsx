@@ -14,13 +14,28 @@ import PatientDetailsPage from "./pages/doctor/PatientDetails";
 import DoctorDetails from "./pages/patient/DoctorDetails";
 import DoctorProfile from "./pages/Profile";
 import PatientAiSummary from "./pages/doctor/PatientAiSummary";
+import { Loader } from "lucide-react";
 
 const App = () => {
-  const { checkAuth } = useAuthStore();
+  const { checkAuth, authUser } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  if (!authUser) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center justify-center space-y-2">
+          <Loader className="animate-spin h-10 w-10" />
+          <p className="max-w-96 text-center">
+            Backend might take some time to spin up as it's hosted on a free
+            service
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <Routes>
