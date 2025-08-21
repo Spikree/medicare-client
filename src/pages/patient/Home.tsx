@@ -227,13 +227,16 @@ const Home = () => {
             <Card className="py-2 mt-4 border-0 shadow-none">
               <TabsContent value="current">
                 <RenderDoctorAccordion
-                
-                  doctors={filteredCurrentDoctorList} doctorStatus={"current"}                />
+                  doctors={filteredCurrentDoctorList}
+                  doctorStatus={"current"}
+                />
               </TabsContent>
 
               <TabsContent value="old">
                 <RenderDoctorAccordion
-                  doctors={filteredOldDoctorList} doctorStatus={"old"}                />
+                  doctors={filteredOldDoctorList}
+                  doctorStatus={"old"}
+                />
               </TabsContent>
             </Card>
           </Tabs>

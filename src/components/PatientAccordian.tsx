@@ -123,6 +123,12 @@ const PatientAccordion = ({
                           View Details
                         </Button>
                       </Link>
+
+                      <Link to={`/chatPage/${patient.patient}`}>
+                      <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                          Chat
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </AccordionContent>

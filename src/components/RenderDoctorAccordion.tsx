@@ -76,6 +76,10 @@ const RenderDoctorAccordion = ({ doctors, doctorStatus }: Props) => {
                       View Details
                     </Button>
                   </Link>
+
+                  <Button size="sm" variant="outline">
+                    Chat
+                  </Button>
                 </div>
               </div>
             </AccordionContent>
