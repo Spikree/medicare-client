@@ -197,6 +197,7 @@ interface PatientStore {
   reassignDoctor: (doctorId: string) => Promise<void>;
 
   isUploadingLabResults: boolean;
+  isFetchingPatientReviews: boolean;
 
   doctorList: DoctorInterface[];
 
@@ -218,6 +219,8 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   patientReview: [],
   LabResultsByDoctorList: [],
   allPatientData: [],
+
+  isFetchingPatientReviews: false,
 
   isUploadingLabResults: false,
   getDoctorList: async () => {
@@ -430,6 +433,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   },
 
   getPatientReviews: async (patientDetailId: string) => {
+    set({isFetchingPatientReviews: true});
     try {
       const response = await axiosInstance.get(
         `/patient/getPatientReviews/${patientDetailId}`
@@ -440,6 +444,8 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       const errorMessage =
         axiosError.response?.data?.message || "Error adding patient review";
       toast.error(errorMessage);
+    } finally {
+      set({isFetchingPatientReviews: true});
     }
   },
 

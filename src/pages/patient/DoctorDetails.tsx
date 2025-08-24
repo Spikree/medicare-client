@@ -22,6 +22,7 @@ const DoctorDetails = () => {
     patientReview,
     getLabResultsByDoctor,
     LabResultsByDoctorList,
+    isFetchingPatientReviews,
   } = PatientStore();
 
   const [selectedRecord, setSelectedRecord] =
@@ -73,11 +74,13 @@ const DoctorDetails = () => {
 
           <Card className="py-2 mt-4 border-0 shadow-none">
             <TabsContent className="p-6" value="current">
-              {doctorStatus && <DoctorDetailsComponent
-                doctorDetailsList={doctorDetailsList}
-                handleViewMore={handleViewMore}
-                doctorStatus={doctorStatus}
-              />}
+              {doctorStatus && (
+                <DoctorDetailsComponent
+                  doctorDetailsList={doctorDetailsList}
+                  handleViewMore={handleViewMore}
+                  doctorStatus={doctorStatus}
+                />
+              )}
 
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
@@ -91,6 +94,7 @@ const DoctorDetails = () => {
                   }
                   addPatientFeedback={addPatientFeedback}
                   patientReview={patientReview}
+                  isFetchingPatientReviews={isFetchingPatientReviews}
                 />
               )}
             </TabsContent>
