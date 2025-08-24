@@ -29,6 +29,7 @@ const PatientDetailsPage = () => {
     patientReview,
     getAllPatientInfo,
     fetchingPatientDetails,
+    isFetchingPatientReviews
   } = DoctorStore();
   const [selectedRecord, setSelectedRecord] = useState<PatientDetails | null>(
     null
@@ -193,6 +194,7 @@ const PatientDetailsPage = () => {
               {/* Details Dialog */}
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
+                isFetchingPatientReviews={isFetchingPatientReviews}
                   patientReview={patientReview}
                   setIsDialogOpen={setIsDialogOpen}
                   isDialogOpen={isDialogOpen}

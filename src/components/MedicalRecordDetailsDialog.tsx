@@ -26,6 +26,7 @@ interface Props {
   patientReview: PatientReview[];
   showPatientFeedbackModel: boolean;
   isDialogOpen: boolean;
+  isFetchingPatientReviews: boolean;
   patientFeedbackModelView: () => void;
   setIsDialogOpen: (value: boolean) => void;
   getPatientReviewsForMedicalRecord: (patientDetailId: string) => void;
@@ -33,7 +34,7 @@ interface Props {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string
+    reviewBy: string,
   ) => void;
 }
 
@@ -46,6 +47,7 @@ const MedicalRecordDetailsDialog = ({
   isDialogOpen,
   setIsDialogOpen,
   patientReview,
+  isFetchingPatientReviews,
 }: Props) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -162,6 +164,7 @@ const MedicalRecordDetailsDialog = ({
         )}
       </DialogContent>
       <PatientReviewsList
+      isFetchingPatientReviews={isFetchingPatientReviews}
       patientReview={patientReview}
         isOpen={showPatientReviewList}
         setIsOpen={setShowPatientReviewList}

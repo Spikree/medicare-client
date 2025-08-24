@@ -42,7 +42,7 @@ const PatientLabResultsComponent = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Lab Results</h2>
           <p className="text-muted-foreground">
@@ -54,7 +54,7 @@ const PatientLabResultsComponent = ({
           onClick={() => {
             setIsUploadLabResultsDialogOpen(!isUploadLabResultsDialogOpen);
           }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto justify-center"
           variant="green"
         >
           <Plus className="h-4 w-4" />

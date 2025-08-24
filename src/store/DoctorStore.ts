@@ -86,7 +86,7 @@ interface AiChatHistory {
     parts: {
       text: string;
       _id: string;
-    }[]
+    }[];
     _id: string;
   }[];
   message: string;
@@ -137,14 +137,16 @@ interface DoctorStore {
   isFetchingPatinetList: boolean;
 
   aiResponse: string;
-  
+
   aiResponseLoading: boolean;
 
   fetchingPatientList: boolean;
 
-  fetchingPatientDetails : boolean;
+  fetchingPatientDetails: boolean;
 
   fetchingLabResults: boolean;
+
+  isFetchingPatientReviews: boolean;
 }
 
 export const DoctorStore = create<DoctorStore>((set) => ({
@@ -161,10 +163,11 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   fetchingPatientList: false,
   fetchingPatientDetails: false,
   fetchingLabResults: false,
+  isFetchingPatientReviews: false,
   aiResponse: "",
 
   getPatientList: async () => {
-    set({fetchingPatientList: true});
+    set({ fetchingPatientList: true });
     try {
       const response = await axiosInstance.get("/doctor/getPatientList");
       set({ patientList: response.data.patientList });
@@ -174,7 +177,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         axiosError.response?.data?.message || "Error fecthing patient list";
       toast.error(errorMessage);
     } finally {
-      set({fetchingPatientList: false})
+      set({ fetchingPatientList: false });
     }
   },
 
@@ -209,7 +212,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   getPatientDetails: async (patientId: string) => {
-    set({fetchingPatientDetails: true});
+    set({ fetchingPatientDetails: true });
     try {
       const response = await axiosInstance.get(
         `/doctor/getPatientDetails/${patientId}`
@@ -221,7 +224,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         axiosError.response?.data?.message || "Error getting patient info";
       toast.error(errorMessage);
     } finally {
-      set({fetchingPatientDetails: false});
+      set({ fetchingPatientDetails: false });
     }
   },
 
@@ -252,7 +255,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   getPatientLabResults: async (patientId: string) => {
-    set({fetchingLabResults: true})
+    set({ fetchingLabResults: true });
     try {
       const response = await axiosInstance.get(
         `/doctor/getPatientLabResults/${patientId}`
@@ -264,7 +267,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         axiosError.response?.data?.message || "Error fetching lab results";
       toast.error(errorMessage);
     } finally {
-      set({fetchingLabResults: false});
+      set({ fetchingLabResults: false });
     }
   },
 
@@ -324,6 +327,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   getPatientReviews: async (patientDetailId: string) => {
+    set({ isFetchingPatientReviews: true });
     try {
       const response = await axiosInstance.get(
         `/doctor/getPatientReviews/${patientDetailId}`
@@ -335,6 +339,8 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         axiosError.response?.data?.message ||
         "Error fetching adding patient reviews";
       toast.error(errorMessage);
+    } finally {
+      set({ isFetchingPatientReviews: false });
     }
   },
 
@@ -380,7 +386,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
   },
 
   askAi: async (patientId: string, query: string) => {
-    set({aiResponseLoading: true})
+    set({ aiResponseLoading: true });
     try {
       const response = await axiosInstance.post(
         `/gemini/ai-chat/${patientId}`,
@@ -388,14 +394,14 @@ export const DoctorStore = create<DoctorStore>((set) => ({
           query,
         }
       );
-      set({aiChatHistoryList: response.data.newChatHistory})
+      set({ aiChatHistoryList: response.data.newChatHistory });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error generating ai response";
       toast.error(errorMessage);
     } finally {
-      set({aiResponseLoading: false})
+      set({ aiResponseLoading: false });
     }
   },
 
@@ -404,7 +410,7 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const response = await axiosInstance.get(
         `/gemini/getAiChatHistory/${patientId}`
       );
-      console.log(response.data.aiChatHistory.history[0].parts[0].text)
+      console.log(response.data.aiChatHistory.history[0].parts[0].text);
       set({ aiChatHistoryList: response.data.aiChatHistory });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
