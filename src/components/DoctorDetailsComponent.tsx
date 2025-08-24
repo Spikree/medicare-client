@@ -4,20 +4,22 @@ import {
 } from "@/store/PatientStore";
 import { Dialog } from "./ui/dialog";
 import { Card, CardContent } from "./ui/card";
-import { Calendar, Eye, FileText } from "lucide-react";
+import { Calendar, Eye, FileText, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
   handleViewMore: (record: DoctorDetailsInterface) => void;
-  doctorStatus: string
+  doctorStatus: string;
+  isFetchingDoctorDetails: boolean
 }
 
 const DoctorDetailsComponent = ({
   doctorDetailsList,
   handleViewMore,
   doctorStatus,
+  isFetchingDoctorDetails,
 }: Props) => {
   const { removeDoctor, reassignDoctor } = PatientStore();
   const { doctorName } = useParams();
@@ -64,7 +66,12 @@ const DoctorDetailsComponent = ({
         </div>
       </div>
 
-      {doctorDetailsList?.length > 0 ? (
+    {isFetchingDoctorDetails ? (
+        <div className="flex flex-col items-center justify-center min-h-[300px]">
+          <Loader className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="mt-4 text-muted-foreground">Fetching doctor details...</p>
+        </div>
+      ) : doctorDetailsList?.length > 0 ? (
         <div className="space-y-4">
           {doctorDetailsList.map((record: DoctorDetailsInterface) => (
             <Card

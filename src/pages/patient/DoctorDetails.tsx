@@ -22,7 +22,8 @@ const DoctorDetails = () => {
     patientReview,
     getLabResultsByDoctor,
     LabResultsByDoctorList,
-    isFetchingPatientReviews,
+    isFetchingPatientReviews, 
+    isFetchingDoctorDetails,
   } = PatientStore();
 
   const [selectedRecord, setSelectedRecord] =
@@ -79,6 +80,7 @@ const DoctorDetails = () => {
                   doctorDetailsList={doctorDetailsList}
                   handleViewMore={handleViewMore}
                   doctorStatus={doctorStatus}
+                  isFetchingDoctorDetails={isFetchingDoctorDetails}
                 />
               )}
 
