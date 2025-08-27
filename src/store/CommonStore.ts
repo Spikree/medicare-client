@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 // import type { AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-interface chatInterface {
+export interface chatInterface {
   _id: string;
   senderId: string;
   reveiverId: string;
