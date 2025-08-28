@@ -15,7 +15,8 @@ import DoctorDetails from "./pages/patient/DoctorDetails";
 import DoctorProfile from "./pages/Profile";
 import PatientAiSummary from "./pages/doctor/PatientAiSummary";
 import { Loader } from "lucide-react";
-import ChatPageDoctor from "./pages/doctor/ChatPage";
+import ChatPageDoctor from "./pages/doctor/ChatPageDoctor";
+import ChatPagePatient from "./pages/patient/ChatPagePatient";
 
 const App = () => {
   const { checkAuth, isCheckingAuth } = useAuthStore();
@@ -67,6 +68,7 @@ const App = () => {
                 path="/doctorDetails/:doctorId/:doctorName/:doctorStatus"
                 element={<DoctorDetails />}
               />
+              <Route path="/chatPagePatient/:doctorId" element={<ChatPagePatient />} />
             </Route>
           </Route>
         </Route>

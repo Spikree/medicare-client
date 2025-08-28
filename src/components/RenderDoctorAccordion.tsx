@@ -77,9 +77,11 @@ const RenderDoctorAccordion = ({ doctors, doctorStatus }: Props) => {
                     </Button>
                   </Link>
 
-                  <Button size="sm" variant="outline">
-                    Chat
-                  </Button>
+                  <Link to={`/chatPagePatient/${doctor.doctor._id}`}>
+                    <Button size="sm" variant="outline">
+                      Chat
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </AccordionContent>
