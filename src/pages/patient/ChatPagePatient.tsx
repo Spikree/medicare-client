@@ -1,8 +1,13 @@
 import { CommonStore } from "@/store/CommonStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Send, User, ArrowLeft } from "lucide-react";
 import type { chatInterface } from "@/store/CommonStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const ChatPagePatient = () => {
   const { doctorId } = useParams();
@@ -15,6 +20,7 @@ const ChatPagePatient = () => {
   } = CommonStore();
 
   const [text, setText] = useState<string>("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (doctorId) {
@@ -38,112 +44,120 @@ const ChatPagePatient = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+    <Card className="flex flex-col gap-2 p-2 h-screen">
+      
+      <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <ArrowLeft size={20} className="text-gray-600" />
-          </button>
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           <div className="flex items-center gap-3">
-            {getUserByIdProfile?.profilePicture ? (
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src={getUserByIdProfile?.profilePicture}
-                  alt={getUserByIdProfile?.name || "Profile Picture"}
-                />
-              </div>
-            ) : (
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <User size={20} className="text-blue-600" />
-              </div>
-            )}
+            <Avatar>
+              <AvatarImage 
+                src={getUserByIdProfile?.profilePicture} 
+                alt={getUserByIdProfile?.name || "Profile Picture"} 
+              />
+              <AvatarFallback>
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">
+              <h1 className="text-lg font-semibold">
                 {getUserByIdProfile?.name}
               </h1>
-              <p className="text-sm text-gray-500">Online consultation</p>
+              <Badge variant="secondary" className="text-xs">
+                Online consultation
+              </Badge>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        {messages && messages.length > 0 ? (
-          messages.map((message: chatInterface, index: number) => (
-            <div
-              key={message._id || index}
-              className={`flex ${
-                message.senderId === doctorId ? " justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                  message.senderId === doctorId
-                    ? "bg-white text-gray-800 border border-gray-200 rounded-bl-md"
-                    : "bg-blue-500 text-white rounded-br-md"
-                }`}
-              >
-                <p className="text-sm leading-relaxed">{message.text}</p>
-                {message.createdAt && (
-                  <p
-                    className={`text-xs mt-2 ${
-                      message.senderId === doctorId
-                        ? "text-gray-500"
-                        : "text-blue-100"
-                    }`}
-                  >
-                    {new Date(message.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <User size={48} className="mx-auto mb-4 text-gray-300" />
-              <p className="text-lg font-medium">Start the conversation</p>
-              <p className="text-sm">
-                Send a message to begin consulting with this patient
+      <Card className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {messages && messages.length > 0 ? (
+            messages.map((message: chatInterface, index: number) => {
+              const isDoctor = message.senderId === doctorId;
+              return (
+                <div
+                  key={message._id || index}
+                  className={`flex items-start gap-4 ${!isDoctor && "flex-row-reverse"}`}
+                >
+                  <Avatar className="w-8 h-8 flex-shrink-0">
+                    {isDoctor ? (
+                      <>
+                        <AvatarImage src={getUserByIdProfile?.profilePicture} alt="Doctor" />
+                        <AvatarFallback className="bg-gray-200">
+                          <User className="w-4 h-4 text-gray-700" />
+                        </AvatarFallback>
+                      </>
+                    ) : (
+                      <AvatarFallback className="bg-green-600 text-white">
+                        <User className="w-4 h-4" />
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                    isDoctor ? 'bg-white border' : 'bg-green-600 text-white'
+                  }`}>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                      {message.text}
+                    </p>
+                    {message.createdAt && (
+                      <p className="text-xs mt-2 opacity-70">
+                        {new Date(message.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Avatar className="w-12 h-12 mb-4 bg-blue-100">
+                <AvatarFallback className="bg-transparent">
+                  <User className="w-6 h-6 text-blue-600" />
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                Start the conversation
+              </h3>
+              <p className="text-sm text-gray-500 max-w-md">
+                Send a message to begin consulting with this doctor
               </p>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Input Area */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
-        <div className="flex items-end gap-3">
-          <div className="flex-1 relative">
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              className="w-full resize-none rounded-2xl border border-gray-300 px-4 py-3 pr-12 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all"
-              rows={1}
-              style={{
-                minHeight: "48px",
-                maxHeight: "120px",
-              }}
-            />
-          </div>
-          <button
-            onClick={sendMessages}
-            disabled={!text.trim()}
-            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-full p-3 transition-colors duration-200 disabled:cursor-not-allowed"
-          >
-            <Send size={20} />
-          </button>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      </div>
-    </div>
+        <div className="flex-shrink-0 border-t bg-white px-6 py-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-3">
+              <Input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1 h-11"
+              />
+              <Button
+                onClick={sendMessages}
+                disabled={!text.trim()}
+                size="icon"
+                className="h-11 w-11 bg-green-600 hover:bg-green-700"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Press Enter to send, Shift+Enter for a new line.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </Card>
   );
 };
 
