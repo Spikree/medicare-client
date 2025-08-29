@@ -62,7 +62,7 @@ const AddNewPatientDialog = ({ setOpen, open }: Props) => {
   }, [open, searchPatients]);
 
   return (
-    <DialogContent className="w-full max-w-2xl mx-2 sm:mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+    <DialogContent className="w-full max-w-2xl sm:mx-4 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
       <DialogHeader className="mb-4">
         <DialogTitle className="text-xl sm:text-2xl">
           Manage Patients

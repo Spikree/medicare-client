@@ -184,7 +184,7 @@ const MedicalRecords = ({
         </div>
       )}
 
-      <DialogContent className="sm:max-w-md flex flex-col gap-4 p-4 sm:p-6 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-md flex flex-col gap-4 p-4 sm:p-6 sm:mx-0 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
             <Upload className="h-5 w-5" />
