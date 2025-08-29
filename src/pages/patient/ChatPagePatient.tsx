@@ -1,13 +1,13 @@
 import { CommonStore } from "@/store/CommonStore";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Send, User, ArrowLeft } from "lucide-react";
+import { Send, User } from "lucide-react";
 import type { chatInterface } from "@/store/CommonStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import BreadcrumbElement from "@/components/BreadcrumbElement";
 
 const ChatPagePatient = () => {
   const { doctorId } = useParams();
@@ -44,33 +44,10 @@ const ChatPagePatient = () => {
   };
 
   return (
-    <Card className="flex flex-col gap-2 p-2 h-screen">
-      
+    <Card className="flex flex-col gap-2 p-2 h-full">
       <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage 
-                src={getUserByIdProfile?.profilePicture} 
-                alt={getUserByIdProfile?.name || "Profile Picture"} 
-              />
-              <AvatarFallback>
-                <User className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-lg font-semibold">
-                {getUserByIdProfile?.name}
-              </h1>
-              <Badge variant="secondary" className="text-xs">
-                Online consultation
-              </Badge>
-            </div>
-          </div>
-        </div>
+        <BreadcrumbElement currentPage={"Chat"} />
+        <p className="text-gray-600">{getUserByIdProfile?.name}</p>
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
@@ -81,12 +58,17 @@ const ChatPagePatient = () => {
               return (
                 <div
                   key={message._id || index}
-                  className={`flex items-start gap-4 ${!isDoctor && "flex-row-reverse"}`}
+                  className={`flex items-start gap-4 ${
+                    !isDoctor && "flex-row-reverse"
+                  }`}
                 >
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     {isDoctor ? (
                       <>
-                        <AvatarImage src={getUserByIdProfile?.profilePicture} alt="Doctor" />
+                        <AvatarImage
+                          src={getUserByIdProfile?.profilePicture}
+                          alt="Doctor"
+                        />
                         <AvatarFallback className="bg-gray-200">
                           <User className="w-4 h-4 text-gray-700" />
                         </AvatarFallback>
@@ -97,9 +79,11 @@ const ChatPagePatient = () => {
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                    isDoctor ? 'bg-white border' : 'bg-green-600 text-white'
-                  }`}>
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                      isDoctor ? "bg-white border" : "bg-green-600 text-white"
+                    }`}
+                  >
                     <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
                       {message.text}
                     </p>
