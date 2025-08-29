@@ -14,16 +14,28 @@ export interface chatInterface {
   updatedAt: string;
 }
 
+export interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+  role: "patient" | "doctor";
+  createdOn: string;
+  profilePicture: string;
+}
+
 interface CommonStore {
   updateProfile: (bio: string, profilePicture: File) => Promise<void>;
   getMessages: (receiverId: string) => Promise<void>;
   sendMessage: (receiverId: string, text: string) => Promise<void>;
+  getUserById: (userId: string) => Promise<void>;
 
   messages: chatInterface[];
+  getUserByIdProfile: UserProfile | null;
 }
 
 export const CommonStore = create<CommonStore>((set) => ({
   messages: [],
+  getUserByIdProfile: null,
 
   updateProfile: async (bio: string, profilePicture: File) => {
     const formData = new FormData();
@@ -73,6 +85,20 @@ export const CommonStore = create<CommonStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error sending messages";
+      toast.error(errorMessage);
+    }
+  },
+
+  getUserById: async (userId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/common/getUserProfile/${userId}`
+      );
+      set({getUserByIdProfile: response.data.user});
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error fetching user";
       toast.error(errorMessage);
     }
   },

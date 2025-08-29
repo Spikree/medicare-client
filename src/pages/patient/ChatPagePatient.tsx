@@ -6,15 +6,22 @@ import type { chatInterface } from "@/store/CommonStore";
 
 const ChatPagePatient = () => {
   const { doctorId } = useParams();
-  const { getMessages, sendMessage, messages } = CommonStore();
+  const {
+    getMessages,
+    sendMessage,
+    messages,
+    getUserById,
+    getUserByIdProfile,
+  } = CommonStore();
 
   const [text, setText] = useState<string>("");
 
   useEffect(() => {
     if (doctorId) {
       getMessages(doctorId);
+      getUserById(doctorId);
     }
-  }, [getMessages, doctorId]);
+  }, [getMessages, doctorId, getUserById]);
 
   const sendMessages = () => {
     if (doctorId && text.trim()) {
@@ -39,12 +46,22 @@ const ChatPagePatient = () => {
             <ArrowLeft size={20} className="text-gray-600" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <User size={20} className="text-blue-600" />
-            </div>
+            {getUserByIdProfile?.profilePicture ? (
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-300">
+                <img
+                  className="w-full h-full object-cover"
+                  src={getUserByIdProfile?.profilePicture}
+                  alt={getUserByIdProfile?.name || "Profile Picture"}
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <User size={20} className="text-blue-600" />
+              </div>
+            )}
             <div>
               <h1 className="text-lg font-semibold text-gray-900">
-                Patient #{doctorId}
+                {getUserByIdProfile?.name}
               </h1>
               <p className="text-sm text-gray-500">Online consultation</p>
             </div>
@@ -59,9 +76,7 @@ const ChatPagePatient = () => {
             <div
               key={message._id || index}
               className={`flex ${
-                message.senderId === doctorId
-                  ? " justify-end"
-                  : "justify-start"
+                message.senderId === doctorId ? " justify-end" : "justify-start"
               }`}
             >
               <div
