@@ -31,11 +31,14 @@ interface CommonStore {
 
   messages: chatInterface[];
   getUserByIdProfile: UserProfile | null;
+
+  isFetchingMessages: boolean;
 }
 
 export const CommonStore = create<CommonStore>((set) => ({
   messages: [],
   getUserByIdProfile: null,
+  isFetchingMessages: false,
 
   updateProfile: async (bio: string, profilePicture: File) => {
     const formData = new FormData();
@@ -63,6 +66,7 @@ export const CommonStore = create<CommonStore>((set) => ({
   },
 
   getMessages: async (receiverId: string) => {
+    set({ isFetchingMessages: true });
     try {
       const response = await axiosInstance.get(
         `/chatRoute/getMessages/${receiverId}`
@@ -73,6 +77,8 @@ export const CommonStore = create<CommonStore>((set) => ({
       const errorMessage =
         axiosError.response?.data?.message || "Error fetching messages";
       toast.error(errorMessage);
+    } finally {
+      set({ isFetchingMessages: false });
     }
   },
 
@@ -94,7 +100,7 @@ export const CommonStore = create<CommonStore>((set) => ({
       const response = await axiosInstance.get(
         `/common/getUserProfile/${userId}`
       );
-      set({getUserByIdProfile: response.data.user});
+      set({ getUserByIdProfile: response.data.user });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
