@@ -21,7 +21,7 @@ const ChatPageDoctor = () => {
   } = CommonStore();
 
   const [text, setText] = useState<string>("");
-  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -51,12 +51,6 @@ const ChatPageDoctor = () => {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
       const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-      console.log("Scroll detected:", {
-        scrollTop,
-        scrollHeight,
-        clientHeight,
-        isNearBottom,
-      }); // Debug log
       setShowScrollButton(!isNearBottom);
     };
 

@@ -1,7 +1,7 @@
 import { CommonStore } from "@/store/CommonStore";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Send, User } from "lucide-react";
+import { ChevronDown, Loader, Send, User } from "lucide-react";
 import type { chatInterface } from "@/store/CommonStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,19 @@ const ChatPagePatient = () => {
     messages,
     getUserById,
     getUserByIdProfile,
+    isFetchingMessages,
   } = CommonStore();
 
   const [text, setText] = useState<string>("");
+  const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showScrollButton) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, showScrollButton]);
 
   useEffect(() => {
     if (doctorId) {
@@ -28,6 +37,32 @@ const ChatPagePatient = () => {
       getUserById(doctorId);
     }
   }, [getMessages, doctorId, getUserById]);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+
+    if (!container) return;
+
+    const scrollableElement =
+      container.querySelector(".overflow-y-auto") || container;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    };
+
+    scrollableElement.addEventListener("scroll", handleScroll);
+
+    handleScroll();
+
+    return () => scrollableElement.removeEventListener("scroll", handleScroll);
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    setShowScrollButton(false);
+  };
 
   const sendMessages = () => {
     if (doctorId && text.trim()) {
@@ -51,71 +86,90 @@ const ChatPagePatient = () => {
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {messages && messages.length > 0 ? (
-            messages.map((message: chatInterface, index: number) => {
-              const isDoctor = message.senderId === doctorId;
-              return (
-                <div
-                  key={message._id || index}
-                  className={`flex items-start gap-4 ${
-                    !isDoctor && "flex-row-reverse"
-                  }`}
-                >
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    {isDoctor ? (
-                      <>
-                        <AvatarImage
-                          src={getUserByIdProfile?.profilePicture}
-                          alt="Doctor"
-                        />
-                        <AvatarFallback className="bg-gray-200">
-                          <User className="w-4 h-4 text-gray-700" />
-                        </AvatarFallback>
-                      </>
-                    ) : (
-                      <AvatarFallback className="bg-green-600 text-white">
-                        <User className="w-4 h-4" />
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
+        {isFetchingMessages ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <Loader className="animate-spin size-6" />
+          </div>
+        ) : (
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto p-6 space-y-6"
+          >
+            {messages && messages.length > 0 ? (
+              messages.map((message: chatInterface, index: number) => {
+                const isDoctor = message.senderId === doctorId;
+                return (
                   <div
-                    className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                      isDoctor ? "bg-white border" : "bg-green-600 text-white"
+                    key={message._id || index}
+                    className={`flex items-start gap-4 ${
+                      !isDoctor && "flex-row-reverse"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
-                      {message.text}
-                    </p>
-                    {message.createdAt && (
-                      <p className="text-xs mt-2 opacity-70">
-                        {new Date(message.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      {isDoctor ? (
+                        <>
+                          <AvatarImage
+                            src={getUserByIdProfile?.profilePicture}
+                            alt="Doctor"
+                          />
+                          <AvatarFallback className="bg-gray-200">
+                            <User className="w-4 h-4 text-gray-700" />
+                          </AvatarFallback>
+                        </>
+                      ) : (
+                        <AvatarFallback className="bg-green-600 text-white">
+                          <User className="w-4 h-4" />
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div
+                      className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        isDoctor ? "bg-white border" : "bg-green-600 text-white"
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                        {message.text}
                       </p>
-                    )}
+                      {message.createdAt && (
+                        <p className="text-xs mt-2 opacity-70">
+                          {new Date(message.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <Avatar className="w-12 h-12 mb-4 bg-blue-100">
-                <AvatarFallback className="bg-transparent">
-                  <User className="w-6 h-6 text-blue-600" />
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
-                Start the conversation
-              </h3>
-              <p className="text-sm text-gray-500 max-w-md">
-                Send a message to begin consulting with this doctor
-              </p>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+                );
+              })
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <Avatar className="w-12 h-12 mb-4 bg-blue-100">
+                  <AvatarFallback className="bg-transparent">
+                    <User className="w-6 h-6 text-blue-600" />
+                  </AvatarFallback>
+                </Avatar>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">
+                  Start the conversation
+                </h3>
+                <p className="text-sm text-gray-500 max-w-md">
+                  Send a message to begin consulting with this doctor
+                </p>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+        {showScrollButton && (
+          <Button
+            onClick={scrollToBottom}
+            className="absolute bottom-20 left-1/2 transform -translate-x-1/2 h-12 w-12 rounded-xl bg-green-600 hover:bg-green-700 shadow-lg transition-all duration-200 z-50"
+            size="icon"
+          >
+            <ChevronDown className="w-6 h-6" />
+          </Button>
+        )}
+
         <div className="flex-shrink-0 border-t bg-white px-6 py-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-3">
