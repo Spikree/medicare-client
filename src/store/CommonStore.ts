@@ -10,6 +10,7 @@ export interface chatInterface {
   reveiverId: string;
   text: string;
   chatId: string;
+  imageUrl: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,7 +27,11 @@ export interface UserProfile {
 interface CommonStore {
   updateProfile: (bio: string, profilePicture: File) => Promise<void>;
   getMessages: (receiverId: string) => Promise<void>;
-  sendMessage: (receiverId: string, text: string) => Promise<void>;
+  sendMessage: (
+    receiverId: string,
+    text: string,
+    image?: File
+  ) => Promise<void>;
   getUserById: (userId: string) => Promise<void>;
 
   messages: chatInterface[];
@@ -82,11 +87,24 @@ export const CommonStore = create<CommonStore>((set) => ({
     }
   },
 
-  sendMessage: async (receiverId: string, text: string) => {
+  sendMessage: async (receiverId: string, text: string, image?: File) => {
     try {
-      await axiosInstance.post(`/chatRoute/sendMessage/${receiverId}`, {
-        text,
-      });
+      const formData = new FormData();
+      formData.append("text", text);
+
+      if (image) {
+        formData.append("image", image);
+      }
+
+      await axiosInstance.post(
+        `/chatRoute/sendMessage/${receiverId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

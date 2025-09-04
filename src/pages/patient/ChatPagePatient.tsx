@@ -1,7 +1,7 @@
 import { CommonStore } from "@/store/CommonStore";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { ChevronDown, Loader, Send, User } from "lucide-react";
+import { ChevronDown, Loader, Send, User, Image, X } from "lucide-react";
 import type { chatInterface } from "@/store/CommonStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,9 +21,12 @@ const ChatPagePatient = () => {
   } = CommonStore();
 
   const [text, setText] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!showScrollButton) {
@@ -64,10 +67,31 @@ const ChatPagePatient = () => {
     setShowScrollButton(false);
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const sendMessages = () => {
-    if (doctorId && text.trim()) {
-      sendMessage(doctorId, text);
+    if (doctorId && (text.trim() || selectedImage)) {
+      sendMessage(doctorId, text, selectedImage || undefined);
       setText("");
+      removeSelectedImage();
     }
   };
 
@@ -127,9 +151,19 @@ const ChatPagePatient = () => {
                         isDoctor ? "bg-white border" : "bg-green-600 text-white"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
-                        {message.text}
-                      </p>
+                      {message.imageUrl && (
+                        <img
+                          src={message.imageUrl}
+                          alt="Message attachment"
+                          className="max-w-64 max-h-64 rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(message.imageUrl, '_blank')}
+                        />
+                      )}
+                      {message.text && (
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                          {message.text}
+                        </p>
+                      )}
                       {message.createdAt && (
                         <p className="text-xs mt-2 opacity-70">
                           {new Date(message.createdAt).toLocaleTimeString([], {
@@ -172,6 +206,22 @@ const ChatPagePatient = () => {
 
         <div className="flex-shrink-0 border-t bg-white px-6 py-4">
           <div className="max-w-4xl mx-auto">
+            {imagePreview && (
+              <div className="mb-3 relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Selected"
+                  className="max-w-32 max-h-32 rounded-lg border"
+                />
+                <Button
+                  onClick={removeSelectedImage}
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600 rounded-full"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <Input
                 value={text}
@@ -180,9 +230,24 @@ const ChatPagePatient = () => {
                 placeholder="Type your message..."
                 className="flex-1 h-11"
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                size="icon"
+                variant="outline"
+                className="h-11 w-11"
+              >
+                <Image className="w-4 h-4" />
+              </Button>
               <Button
                 onClick={sendMessages}
-                disabled={!text.trim()}
+                disabled={!text.trim() && !selectedImage}
                 size="icon"
                 className="h-11 w-11 bg-green-600 hover:bg-green-700"
               >
