@@ -1,7 +1,7 @@
 import { CommonStore } from "@/store/CommonStore";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Loader, Send, User, ChevronDown } from "lucide-react";
+import { Loader, Send, User, ChevronDown, Image, X } from "lucide-react";
 import type { chatInterface } from "@/store/CommonStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,9 @@ const ChatPageDoctor = () => {
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   // Clean up useEffects - only one for auto-scroll
   useEffect(() => {
@@ -62,16 +65,36 @@ const ChatPageDoctor = () => {
     return () => scrollableElement.removeEventListener("scroll", handleScroll);
   }, [messages]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     setShowScrollButton(false);
   };
 
   const sendMessages = () => {
-    if (patientId && text.trim()) {
-      sendMessage(patientId, text);
+    if (patientId && (text.trim() || selectedImage)) {
+      sendMessage(patientId, text, selectedImage || undefined);
       setText("");
-      // Auto-scroll will happen via useEffect
+      removeSelectedImage();
     }
   };
 
@@ -128,27 +151,32 @@ const ChatPageDoctor = () => {
                         )}
                       </Avatar>
                       <div
-                        className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                          isPatient
-                            ? "bg-white border"
-                            : "bg-green-600 text-white"
-                        }`}
-                      >
+                      className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        isPatient ? "bg-white border" : "bg-green-600 text-white"
+                      }`}
+                    >
+                      {message.imageUrl && (
+                        <img
+                          src={message.imageUrl}
+                          alt="Message attachment"
+                          className="max-w-64 max-h-64 rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(message.imageUrl, '_blank')}
+                        />
+                      )}
+                      {message.text && (
                         <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
                           {message.text}
                         </p>
-                        {message.createdAt && (
-                          <p className="text-xs mt-2 opacity-70">
-                            {new Date(message.createdAt).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </p>
-                        )}
-                      </div>
+                      )}
+                      {message.createdAt && (
+                        <p className="text-xs mt-2 opacity-70">
+                          {new Date(message.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      )}
+                    </div>
                     </div>
                   );
                 })
@@ -185,6 +213,22 @@ const ChatPageDoctor = () => {
 
         <div className="flex-shrink-0 border-t bg-white px-6 py-4">
           <div className="max-w-4xl mx-auto">
+            {imagePreview && (
+              <div className="mb-3 relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Selected"
+                  className="max-w-32 max-h-32 rounded-lg border"
+                />
+                <Button
+                  onClick={removeSelectedImage}
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600 rounded-full"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <Input
                 value={text}
@@ -193,6 +237,21 @@ const ChatPageDoctor = () => {
                 placeholder="Type your message..."
                 className="flex-1 h-11"
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                size="icon"
+                variant="outline"
+                className="h-11 w-11"
+              >
+                <Image className="w-4 h-4" />
+              </Button>
               <Button
                 onClick={sendMessages}
                 disabled={!text.trim()}
