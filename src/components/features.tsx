@@ -36,17 +36,7 @@ const features: Feature[] = [
       "Data privacy and security at the core, ensuring all patient records are protected and compliant with healthcare standards."
     ]
   },
-  {
-    id: "analytics-reports",
-    title: "Analytics & Reports",
-    image: patientManagementImage, // Note: Original code reused this image
-    imagePosition: "left",
-    benefits: [
-      "Track your clinic's performance with in-depth analytics, helping you identify strengths, bottlenecks, and opportunities for growth.",
-      "Measure patient outcomes over time to improve care quality, enhance treatment strategies, and build stronger trust with patients.",
-      "Gain visibility into revenue trends and optimize your financial performance with clear, actionable insights."
-    ]
-  },
+  
   {
     id: "patient-communication",
     title: "Patient Communication",
@@ -72,9 +62,9 @@ function FeatureItem({ feature, index }: FeatureItemProps) {
       index % 2 === 1 ? "lg:flex-row-reverse" : ""
     }`}>
       {/* Image */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 rounded-md">
         <img
-          className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto object-contain"
+          className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto object-contain rounded-md"
           src={feature.image}
           alt={`${feature.title} illustration`}
           loading="lazy"
