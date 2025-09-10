@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DoctorStore } from "@/store/DoctorStore";
-import { Send, Loader2, Bot, User } from "lucide-react";
+import { Send, Loader2, Bot, User, ChevronDown } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,13 +13,45 @@ import BreadcrumbElement from "@/components/BreadcrumbElement";
 const PatientAiSummary = () => {
   const { patientId, patientName } = useParams();
   const [aiQuery, setAiQuery] = useState<string>("");
+  const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { authUser } = useAuthStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { askAi, getAiChatHistory, aiChatHistoryList, aiResponseLoading } =
     DoctorStore();
 
+  useEffect(() => {
+    if (!showScrollButton) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [showScrollButton]);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    // Find the actual scrollable element (might be a child)
+    const scrollableElement =
+      container.querySelector(".overflow-y-auto") || container;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    };
+
+    scrollableElement.addEventListener("scroll", handleScroll);
+
+    // Initial check
+    handleScroll();
+
+    return () => scrollableElement.removeEventListener("scroll", handleScroll);
+  });
+
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    setShowScrollButton(false);
   };
 
   useEffect(() => {
@@ -54,14 +86,14 @@ const PatientAiSummary = () => {
 
   return (
     <Card className="flex flex-col gap-2 p-2 h-full">
-      
+
       <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"AI Summary"} />
         <p className="text-gray-600">{patientName}</p>
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={messagesContainerRef}>
           {aiChatHistoryList?.history?.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Avatar className="w-12 h-12 mb-4 bg-blue-100">
@@ -98,9 +130,8 @@ const PatientAiSummary = () => {
                       </>
                     )}
                   </Avatar>
-                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                    isModel ? 'bg-white border' : 'bg-green-600 text-white'
-                  }`}>
+                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${isModel ? 'bg-white border' : 'bg-green-600 text-white'
+                    }`}>
                     <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
                       {msg.parts[0].text}
                     </p>
@@ -113,9 +144,9 @@ const PatientAiSummary = () => {
           {aiResponseLoading && (
             <div className="flex items-start gap-4">
               <Avatar className="w-8 h-8 flex-shrink-0">
-                 <AvatarFallback className="bg-green-600 text-white">
-                    <Bot className="w-4 h-4" />
-                  </AvatarFallback>
+                <AvatarFallback className="bg-green-600 text-white">
+                  <Bot className="w-4 h-4" />
+                </AvatarFallback>
               </Avatar>
               <div className="max-w-[80%] rounded-lg px-4 py-3 bg-white border">
                 <div className="flex items-center gap-2 text-gray-500">
@@ -127,6 +158,17 @@ const PatientAiSummary = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        {showScrollButton && (
+          <Button
+            onClick={scrollToBottom}
+            className="absolute bottom-20 left-1/2 transform -translate-x-1/2 h-12 w-12 rounded-xl bg-green-600 hover:bg-green-700 shadow-lg transition-all duration-200 z-50"
+            size="icon"
+          >
+            <ChevronDown className="w-6 h-6" />
+          </Button>
+        )}
+
         <div className="flex-shrink-0 border-t bg-white px-6 py-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-3">

@@ -410,7 +410,6 @@ export const DoctorStore = create<DoctorStore>((set) => ({
       const response = await axiosInstance.get(
         `/gemini/getAiChatHistory/${patientId}`
       );
-      console.log(response.data.aiChatHistory.history[0].parts[0].text);
       set({ aiChatHistoryList: response.data.aiChatHistory });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
