@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import socket from "@/socket/socket";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const ChatPageDoctor = () => {
   const { patientId } = useParams();
@@ -19,6 +21,11 @@ const ChatPageDoctor = () => {
     getUserByIdProfile,
     isFetchingMessages,
   } = CommonStore();
+  const { authUser } = useAuthStore();
+  const userId = authUser?._id;
+
+  const actualChatId =
+    userId && patientId ? [userId, patientId].sort().join("_") : "";
 
   const [text, setText] = useState<string>("");
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
@@ -27,6 +34,55 @@ const ChatPageDoctor = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const [typingUser, setTypingUser] = useState(null);
+
+  // SOCKET CONNECTION
+  useEffect(() => {
+    console.log(typingUser);
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    if (userId) {
+      socket.auth = { userId };
+      socket.emit("join", userId);
+
+      if (actualChatId) {
+        socket.emit("joinChat", actualChatId);
+      }
+
+      socket.emit("setActiveStatus", { userId });
+    }
+
+    socket.off("newMessage");
+    socket.off("userActiveStatus");
+    socket.off("userTyping");
+
+    socket.on("newMessage", (newMessage) => {
+      if (
+        (newMessage.senderId === userId &&
+          newMessage.receiverId === patientId) ||
+        (newMessage.senderId === patientId && newMessage.receiverId === userId)
+      ) {
+        console.log(newMessage);
+      }
+    });
+
+    socket.on("userActiveStatus",(data) => {
+      if(data.chatId === actualChatId && data.senderId === patientId){
+        setTypingUser(data.isTyping ? data.senderId : null);
+      }
+    });
+
+    // cleanup after unmount
+
+    return () => {
+      socket.off("newMessage");
+      socket.off("userActiveStatus");
+      socket.off("userTyping");
+    }
+  },[userId,patientId,actualChatId]);
 
   // Clean up useEffects - only one for auto-scroll
   useEffect(() => {
@@ -151,32 +207,39 @@ const ChatPageDoctor = () => {
                         )}
                       </Avatar>
                       <div
-                      className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                        isPatient ? "bg-white border" : "bg-green-600 text-white"
-                      }`}
-                    >
-                      {message.imageUrl && (
-                        <img
-                          src={message.imageUrl}
-                          alt="Message attachment"
-                          className="max-w-64 max-h-64 rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => window.open(message.imageUrl, '_blank')}
-                        />
-                      )}
-                      {message.text && (
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
-                          {message.text}
-                        </p>
-                      )}
-                      {message.createdAt && (
-                        <p className="text-xs mt-2 opacity-70">
-                          {new Date(message.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      )}
-                    </div>
+                        className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                          isPatient
+                            ? "bg-white border"
+                            : "bg-green-600 text-white"
+                        }`}
+                      >
+                        {message.imageUrl && (
+                          <img
+                            src={message.imageUrl}
+                            alt="Message attachment"
+                            className="max-w-64 max-h-64 rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() =>
+                              window.open(message.imageUrl, "_blank")
+                            }
+                          />
+                        )}
+                        {message.text && (
+                          <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                            {message.text}
+                          </p>
+                        )}
+                        {message.createdAt && (
+                          <p className="text-xs mt-2 opacity-70">
+                            {new Date(message.createdAt).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   );
                 })
