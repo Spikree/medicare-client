@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 import socket from "@/socket/socket";
 import { useAuthStore } from "@/store/useAuthStore";
+import { motion } from "framer-motion";
 
 const ChatPageDoctor = () => {
   const { patientId } = useParams();
@@ -34,8 +35,11 @@ const ChatPageDoctor = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
 
   const [typingUser, setTypingUser] = useState(null);
+
+  const typingTimeRef = useRef<NodeJS.Timeout | null>(null);
 
   // SOCKET CONNECTION
   useEffect(() => {
@@ -69,20 +73,45 @@ const ChatPageDoctor = () => {
       }
     });
 
-    socket.on("userActiveStatus",(data) => {
-      if(data.chatId === actualChatId && data.senderId === patientId){
+    socket.on("userActiveStatus", (data) => {
+      if (data.chatId === actualChatId && data.senderId === patientId) {
         setTypingUser(data.isTyping ? data.senderId : null);
       }
     });
 
-    // cleanup after unmount
 
     return () => {
       socket.off("newMessage");
       socket.off("userActiveStatus");
       socket.off("userTyping");
+    };
+  }, [userId, patientId, actualChatId, typingUser]);
+
+  const handelTyping = () => {
+    if (isTyping && actualChatId) {
+      socket.emit("typing", {
+        senderId: userId,
+        receiverId: patientId,
+        chatId: actualChatId,
+      });
+      setIsTyping(true);
     }
-  },[userId,patientId,actualChatId]);
+
+    if (typingTimeRef.current) {
+      clearTimeout(typingTimeRef.current);
+    }
+
+    typingTimeRef.current = setTimeout(() => {
+      if (actualChatId) {
+        socket.emit("stopTyping", {
+          senderId: userId,
+          receiverId: patientId,
+          chatId: actualChatId,
+        });
+        setIsTyping(false);
+      }
+    }, 200);
+  };
 
   // Clean up useEffects - only one for auto-scroll
   useEffect(() => {
@@ -263,6 +292,43 @@ const ChatPageDoctor = () => {
           </>
         )}
 
+        {/* Typing Indicator */}
+      {typingUser && (
+        <div className="flex px-4 mb-2">
+          <div className="flex items-center space-x-1 p-2 bg-white rounded-full shadow-sm w-fit">
+            <motion.div
+              className="w-2 h-2 bg-gray-400 rounded-full"
+              animate={{ y: [0, -3, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 0.6,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="w-2 h-2 bg-gray-400 rounded-full"
+              animate={{ y: [0, -3, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 0.2,
+              }}
+            />
+            <motion.div
+              className="w-2 h-2 bg-gray-400 rounded-full"
+              animate={{ y: [0, -3, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 0.4,
+              }}
+            />
+          </div>
+        </div>
+      )}
+
         {/* Scroll to Bottom Button - centered */}
         {showScrollButton && (
           <Button
@@ -295,7 +361,10 @@ const ChatPageDoctor = () => {
             <div className="flex items-center gap-3">
               <Input
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  handelTyping();
+                }}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
                 className="flex-1 h-11"
