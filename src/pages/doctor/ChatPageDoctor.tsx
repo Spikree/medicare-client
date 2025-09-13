@@ -21,6 +21,7 @@ const ChatPageDoctor = () => {
     getUserById,
     getUserByIdProfile,
     isFetchingMessages,
+    setMessage,
   } = CommonStore();
   const { authUser } = useAuthStore();
   const userId = authUser?._id;
@@ -43,7 +44,6 @@ const ChatPageDoctor = () => {
 
   // SOCKET CONNECTION
   useEffect(() => {
-    console.log(typingUser);
     if (!socket.connected) {
       socket.connect();
     }
@@ -69,13 +69,21 @@ const ChatPageDoctor = () => {
           newMessage.receiverId === patientId) ||
         (newMessage.senderId === patientId && newMessage.receiverId === userId)
       ) {
-        console.log(newMessage);
+        setMessage(newMessage);
       }
     });
 
-    socket.on("userActiveStatus", (data) => {
-      if (data.chatId === actualChatId && data.senderId === patientId) {
+    // socket.on("userActiveStatus", (data) => {
+    //   if (data.chatId === actualChatId && data.senderId === patientId) {
+    //     setTypingUser(data.isTyping ? data.senderId : null);
+    //   }
+    // });
+
+
+     socket.on("userTyping", (data) => {
+      if (data.chatId === actualChatId && data.senderId !== userId) {
         setTypingUser(data.isTyping ? data.senderId : null);
+        setIsTyping(true)
       }
     });
 
@@ -85,7 +93,7 @@ const ChatPageDoctor = () => {
       socket.off("userActiveStatus");
       socket.off("userTyping");
     };
-  }, [userId, patientId, actualChatId, typingUser]);
+  }, [userId, patientId, actualChatId, setMessage]);
 
   const handelTyping = () => {
     if (isTyping && actualChatId) {

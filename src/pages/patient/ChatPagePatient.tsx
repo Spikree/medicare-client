@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import { useAuthStore } from "@/store/useAuthStore";
+import socket from "@/socket/socket";
+import { motion } from "framer-motion";
 
 const ChatPagePatient = () => {
   const { doctorId } = useParams();
@@ -18,7 +21,18 @@ const ChatPagePatient = () => {
     getUserById,
     getUserByIdProfile,
     isFetchingMessages,
+    setMessage,
   } = CommonStore();
+
+  const { authUser } = useAuthStore();
+  const userId = authUser?._id;
+
+  const actualChatId =
+    userId && doctorId ? [userId, doctorId].sort().join("_") : "";
+
+  const [typingUser, setTypingUser] = useState(null);
+  const typingTimeRef = useRef<NodeJS.Timeout | null>(null);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
 
   const [text, setText] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -27,6 +41,83 @@ const ChatPagePatient = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // socket connection
+  useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    if (userId) {
+      socket.auth = { userId };
+      socket.emit("join", userId);
+
+      if (actualChatId) {
+        socket.emit("joinChat", actualChatId);
+
+        socket.emit("setActiveStatus", { userId });
+      }
+    }
+
+    socket.off("newMessage");
+    socket.off("userActiveStatus");
+    socket.off("userTyping");
+
+    socket.on("newMessage", (newMessage) => {
+      if (
+        (newMessage.senderId === userId &&
+          newMessage.receiverId === doctorId) ||
+        (newMessage.senderId === doctorId && newMessage.receiverId === userId)
+      ) {
+        setMessage(newMessage);
+      }
+    });
+
+    // socket.on("userActiveStatus", (data) => {
+    //   if (data.chatId === actualChatId && data.senderId === doctorId) {
+    //     setTypingUser(data.isTyping ? data.senderId : null);
+    //   }
+    // });
+
+     socket.on("userTyping", (data) => {
+      if (data.chatId === actualChatId && data.senderId !== userId) {
+        setTypingUser(data.isTyping ? data.senderId : null);
+        setIsTyping(true)
+      }
+    });
+
+    return () => {
+      socket.off("newMessage");
+      socket.off("userActiveStatus");
+      socket.off("userTyping");
+    };
+  }, [userId, doctorId, actualChatId, setMessage]);
+
+  const handleTyping = () => {
+    if (isTyping && actualChatId) {
+      socket.emit("typing", {
+        senderId: userId,
+        receiverId: doctorId,
+        chatId: actualChatId,
+      });
+      setIsTyping(true);
+    }
+
+    if (typingTimeRef.current) {
+      clearTimeout(typingTimeRef.current);
+    }
+
+    typingTimeRef.current = setTimeout(() => {
+      if (actualChatId) {
+        socket.emit("stopTyping", {
+          senderId: userId,
+          receiverId: doctorId,
+          chatId: actualChatId,
+        });
+        setIsTyping(false);
+      }
+    }, 200);
+  };
 
   useEffect(() => {
     if (!showScrollButton) {
@@ -156,7 +247,9 @@ const ChatPagePatient = () => {
                           src={message.imageUrl}
                           alt="Message attachment"
                           className="max-w-64 max-h-64 rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => window.open(message.imageUrl, '_blank')}
+                          onClick={() =>
+                            window.open(message.imageUrl, "_blank")
+                          }
                         />
                       )}
                       {message.text && (
@@ -194,6 +287,43 @@ const ChatPagePatient = () => {
             <div ref={messagesEndRef} />
           </div>
         )}
+
+        {typingUser && (
+          <div className="flex px-4 mb-2">
+            <div className="flex items-center space-x-1 p-2 bg-white rounded-full shadow-sm w-fit">
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  delay: 0.2,
+                }}
+              />
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  delay: 0.4,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {showScrollButton && (
           <Button
             onClick={scrollToBottom}
@@ -225,7 +355,10 @@ const ChatPagePatient = () => {
             <div className="flex items-center gap-3">
               <Input
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  handleTyping();
+                }}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
                 className="flex-1 h-11"

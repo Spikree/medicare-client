@@ -27,6 +27,7 @@ export interface UserProfile {
 interface CommonStore {
   updateProfile: (bio: string, profilePicture: File) => Promise<void>;
   getMessages: (receiverId: string) => Promise<void>;
+  setMessage:(data:chatInterface) => Promise<void>;
   sendMessage: (
     receiverId: string,
     text: string,
@@ -85,6 +86,12 @@ export const CommonStore = create<CommonStore>((set) => ({
     } finally {
       set({ isFetchingMessages: false });
     }
+  },
+
+  setMessage: async (data: chatInterface) => {
+    set((state) => ({
+      messages: [...state.messages, data],
+    }))
   },
 
   sendMessage: async (receiverId: string, text: string, image?: File) => {
