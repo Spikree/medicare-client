@@ -197,7 +197,11 @@ const ChatPagePatient = () => {
     <Card className="flex flex-col gap-2 p-2 h-full">
       <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"Chat"} />
-        <p className="text-gray-600">{getUserByIdProfile?.name}</p>
+        <div>
+          <img className="h-10 w-10 rounded-full hidden sm:block" src={getUserByIdProfile?.profilePicture} alt="doctor profile picture" />
+          <p className="text-gray-600">{getUserByIdProfile?.name}</p>
+        </div>
+        
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
