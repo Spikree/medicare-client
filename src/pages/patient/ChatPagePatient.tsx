@@ -79,10 +79,10 @@ const ChatPagePatient = () => {
     //   }
     // });
 
-     socket.on("userTyping", (data) => {
+    socket.on("userTyping", (data) => {
       if (data.chatId === actualChatId && data.senderId !== userId) {
         setTypingUser(data.isTyping ? data.senderId : null);
-        setIsTyping(true)
+        setIsTyping(true);
       }
     });
 
@@ -195,13 +195,16 @@ const ChatPagePatient = () => {
 
   return (
     <Card className="flex flex-col gap-2 p-2 h-full">
-      <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
+      <Card className="flex-shrink-0 items-center flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"Chat"} />
-        <div>
-          <img className="h-10 w-10 rounded-full hidden sm:block" src={getUserByIdProfile?.profilePicture} alt="doctor profile picture" />
+        <div className="flex justify-center items-center gap-2">
+          <img
+            className="h-10 w-10 rounded-full hidden sm:block"
+            src={getUserByIdProfile?.profilePicture}
+            alt="doctor profile picture"
+          />
           <p className="text-gray-600">{getUserByIdProfile?.name}</p>
         </div>
-        
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">

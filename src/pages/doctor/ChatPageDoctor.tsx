@@ -79,14 +79,12 @@ const ChatPageDoctor = () => {
     //   }
     // });
 
-
-     socket.on("userTyping", (data) => {
+    socket.on("userTyping", (data) => {
       if (data.chatId === actualChatId && data.senderId !== userId) {
         setTypingUser(data.isTyping ? data.senderId : null);
-        setIsTyping(true)
+        setIsTyping(true);
       }
     });
-
 
     return () => {
       socket.off("newMessage");
@@ -200,13 +198,16 @@ const ChatPageDoctor = () => {
 
   return (
     <Card className="flex flex-col gap-2 p-2 h-full">
-      <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
+      <Card className="flex-shrink-0 flex justify-between items-center flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"Chat"} />
         <div className="flex justify-center items-center gap-2">
-          <img className="h-10 w-10 rounded-full hidden sm:block" src={getUserByIdProfile?.profilePicture} alt="patient profile picture" />
-          <p className="text-gray-600">{getUserByIdProfile?.name}</p>
+          <img
+            className="h-10 w-10 rounded-full hidden sm:block"
+            src={getUserByIdProfile?.profilePicture}
+            alt="patient profile picture"
+          />
+          <p className="text-gray-600 items-center">{getUserByIdProfile?.name}</p>
         </div>
-        
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden relative">
@@ -305,41 +306,41 @@ const ChatPageDoctor = () => {
         )}
 
         {/* Typing Indicator */}
-      {typingUser && (
-        <div className="flex px-4 mb-2">
-          <div className="flex items-center space-x-1 p-2 bg-white rounded-full shadow-sm w-fit">
-            <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ y: [0, -3, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 0.6,
-                ease: "easeInOut",
-              }}
-            />
-            <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ y: [0, -3, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 0.2,
-              }}
-            />
-            <motion.div
-              className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ y: [0, -3, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 0.4,
-              }}
-            />
+        {typingUser && (
+          <div className="flex px-4 mb-2">
+            <div className="flex items-center space-x-1 p-2 bg-white rounded-full shadow-sm w-fit">
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  delay: 0.2,
+                }}
+              />
+              <motion.div
+                className="w-2 h-2 bg-gray-400 rounded-full"
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.6,
+                  ease: "easeInOut",
+                  delay: 0.4,
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* Scroll to Bottom Button - centered */}
         {showScrollButton && (
