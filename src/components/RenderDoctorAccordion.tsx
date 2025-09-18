@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Mail, User, UserCheck } from "lucide-react";
+import { Loader, Mail, User, UserCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import type { DoctorInterface as Doctor } from "@/store/PatientStore";
@@ -14,9 +14,21 @@ import type { DoctorInterface as Doctor } from "@/store/PatientStore";
 interface Props {
   doctors: Doctor[];
   doctorStatus: "current" | "old";
+  isFetchingDoctorList: boolean;
 }
 
-const RenderDoctorAccordion = ({ doctors, doctorStatus }: Props) => {
+const RenderDoctorAccordion = ({
+  doctors,
+  doctorStatus,
+  isFetchingDoctorList,
+}: Props) => {
+  if (isFetchingDoctorList) {
+    return (
+      <div className="p-4 m-4 flex justify-center">
+        <Loader className="animate-spin h-8 w-8" />
+      </div>
+    );
+  }
   if (doctors.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">

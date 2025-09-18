@@ -27,6 +27,7 @@ const Home = () => {
     IncomingAddRequests,
     acceptAddRequest,
     isUploadingLabResults,
+    isFetchingDoctorList,
   } = PatientStore();
   
   const [isAddDoctorDialog, setIsAddDoctorDialog] = useState<boolean>(false);
@@ -236,6 +237,7 @@ const Home = () => {
             <Card className="mt-4 border-0 shadow-none">
               <TabsContent value="current">
                 <RenderDoctorAccordion
+                isFetchingDoctorList={isFetchingDoctorList}
                   doctors={filteredCurrentDoctorList}
                   doctorStatus={"current"}
                 />
@@ -243,6 +245,7 @@ const Home = () => {
 
               <TabsContent value="old">
                 <RenderDoctorAccordion
+                isFetchingDoctorList={isFetchingDoctorList}
                   doctors={filteredOldDoctorList}
                   doctorStatus={"old"}
                 />
