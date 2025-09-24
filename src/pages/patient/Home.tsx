@@ -43,19 +43,19 @@ const Home = () => {
     getAllAddRequests();
   }, [getDoctorList, getLabResults, getAllAddRequests]);
 
-  const currentDoctorList = doctorList.filter(
+  const currentDoctorList = doctorList?.filter(
     (doctor) => doctor.patientStatus === "current"
   );
 
-  const oldDoctorList = doctorList.filter(
+  const oldDoctorList = doctorList?.filter(
     (doctor) => doctor.patientStatus === "old"
   );
 
-  const filteredCurrentDoctorList = currentDoctorList.filter((doctor) =>
+  const filteredCurrentDoctorList = currentDoctorList?.filter((doctor) =>
     doctor.doctor.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredOldDoctorList = oldDoctorList.filter((doctor) =>
+  const filteredOldDoctorList = oldDoctorList?.filter((doctor) =>
     doctor.doctor.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

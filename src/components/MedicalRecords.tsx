@@ -63,7 +63,7 @@ const MedicalRecords = ({
 }: Props) => {
   const { authUser } = useAuthStore();
 
-  const patientDetailsByCurrentDoctor = patientDetailsList.filter(
+  const patientDetailsByCurrentDoctor = patientDetailsList?.filter(
     (medicalRecord) =>
       medicalRecord.doctor?.toString() === authUser?._id.toString()
   );

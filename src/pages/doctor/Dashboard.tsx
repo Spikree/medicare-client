@@ -18,18 +18,18 @@ const Dashboard = () => {
     getPatientList();
   }, [getPatientList]);
 
-  const currentPatients = patientList.filter(
+  const currentPatients = patientList?.filter(
     (patient) => patient.patientStatus === "current"
   );
-  const oldPatients = patientList.filter(
+  const oldPatients = patientList?.filter(
     (patient) => patient.patientStatus === "old"
   );
 
-  const filteredCurrentPatientList = currentPatients.filter((patient) =>
+  const filteredCurrentPatientList = currentPatients?.filter((patient) =>
     patient.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredOldPatientList = oldPatients.filter((patient) =>
+  const filteredOldPatientList = oldPatients?.filter((patient) =>
     patient.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

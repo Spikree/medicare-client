@@ -357,7 +357,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         `/patient/acceptAddRequest/${requestId}`
       );
       set((state) => ({
-        IncomingAddRequests: state.IncomingAddRequests.filter(
+        IncomingAddRequests: state.IncomingAddRequests?.filter(
           (request) => request._id !== requestId
         ),
       }));

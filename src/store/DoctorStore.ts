@@ -271,6 +271,8 @@ export const DoctorStore = create<DoctorStore>((set) => ({
     }
   },
 
+  //
+
   addPatientDetails: async (
     patientId: string,
     Disease: string,
@@ -290,6 +292,9 @@ export const DoctorStore = create<DoctorStore>((set) => ({
         payload
       );
       toast.success(response.data.message);
+      set((state) => ({
+        patientDetailsList: [...state.patientDetailsList, response.data.patientDetail]
+      }));
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
