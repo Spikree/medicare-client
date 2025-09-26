@@ -17,6 +17,7 @@ import PatientAiSummary from "./pages/doctor/PatientAiSummary";
 import { Loader } from "lucide-react";
 import ChatPageDoctor from "./pages/doctor/ChatPageDoctor";
 import ChatPagePatient from "./pages/patient/ChatPagePatient";
+import AddPatientHealthInfo from "./components/AddPatientHealthInfo";
 
 const App = () => {
   const { checkAuth, isCheckingAuth } = useAuthStore();
@@ -73,6 +74,8 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
+
+      <AddPatientHealthInfo/>
     </>
   );
 };

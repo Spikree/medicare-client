@@ -7,14 +7,16 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Menu, User, LogIn, UserPlus, X, LogOut } from "lucide-react";
+import { Menu, User, LogIn, UserPlus, X, LogOut, Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { defaultProfileImage } from "@/assets/assets";
+import { useUiStore } from "@/store/UiStore";
 
 export default function Header() {
   const { authUser, logout } = useAuthStore();
+  const { toggleAddHealthInfoModal } = useUiStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -74,7 +76,6 @@ export default function Header() {
                 className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
                 sideOffset={8}
               >
-
                 <div className="py-1">
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
@@ -82,10 +83,7 @@ export default function Header() {
                   >
                     <Card className="h-10 w-10 rounded-full">
                       <img
-                        src={
-                          authUser?.profilePicture ||
-                          defaultProfileImage
-                        }
+                        src={authUser?.profilePicture || defaultProfileImage}
                         alt=""
                         className="h-10 w-10 rounded-full"
                       />
@@ -94,6 +92,13 @@ export default function Header() {
                       <p>{authUser.name}</p>
                       <p className="text-xs">{authUser.email}</p>
                     </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={toggleAddHealthInfoModal}
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                  >
+                    <Plus className="h-4 w-4 mr-3 text-gray-400" />
+                    Add health info
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
@@ -146,72 +151,74 @@ export default function Header() {
             </nav>
           )}
 
-          {authUser ? null :<div className="md:hidden">
-            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
-                  aria-label="Open navigation menu"
-                >
-                  {isOpen ? (
-                    <X className="h-5 w-5" />
-                  ) : (
-                    <Menu className="h-5 w-5" />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
+          {authUser ? null : (
+            <div className="md:hidden">
+              <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
+                    aria-label="Open navigation menu"
+                  >
+                    {isOpen ? (
+                      <X className="h-5 w-5" />
+                    ) : (
+                      <Menu className="h-5 w-5" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
 
-              {authUser ? (
-                ""
-              ) : (
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                  sideOffset={8}
-                >
-                  <div className="py-1">
-                    <DropdownMenuItem
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleLinkClick("#features")}
-                    >
-                      <User className="h-4 w-4 mr-3 text-gray-400" />
-                      Features
-                    </DropdownMenuItem>
+                {authUser ? (
+                  ""
+                ) : (
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                    sideOffset={8}
+                  >
+                    <div className="py-1">
+                      <DropdownMenuItem
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleLinkClick("#features")}
+                      >
+                        <User className="h-4 w-4 mr-3 text-gray-400" />
+                        Features
+                      </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleLinkClick("#testimonials")}
-                    >
-                      <User className="h-4 w-4 mr-3 text-gray-400" />
-                      Testimonials
-                    </DropdownMenuItem>
-                  </div>
+                      <DropdownMenuItem
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleLinkClick("#testimonials")}
+                      >
+                        <User className="h-4 w-4 mr-3 text-gray-400" />
+                        Testimonials
+                      </DropdownMenuItem>
+                    </div>
 
-                  <DropdownMenuSeparator className="h-px bg-gray-200" />
+                    <DropdownMenuSeparator className="h-px bg-gray-200" />
 
-                  <div className="py-1">
-                    <DropdownMenuItem
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleLinkClick("/auth")}
-                    >
-                      <LogIn className="h-4 w-4 mr-3 text-gray-400" />
-                      Sign In
-                    </DropdownMenuItem>
+                    <div className="py-1">
+                      <DropdownMenuItem
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleLinkClick("/auth")}
+                      >
+                        <LogIn className="h-4 w-4 mr-3 text-gray-400" />
+                        Sign In
+                      </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                      className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleLinkClick("/auth")}
-                    >
-                      <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
-                      Get Started
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
-              )}
-            </DropdownMenu>
-          </div>}
+                      <DropdownMenuItem
+                        className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleLinkClick("/auth")}
+                      >
+                        <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
+                        Get Started
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                )}
+              </DropdownMenu>
+            </div>
+          )}
         </div>
       </div>
     </header>
