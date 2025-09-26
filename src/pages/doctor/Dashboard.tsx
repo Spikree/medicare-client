@@ -1,4 +1,4 @@
-import AddNewPatientDialog from "@/components/addNewPatientDialog";
+import AddNewPatientDialog from "@/components/AddNewPatientDialog";
 import PatientAccordion from "@/components/PatientAccordian";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
