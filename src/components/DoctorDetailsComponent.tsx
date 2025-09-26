@@ -12,7 +12,7 @@ interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
   handleViewMore: (record: DoctorDetailsInterface) => void;
   doctorStatus: string;
-  isFetchingDoctorDetails: boolean
+  isFetchingDoctorDetails: boolean;
 }
 
 const DoctorDetailsComponent = ({
@@ -30,46 +30,61 @@ const DoctorDetailsComponent = ({
   const handleRemoveDoctor = () => {
     if (doctorId) {
       removeDoctor(doctorId).then(() => {
-        navigate("/home")
-      })
+        navigate("/home");
+      });
     }
   };
 
   const handleReassignDoctor = () => {
-    if(doctorId) {
+    if (doctorId) {
       reassignDoctor(doctorId).then(() => {
-        navigate("/home")
-      })
+        navigate("/home");
+      });
     }
-  }
+  };
 
   return (
     <Dialog>
-      <div className="flex justify-between items-start mb-6">
-        <div className="sm:flex w-full   justify-between items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+        <div className="flex flex-col items-start gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">{doctorName}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              {doctorName}
+            </h1>
             <p className="text-muted-foreground">
               Medical Records ({doctorDetailsList.length} entries)
             </p>
             <hr className="mt-2" />
             <div className="flex items-center text-muted-foreground mt-2"></div>
           </div>
+        </div>
 
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
           {doctorStatus === "current" ? (
-            <Button onClick={handleRemoveDoctor} variant={"green"}>
-              Remove Doctor
+            <Button 
+              onClick={handleRemoveDoctor} 
+              variant={"green"}
+              className="w-full sm:w-auto"
+            >
+              <span className="hidden sm:inline">Remove Doctor</span>
+              <span className="sm:hidden">Remove</span>
             </Button>
           ) : (
-            <Button onClick={handleReassignDoctor} variant={"green"}>Reassign Doctor</Button>
+            <Button 
+              onClick={handleReassignDoctor} 
+              variant={"green"}
+              className="w-full sm:w-auto"
+            >
+              <span className="hidden sm:inline">Reassign Doctor</span>
+              <span className="sm:hidden">Reassign</span>
+            </Button>
           )}
         </div>
       </div>
 
-    {isFetchingDoctorDetails ? (
-        <div className="flex flex-col items-center justify-center min-h-[300px]">
-          <Loader className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="mt-4 text-muted-foreground">Fetching doctor details...</p>
+      {isFetchingDoctorDetails ? (
+        <div className="flex justify-center p-8 m-8">
+          <Loader className="animate-spin" />
         </div>
       ) : doctorDetailsList?.length > 0 ? (
         <div className="space-y-4">
@@ -78,14 +93,14 @@ const DoctorDetailsComponent = ({
               key={record._id}
               className="hover:shadow-md transition-shadow"
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 grid md:grid-cols-3 gap-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Disease
                       </label>
-                      <p className="text-sm text-foreground">
+                      <p className="text-sm text-foreground break-words">
                         {record.Disease}
                       </p>
                     </div>
@@ -93,16 +108,16 @@ const DoctorDetailsComponent = ({
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Symptoms
                       </label>
-                      <p className="text-sm text-foreground">
+                      <p className="text-sm text-foreground break-words">
                         {record.symptom}
                       </p>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 sm:col-span-2 lg:col-span-1">
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Date
                       </label>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
                         {new Date(record.createdOn).toLocaleDateString()}
                       </div>
                     </div>
@@ -111,7 +126,7 @@ const DoctorDetailsComponent = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handleViewMore(record)}
-                    className="flex items-center gap-2 ml-4"
+                    className="flex items-center gap-2 w-full sm:w-auto lg:ml-4"
                   >
                     <Eye className="h-4 w-4" />
                     View More

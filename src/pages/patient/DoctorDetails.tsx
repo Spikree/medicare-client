@@ -21,6 +21,7 @@ const DoctorDetails = () => {
     addPatientReview,
     patientReview,
     getLabResultsByDoctor,
+    isFetchingLabResultsByDoctor,
     LabResultsByDoctorList,
     isFetchingPatientReviews, 
     isFetchingDoctorDetails,
@@ -108,6 +109,7 @@ const DoctorDetails = () => {
                   doctorId={doctorId}
                   getLabResultsByDoctor={getLabResultsByDoctor}
                   LabResultsByDoctorList={LabResultsByDoctorList}
+                  isFetchingLabResultsByDoctor={isFetchingLabResultsByDoctor}
                 />
               )}
             </TabsContent>

@@ -271,8 +271,6 @@ export const DoctorStore = create<DoctorStore>((set) => ({
     }
   },
 
-  //
-
   addPatientDetails: async (
     patientId: string,
     Disease: string,
