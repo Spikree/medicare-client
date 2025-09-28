@@ -83,6 +83,14 @@ export interface PatientReview {
   __v: number;
 }
 
+interface allergiesAndHealthInfo {
+  _id: string;
+  patient: string;
+  allergies: string;
+  generalHealthInfo: string;
+  createdOn: Date;
+}
+
 export interface PatientAllData {
   userInfo: {
     _id: string;
@@ -174,6 +182,7 @@ interface PatientStore {
     allergies: string,
     generalHealthInfo: string
   ) => Promise<void>;
+  getAllergiesAndHealthinfo: (patientId: string) => Promise<void>;
   reviewOnMedication: (
     patientDetailId: string,
     patientReview: string,
@@ -203,7 +212,7 @@ interface PatientStore {
   isFetchingLabResultsByDoctor: boolean;
 
   doctorList: DoctorInterface[];
-
+  allergiesAndHealthInfo: allergiesAndHealthInfo | null;
   patientLabResultList: PatientLabResults[];
   LabResultsByDoctorList: PatientLabResults[];
   IncomingAddRequests: RequestInterface[];
@@ -222,6 +231,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   patientReview: [],
   LabResultsByDoctorList: [],
   allPatientData: [],
+  allergiesAndHealthInfo: null,
 
   isFetchingPatientReviews: false,
   isFetchingDoctorDetails: false,
@@ -230,7 +240,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
 
   isUploadingLabResults: false,
   getDoctorList: async () => {
-    set({isFetchingDoctorList: true});
+    set({ isFetchingDoctorList: true });
     try {
       const response = await axiosInstance.get("/patient/getDoctorList");
       set({ doctorList: response.data.doctors });
@@ -240,7 +250,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         axiosError.response?.data?.message || "Error fecthing doctor list";
       toast.error(errorMessage);
     } finally {
-      set({isFetchingDoctorList: false});
+      set({ isFetchingDoctorList: false });
     }
   },
 
@@ -313,6 +323,21 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       const errorMessage =
         axiosError.response?.data?.message ||
         "Error uploading allergies and general health info";
+      toast.error(errorMessage);
+    }
+  },
+
+  getAllergiesAndHealthinfo: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/common/getAllergiesAndHealthInfo/${patientId}`
+      );
+      set({allergiesAndHealthInfo: response.data.allergiesAndHealthInfo});
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error getting allergies and healthinfo";
       toast.error(errorMessage);
     }
   },
@@ -403,7 +428,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   },
 
   getDoctorDetails: async (doctorId: string) => {
-    set({isFetchingDoctorDetails: true});
+    set({ isFetchingDoctorDetails: true });
     try {
       const response = await axiosInstance.get(
         `/patient/getDoctorDetails/${doctorId}`
@@ -415,7 +440,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         axiosError.response?.data?.message || "Error getting patient info";
       toast.error(errorMessage);
     } finally {
-      set({isFetchingDoctorDetails: false});
+      set({ isFetchingDoctorDetails: false });
     }
   },
 
@@ -445,7 +470,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   },
 
   getPatientReviews: async (patientDetailId: string) => {
-    set({isFetchingPatientReviews: true});
+    set({ isFetchingPatientReviews: true });
     try {
       const response = await axiosInstance.get(
         `/patient/getPatientReviews/${patientDetailId}`
@@ -457,12 +482,12 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         axiosError.response?.data?.message || "Error adding patient review";
       toast.error(errorMessage);
     } finally {
-      set({isFetchingPatientReviews: false});
+      set({ isFetchingPatientReviews: false });
     }
   },
 
   getLabResultsByDoctor: async (doctorId: string) => {
-    set({isFetchingLabResultsByDoctor: true})
+    set({ isFetchingLabResultsByDoctor: true });
     try {
       const response = await axiosInstance.get(
         `/patient/getLabResultsByDoctor/${doctorId}`
@@ -475,7 +500,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
         "Error getting lab results by doctor";
       toast.error(errorMessage);
     } finally {
-      set({isFetchingLabResultsByDoctor: false});
+      set({ isFetchingLabResultsByDoctor: false });
     }
   },
 

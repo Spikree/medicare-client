@@ -93,13 +93,13 @@ export default function Header() {
                       <p className="text-xs">{authUser.email}</p>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
+                  {authUser?.role === "patient" && <DropdownMenuItem
                     onClick={toggleAddHealthInfoModal}
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
                   >
                     <Plus className="h-4 w-4 mr-3 text-gray-400" />
                     Add health info
-                  </DropdownMenuItem>
+                  </DropdownMenuItem>}
                   <DropdownMenuItem
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
                     onClick={() => logoutUser()}

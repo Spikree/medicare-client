@@ -20,7 +20,7 @@ import ChatPagePatient from "./pages/patient/ChatPagePatient";
 import AddPatientHealthInfo from "./components/AddPatientHealthInfo";
 
 const App = () => {
-  const { checkAuth, isCheckingAuth } = useAuthStore();
+  const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -75,7 +75,7 @@ const App = () => {
         </Route>
       </Routes>
 
-      <AddPatientHealthInfo/>
+      {authUser?.role === "patient" && <AddPatientHealthInfo/>}
     </>
   );
 };
