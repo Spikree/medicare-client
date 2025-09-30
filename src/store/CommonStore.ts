@@ -24,6 +24,14 @@ export interface UserProfile {
   profilePicture: string;
 }
 
+interface allergiesAndHealthInfo {
+  _id: string;
+  patient: string;
+  allergies: string;
+  generalHealthInfo: string;
+  createdOn: string;
+}
+
 interface CommonStore {
   updateProfile: (bio: string, profilePicture: File) => Promise<void>;
   getMessages: (receiverId: string) => Promise<void>;
@@ -34,8 +42,10 @@ interface CommonStore {
     image?: File
   ) => Promise<void>;
   getUserById: (userId: string) => Promise<void>;
+  getAllergiesAndHealthinfo: (patientId: string) => Promise<void>;
 
   messages: chatInterface[];
+  allergiesAndHealthInfo: allergiesAndHealthInfo | null;
   getUserByIdProfile: UserProfile | null;
 
   isFetchingMessages: boolean;
@@ -44,6 +54,7 @@ interface CommonStore {
 export const CommonStore = create<CommonStore>((set) => ({
   messages: [],
   getUserByIdProfile: null,
+  allergiesAndHealthInfo: null,
   isFetchingMessages: false,
 
   updateProfile: async (bio: string, profilePicture: File) => {
@@ -130,6 +141,22 @@ export const CommonStore = create<CommonStore>((set) => ({
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
         axiosError.response?.data?.message || "Error fetching user";
+      toast.error(errorMessage);
+    }
+  },
+
+
+    getAllergiesAndHealthinfo: async (patientId: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/common/getAllergiesAndHealthInfo/${patientId}`
+      );
+      set({allergiesAndHealthInfo: response.data.allergiesAndHealthInfo});
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message ||
+        "Error getting allergies and healthinfo";
       toast.error(errorMessage);
     }
   },

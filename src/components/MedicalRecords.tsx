@@ -5,6 +5,7 @@ import {
   Eye,
   FileText,
   Loader,
+  PersonStanding,
   Plus,
   Upload,
 } from "lucide-react";
@@ -16,11 +17,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialog,
+} from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import type { PatientDetails } from "@/store/DoctorStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useParams } from "react-router-dom";
+import { CommonStore } from "@/store/CommonStore";
+import { useEffect, useState } from "react";
 
 interface Props {
   patientDetailsList: PatientDetails[];
@@ -61,14 +74,23 @@ const MedicalRecords = ({
   getAllPatientData,
   fetchingPatientDetails,
 }: Props) => {
+  const { patientId , patientName} = useParams();
   const { authUser } = useAuthStore();
+  const { allergiesAndHealthInfo, getAllergiesAndHealthinfo } = CommonStore();
+
+  const [isAllergiesAndHealthInfoOpen, setIsAllergiesAndHealthInfoOpen] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    if (patientId) {
+      getAllergiesAndHealthinfo(patientId);
+    }
+  }, [getAllergiesAndHealthinfo, patientId]);
 
   const patientDetailsByCurrentDoctor = patientDetailsList?.filter(
     (medicalRecord) =>
       medicalRecord.doctor?.toString() === authUser?._id.toString()
   );
-
-  const { patientName } = useParams();
 
   return (
     <Dialog
@@ -99,16 +121,33 @@ const MedicalRecords = ({
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2 w-full sm:w-auto" variant="green">
+            <Button
+              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="green"
+            >
               <Plus className="h-4 w-4" />
               <span className="hidden sm:inline">Upload patient records</span>
               <span className="sm:hidden">Upload Records</span>
             </Button>
           </DialogTrigger>
-          <Button onClick={getAllPatientData} variant={"green"} className="w-full sm:w-auto">
+          <Button
+            onClick={getAllPatientData}
+            variant={"green"}
+            className="w-full sm:w-auto"
+          >
             <Download />
             <span className="hidden sm:inline">Download all patient data</span>
             <span className="sm:hidden">Download Data</span>
+          </Button>
+
+          <Button
+            onClick={() =>
+              setIsAllergiesAndHealthInfoOpen(!isAllergiesAndHealthInfoOpen)
+            }
+            variant={"green"}
+          >
+            <PersonStanding className="h-4 w-4" />
+            Patient info
           </Button>
         </div>
       </div>
@@ -244,6 +283,35 @@ const MedicalRecords = ({
           Submit
         </Button>
       </DialogContent>
+
+      <AlertDialog
+        open={isAllergiesAndHealthInfoOpen}
+        onOpenChange={setIsAllergiesAndHealthInfoOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogTitle>{patientName} Health info</AlertDialogTitle>
+          <AlertDialogDescription>
+            {allergiesAndHealthInfo?.createdOn}
+          </AlertDialogDescription>
+
+          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            Known Allergies
+          </Label>
+
+          <Input readOnly value={allergiesAndHealthInfo?.allergies} />
+          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            General healthInfo
+          </Label>
+          <Textarea
+            readOnly
+            value={allergiesAndHealthInfo?.generalHealthInfo}
+          />
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

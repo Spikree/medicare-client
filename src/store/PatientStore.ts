@@ -119,7 +119,13 @@ export interface PatientAllData {
     createdOn: string;
     __v: number;
   }[];
-  allergiesAndHealthInfo: [];
+  allergiesAndHealthInfo: {
+    _id: string;
+    patient: string;
+    allergies: string;
+    generalHealthInfo: string;
+    createdOn: Date;
+  };
   labResults: {
     _id: string;
     title: string;
@@ -327,12 +333,13 @@ export const PatientStore = create<PatientStore>((set, get) => ({
     }
   },
 
+  // TODO : transfer it to common store
   getAllergiesAndHealthinfo: async (patientId: string) => {
     try {
       const response = await axiosInstance.get(
         `/common/getAllergiesAndHealthInfo/${patientId}`
       );
-      set({allergiesAndHealthInfo: response.data.allergiesAndHealthInfo});
+      set({ allergiesAndHealthInfo: response.data.allergiesAndHealthInfo });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =

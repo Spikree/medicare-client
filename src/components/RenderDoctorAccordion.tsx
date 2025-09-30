@@ -92,13 +92,13 @@ const RenderDoctorAccordion = ({
                 </div>
 
                 <div className="pt-3 border-t flex flex-col sm:flex-row gap-2">
-                  <Button
+                  {/* <Button
                     size="sm"
                     variant="outline"
                     className="w-full sm:w-auto"
                   >
                     Edit Doctor
-                  </Button>
+                  </Button> */}
 
                   <Link
                     to={`/doctorDetails/${doctor.doctor._id}/${doctor?.doctor?.name}/${doctorStatus}`}
