@@ -54,13 +54,11 @@ const ChatPageDoctor = () => {
 
       if (actualChatId) {
         socket.emit("joinChat", actualChatId);
+        socket.emit("setActiveStatus", { userId });
       }
-
-      socket.emit("setActiveStatus", { userId });
     }
 
     socket.off("newMessage");
-    socket.off("userActiveStatus");
     socket.off("userTyping");
 
     socket.on("newMessage", (newMessage) => {
@@ -73,28 +71,21 @@ const ChatPageDoctor = () => {
       }
     });
 
-    // socket.on("userActiveStatus", (data) => {
-    //   if (data.chatId === actualChatId && data.senderId === patientId) {
-    //     setTypingUser(data.isTyping ? data.senderId : null);
-    //   }
-    // });
-
     socket.on("userTyping", (data) => {
       if (data.chatId === actualChatId && data.senderId !== userId) {
         setTypingUser(data.isTyping ? data.senderId : null);
-        setIsTyping(true);
       }
     });
 
     return () => {
       socket.off("newMessage");
-      socket.off("userActiveStatus");
       socket.off("userTyping");
     };
   }, [userId, patientId, actualChatId, setMessage]);
 
-  const handelTyping = () => {
-    if (isTyping && actualChatId) {
+  const handleTyping = () => {
+    // Only emit typing event if not already typing
+    if (!isTyping && actualChatId) {
       socket.emit("typing", {
         senderId: userId,
         receiverId: patientId,
@@ -103,10 +94,12 @@ const ChatPageDoctor = () => {
       setIsTyping(true);
     }
 
+    // Clear existing timeout
     if (typingTimeRef.current) {
       clearTimeout(typingTimeRef.current);
     }
 
+    // Set new timeout to stop typing
     typingTimeRef.current = setTimeout(() => {
       if (actualChatId) {
         socket.emit("stopTyping", {
@@ -116,7 +109,7 @@ const ChatPageDoctor = () => {
         });
         setIsTyping(false);
       }
-    }, 200);
+    }, 1500); // Increased from 200ms to 1500ms
   };
 
   // Clean up useEffects - only one for auto-scroll
@@ -186,6 +179,19 @@ const ChatPageDoctor = () => {
       sendMessage(patientId, text, selectedImage || undefined);
       setText("");
       removeSelectedImage();
+      
+      // Stop typing when message is sent
+      if (typingTimeRef.current) {
+        clearTimeout(typingTimeRef.current);
+      }
+      if (isTyping && actualChatId) {
+        socket.emit("stopTyping", {
+          senderId: userId,
+          receiverId: patientId,
+          chatId: actualChatId,
+        });
+        setIsTyping(false);
+      }
     }
   };
 
@@ -376,7 +382,7 @@ const ChatPageDoctor = () => {
                 value={text}
                 onChange={(e) => {
                   setText(e.target.value);
-                  handelTyping();
+                  handleTyping();
                 }}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
@@ -399,7 +405,7 @@ const ChatPageDoctor = () => {
               </Button>
               <Button
                 onClick={sendMessages}
-                disabled={!text.trim()}
+                disabled={!text.trim() && !selectedImage}
                 size="icon"
                 className="h-11 w-11 bg-green-600 hover:bg-green-700"
               >

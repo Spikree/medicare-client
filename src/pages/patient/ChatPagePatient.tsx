@@ -54,13 +54,11 @@ const ChatPagePatient = () => {
 
       if (actualChatId) {
         socket.emit("joinChat", actualChatId);
-
         socket.emit("setActiveStatus", { userId });
       }
     }
 
     socket.off("newMessage");
-    socket.off("userActiveStatus");
     socket.off("userTyping");
 
     socket.on("newMessage", (newMessage) => {
@@ -73,28 +71,21 @@ const ChatPagePatient = () => {
       }
     });
 
-    // socket.on("userActiveStatus", (data) => {
-    //   if (data.chatId === actualChatId && data.senderId === doctorId) {
-    //     setTypingUser(data.isTyping ? data.senderId : null);
-    //   }
-    // });
-
     socket.on("userTyping", (data) => {
       if (data.chatId === actualChatId && data.senderId !== userId) {
         setTypingUser(data.isTyping ? data.senderId : null);
-        setIsTyping(true);
       }
     });
 
     return () => {
       socket.off("newMessage");
-      socket.off("userActiveStatus");
       socket.off("userTyping");
     };
   }, [userId, doctorId, actualChatId, setMessage]);
 
   const handleTyping = () => {
-    if (isTyping && actualChatId) {
+    // Only emit typing event if not already typing
+    if (!isTyping && actualChatId) {
       socket.emit("typing", {
         senderId: userId,
         receiverId: doctorId,
@@ -103,10 +94,12 @@ const ChatPagePatient = () => {
       setIsTyping(true);
     }
 
+    // Clear existing timeout
     if (typingTimeRef.current) {
       clearTimeout(typingTimeRef.current);
     }
 
+    // Set new timeout to stop typing
     typingTimeRef.current = setTimeout(() => {
       if (actualChatId) {
         socket.emit("stopTyping", {
@@ -116,7 +109,7 @@ const ChatPagePatient = () => {
         });
         setIsTyping(false);
       }
-    }, 200);
+    }, 1500); // Increased from 200ms to 1500ms
   };
 
   useEffect(() => {
@@ -183,6 +176,19 @@ const ChatPagePatient = () => {
       sendMessage(doctorId, text, selectedImage || undefined);
       setText("");
       removeSelectedImage();
+      
+      // Stop typing when message is sent
+      if (typingTimeRef.current) {
+        clearTimeout(typingTimeRef.current);
+      }
+      if (isTyping && actualChatId) {
+        socket.emit("stopTyping", {
+          senderId: userId,
+          receiverId: doctorId,
+          chatId: actualChatId,
+        });
+        setIsTyping(false);
+      }
     }
   };
 
