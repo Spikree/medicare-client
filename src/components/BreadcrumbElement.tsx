@@ -18,21 +18,28 @@ type Props = {
   currentPage: string;
 };
 
-const BreadcrumbElement = ({ items, currentPage }: Props) => {
+const BreadcrumbElement = ({ currentPage }: Props) => {
+  const user_role = localStorage.getItem("user_role");
+
+  const handleBackClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.history.back();
+  };
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          {user_role === "doctor" ? (
+            <BreadcrumbLink href="#" onClick={handleBackClick}>
+              Dashboard
+            </BreadcrumbLink>
+          ) : (
+            <BreadcrumbLink href="#" onClick={handleBackClick}>
+              Home
+            </BreadcrumbLink>
+          )}
         </BreadcrumbItem>
-        {items?.map((item, index) => (
-          <React.Fragment key={index}>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={item.link}>{item.name}</BreadcrumbLink>
-            </BreadcrumbItem>
-          </React.Fragment>
-        ))}
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbPage>{currentPage}</BreadcrumbPage>
