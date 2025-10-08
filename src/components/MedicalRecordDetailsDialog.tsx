@@ -137,7 +137,6 @@ const MedicalRecordDetailsDialog = ({
             </div>
             <div className="space-y-1 text-sm text-muted-foreground">
               <p>Created: {formatDate(selectedRecord.createdOn)}</p>
-              <p>Record ID: {selectedRecord._id}</p>
             </div>
           </div>
         </div>

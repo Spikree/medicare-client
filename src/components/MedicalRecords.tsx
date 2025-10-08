@@ -242,35 +242,35 @@ const MedicalRecords = ({
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-700">Symptoms</label>
-          <Input
+          <Textarea
             required
             value={symptom}
             onChange={(e) => setSymptom(e.target.value)}
             placeholder="Enter symptoms"
-            className="focus:ring-2 focus:ring-green-500"
+            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
           />
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-700">
             Patient Experience
           </label>
-          <Input
+          <Textarea
             value={patientExperience}
             onChange={(e) => setPatientExperience(e.target.value)}
             placeholder="Enter patient experience"
-            className="focus:ring-2 focus:ring-green-500"
+            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
           />
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-gray-700">
             Medication Prescribed
           </label>
-          <Input
+          <Textarea
             required
             value={medicationPrescribed}
             onChange={(e) => setMedicationPrescribed(e.target.value)}
             placeholder="Enter medication prescribed"
-            className="focus:ring-2 focus:ring-green-500"
+            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
           />
         </div>
         <Button
