@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthStore } from "@/store/useAuthStore";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const PatientAiSummary = () => {
   const { patientId, patientName } = useParams();
@@ -48,7 +50,6 @@ const PatientAiSummary = () => {
     return () => scrollableElement.removeEventListener("scroll", handleScroll);
   });
 
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     setShowScrollButton(false);
@@ -86,14 +87,16 @@ const PatientAiSummary = () => {
 
   return (
     <Card className="flex flex-col gap-2 p-2 h-full">
-
       <Card className="flex-shrink-0 flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"AI Summary"} />
         <p className="text-gray-600">{patientName}</p>
       </Card>
 
       <Card className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6 space-y-6" ref={messagesContainerRef}>
+        <div
+          className="flex-1 overflow-y-auto p-6 space-y-6"
+          ref={messagesContainerRef}
+        >
           {aiChatHistoryList?.history?.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Avatar className="w-12 h-12 mb-4 bg-blue-100">
@@ -105,7 +108,8 @@ const PatientAiSummary = () => {
                 AI Assistant Ready
               </h3>
               <p className="text-sm text-gray-500 max-w-md">
-                Ask me anything about this patient's medical history, symptoms, or treatment plans.
+                Ask me anything about this patient's medical history, symptoms,
+                or treatment plans.
               </p>
             </div>
           ) : (
@@ -114,7 +118,9 @@ const PatientAiSummary = () => {
               return (
                 <div
                   key={index}
-                  className={`flex items-start gap-4 ${!isModel && "flex-row-reverse"}`}
+                  className={`flex items-start gap-4 ${
+                    !isModel && "flex-row-reverse"
+                  }`}
                 >
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     {isModel ? (
@@ -123,18 +129,24 @@ const PatientAiSummary = () => {
                       </AvatarFallback>
                     ) : (
                       <>
-                        <AvatarImage src={authUser?.profilePicture} alt="User" />
+                        <AvatarImage
+                          src={authUser?.profilePicture}
+                          alt="User"
+                        />
                         <AvatarFallback className="bg-gray-200">
                           <User className="w-4 h-4 text-gray-700" />
                         </AvatarFallback>
                       </>
                     )}
                   </Avatar>
-                  <div className={`max-w-[80%] rounded-lg px-4 py-3 ${isModel ? 'bg-white border' : 'bg-green-600 text-white'
-                    }`}>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                  <div
+                    className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                      isModel ? "bg-white border" : "bg-green-600 text-white"
+                    }`}
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {msg.parts[0].text}
-                    </p>
+                    </ReactMarkdown>
                   </div>
                 </div>
               );
