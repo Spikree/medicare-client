@@ -63,12 +63,17 @@ const PatientAccordion = ({
         >
           {patients.map((patient) => (
             <Card key={patient._id}>
-              <AccordionItem value={patient._id} className="px-4 sm:px-10 border-b-0">
+              <AccordionItem
+                value={patient._id}
+                className="px-4 sm:px-10 border-b-0"
+              >
                 <AccordionTrigger>
                   <div className="flex items-center justify-between w-full mr-2 sm:mr-4">
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                       <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                      <span className="font-medium truncate text-sm sm:text-base">{patient.name}</span>
+                      <span className="font-medium truncate text-sm sm:text-base">
+                        {patient.name}
+                      </span>
                     </div>
                     <Badge
                       variant={
@@ -90,7 +95,9 @@ const PatientAccordion = ({
                           <Mail className="h-4 w-4 text-gray-500 flex-shrink-0" />
                           <span className="text-sm text-gray-600">Email:</span>
                         </div>
-                        <span className="text-sm break-all sm:break-normal">{patient.email}</span>
+                        <span className="text-sm break-all sm:break-normal">
+                          {patient.email}
+                        </span>
                       </div>
                       <div className="flex items-start sm:items-center gap-2 flex-col sm:flex-row">
                         <div className="flex items-center gap-2">
@@ -110,22 +117,34 @@ const PatientAccordion = ({
                         to={`/patientAiSummary/${patient?.patient}/${patient.name}`}
                       >
                         {patientStatus === "current" && (
-                          <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                          >
                             AI Summary
                           </Button>
                         )}
                       </Link>
 
                       <Link
-                        to={`/patientDetails/${patient?.patient}/${patient?.name}`}
+                        to={`/patientDetails/${patient?.patient}/${patient?.name}/${patientStatus}`}
                       >
-                        <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full sm:w-auto"
+                        >
                           View Details
                         </Button>
                       </Link>
 
                       <Link to={`/chatPage/${patient.patient}`}>
-                      <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full sm:w-auto"
+                        >
                           Chat
                         </Button>
                       </Link>

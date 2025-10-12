@@ -53,6 +53,7 @@ interface Props {
   setIsUploadPatientsDialogOpen: (value: boolean) => void;
   getAllPatientData: () => void;
   fetchingPatientDetails: boolean;
+  patientStatus: string | undefined;
 }
 
 const MedicalRecords = ({
@@ -73,8 +74,9 @@ const MedicalRecords = ({
   setIsUploadPatientsDialogOpen,
   getAllPatientData,
   fetchingPatientDetails,
+  patientStatus,
 }: Props) => {
-  const { patientId , patientName} = useParams();
+  const { patientId, patientName } = useParams();
   const { authUser } = useAuthStore();
   const { allergiesAndHealthInfo, getAllergiesAndHealthinfo } = CommonStore();
 
@@ -120,25 +122,31 @@ const MedicalRecords = ({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
-          <DialogTrigger asChild>
+          {patientStatus === "current" && (
+            <DialogTrigger asChild>
+              <Button
+                className="flex items-center gap-2 w-full sm:w-auto"
+                variant="green"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Upload patient records</span>
+                <span className="sm:hidden">Upload Records</span>
+              </Button>
+            </DialogTrigger>
+          )}
+          {patientStatus === "current" && (
             <Button
-              className="flex items-center gap-2 w-full sm:w-auto"
-              variant="green"
+              onClick={getAllPatientData}
+              variant={"green"}
+              className="w-full sm:w-auto"
             >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Upload patient records</span>
-              <span className="sm:hidden">Upload Records</span>
+              <Download />
+              <span className="hidden sm:inline">
+                Download all patient data
+              </span>
+              <span className="sm:hidden">Download Data</span>
             </Button>
-          </DialogTrigger>
-          <Button
-            onClick={getAllPatientData}
-            variant={"green"}
-            className="w-full sm:w-auto"
-          >
-            <Download />
-            <span className="hidden sm:inline">Download all patient data</span>
-            <span className="sm:hidden">Download Data</span>
-          </Button>
+          )}
 
           <Button
             onClick={() =>
