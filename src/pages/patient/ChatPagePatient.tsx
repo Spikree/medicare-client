@@ -176,7 +176,7 @@ const ChatPagePatient = () => {
       sendMessage(doctorId, text, selectedImage || undefined);
       setText("");
       removeSelectedImage();
-      
+
       // Stop typing when message is sent
       if (typingTimeRef.current) {
         clearTimeout(typingTimeRef.current);
@@ -204,11 +204,19 @@ const ChatPagePatient = () => {
       <Card className="flex-shrink-0 items-center flex justify-between flex-wrap text-center bg-white border-b border-gray px-6 py-3">
         <BreadcrumbElement currentPage={"Chat"} />
         <div className="flex justify-center items-center gap-2">
-          <img
-            className="h-10 w-10 rounded-full hidden sm:block"
-            src={getUserByIdProfile?.profilePicture}
-            alt="doctor profile picture"
-          />
+          {getUserByIdProfile?.profilePicture ? (
+            <img
+              className="h-10 w-10 rounded-full hidden sm:block"
+              src={getUserByIdProfile?.profilePicture}
+              alt="patient profile picture"
+            />
+          ) : (
+            <Avatar>
+              <AvatarFallback>
+                <User className="w-4 h-4 text-gray-700" />
+              </AvatarFallback>
+            </Avatar>
+          )}
           <p className="text-gray-600">{getUserByIdProfile?.name}</p>
         </div>
       </Card>
