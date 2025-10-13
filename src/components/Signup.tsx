@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { AuthLayout } from "./AuthLayout"
 import { useAuthStore } from "@/store/useAuthStore"
+import { toast } from "sonner"
 
 interface props {
     setShowLogin: (value: boolean) => void;
@@ -33,6 +34,14 @@ export function SignupForm({setShowLogin} : props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+
+    const containsHTML = /<[^>]*>/g.test(formData.name);
+
+    if (containsHTML) {
+    toast.error("Invalid name");
+    setIsLoading(false);
+    return;
+  }
 
     signup(formData.name, formData.email, formData.password, formData.role as "doctor" | "patient");
 
