@@ -197,6 +197,7 @@ const PatientDetailsPage = () => {
               {/* Details Dialog */}
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
+                patientStatus={patientStatus}
                 isFetchingPatientReviews={isFetchingPatientReviews}
                   patientReview={patientReview}
                   setIsDialogOpen={setIsDialogOpen}

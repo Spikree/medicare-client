@@ -25,6 +25,7 @@ interface Props {
   selectedRecord: PatientDetails | DoctorDetailsInterface;
   patientReview: PatientReview[];
   showPatientFeedbackModel: boolean;
+  patientStatus: string | undefined;
   isDialogOpen: boolean;
   isFetchingPatientReviews: boolean;
   patientFeedbackModelView: () => void;
@@ -39,6 +40,7 @@ interface Props {
 }
 
 const MedicalRecordDetailsDialog = ({
+  patientStatus,
   selectedRecord,
   patientFeedbackModelView,
   getPatientReviewsForMedicalRecord,
@@ -141,9 +143,9 @@ const MedicalRecordDetailsDialog = ({
           </div>
         </div>
 
-        <Button onClick={patientFeedbackModelView} variant="green">
+        {patientStatus === "current" && <Button onClick={patientFeedbackModelView} variant="green">
           Add patient feedback
-        </Button>
+        </Button>}
         <Button
           onClick={() => {
             getPatientReviewsForMedicalRecord(selectedRecord?._id || "");

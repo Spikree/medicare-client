@@ -93,7 +93,7 @@ const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
                   >
                     <div className="flex flex-col">
                       <span className="text-base sm:text-lg font-medium">
-                        {doctor.name}
+                        {doctor?.name}
                       </span>
                       <p className="text-sm text-muted-foreground">
                         {doctor.email}
@@ -134,10 +134,10 @@ const AddNewDoctorDialog = ({ open, addRequests, acceptAddRequest }: Props) => {
                   <div>
                     {/* 2. Access the nested sender object for name and email */}
                     <span className="text-base font-medium">
-                      {request.sender.name}
+                      {request?.sender?.name}
                     </span>
                     <p className="text-sm text-muted-foreground">
-                      {request.sender.email}
+                      {request?.sender?.email}
                     </p>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto">
