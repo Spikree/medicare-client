@@ -87,6 +87,7 @@ const DoctorDetails = () => {
 
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
+                 patientStatus={doctorStatus}
                   setIsDialogOpen={setIsViewMoreDialogOpen}
                   isDialogOpen={isViewMoreDialogOpen}
                   selectedRecord={selectedRecord}
