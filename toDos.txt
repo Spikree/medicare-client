@@ -3,3 +3,6 @@
 3. Add a loader to the labresults page for patient : Done
 4. Add a button which shows patients alergies and general health info on doctor side : Done
 5. Add a button for patient to add alergies and general health info and also the update button : Done
+
+
+6. omplement giveDoctorDataAccess,removeDataAccessFromDoctor

@@ -7,12 +7,14 @@ import { Card, CardContent } from "./ui/card";
 import { Calendar, Eye, FileText, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
+import type { doctorDataAccessInfo } from "@/store/PatientStore";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
   handleViewMore: (record: DoctorDetailsInterface) => void;
   doctorStatus: string;
   isFetchingDoctorDetails: boolean;
+  doctorDataAccessInfo: doctorDataAccessInfo | null;
 }
 
 const DoctorDetailsComponent = ({
@@ -20,6 +22,7 @@ const DoctorDetailsComponent = ({
   handleViewMore,
   doctorStatus,
   isFetchingDoctorDetails,
+  doctorDataAccessInfo,
 }: Props) => {
   const { removeDoctor, reassignDoctor } = PatientStore();
   const { doctorName } = useParams();
@@ -61,8 +64,8 @@ const DoctorDetailsComponent = ({
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
           {doctorStatus === "current" ? (
-            <Button 
-              onClick={handleRemoveDoctor} 
+            <Button
+              onClick={handleRemoveDoctor}
               variant={"green"}
               className="w-full sm:w-auto"
             >
@@ -70,13 +73,33 @@ const DoctorDetailsComponent = ({
               <span className="sm:hidden">Remove</span>
             </Button>
           ) : (
-            <Button 
-              onClick={handleReassignDoctor} 
+            <Button
+              onClick={handleReassignDoctor}
               variant={"green"}
               className="w-full sm:w-auto"
             >
               <span className="hidden sm:inline">Reassign Doctor</span>
               <span className="sm:hidden">Reassign</span>
+            </Button>
+          )}
+
+          {doctorDataAccessInfo?.patientDataAccess ? (
+            <Button
+              // onClick={handleRemoveDoctor}
+              variant={"green"}
+              className="w-full sm:w-auto"
+            >
+              <span className="">Remove data access</span>
+              {/* <span className="sm:hidden">Remove</span> */}
+            </Button>
+          ) : (
+            <Button
+              // onClick={handleRemoveDoctor}
+              variant={"green"}
+              className="w-full sm:w-auto"
+            >
+              <span className="">Give data access</span>
+              {/* <span className="sm:hidden">Remove</span> */}
             </Button>
           )}
         </div>

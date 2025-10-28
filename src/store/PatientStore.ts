@@ -91,6 +91,17 @@ interface allergiesAndHealthInfo {
   createdOn: Date;
 }
 
+export interface doctorDataAccessInfo {
+  _id: string,
+  name: string,
+  email: string,
+  doctor: string,
+  patient: string,
+  patientStatus: string,
+  patientDataAccess: string
+  createdOn: string
+}
+
 export interface PatientAllData {
   userInfo: {
     _id: string;
@@ -210,12 +221,14 @@ interface PatientStore {
   getAllYourData: () => Promise<AxiosResponse | void>;
   removeDoctor: (doctorId: string) => Promise<void>;
   reassignDoctor: (doctorId: string) => Promise<void>;
+  getDoctorDataAccessInfo: (doctorId: string) => Promise<void>
 
   isUploadingLabResults: boolean;
   isFetchingPatientReviews: boolean;
   isFetchingDoctorDetails: boolean;
   isFetchingDoctorList: boolean;
   isFetchingLabResultsByDoctor: boolean;
+  doctorDataAccessInfo : doctorDataAccessInfo | null;
 
   doctorList: DoctorInterface[];
   allergiesAndHealthInfo: allergiesAndHealthInfo | null;
@@ -238,6 +251,7 @@ export const PatientStore = create<PatientStore>((set, get) => ({
   LabResultsByDoctorList: [],
   allPatientData: [],
   allergiesAndHealthInfo: null,
+  doctorDataAccessInfo: null,
 
   isFetchingPatientReviews: false,
   isFetchingDoctorDetails: false,
@@ -551,4 +565,16 @@ export const PatientStore = create<PatientStore>((set, get) => ({
       toast.error(errorMessage);
     }
   },
+
+  getDoctorDataAccessInfo: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.get(`/patient/getDoctorDataAccessInfo/${doctorId}`);
+      set({doctorDataAccessInfo: response.data.doctorDataAccessInfo});
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error getting doctor access info";
+      toast.error(errorMessage);
+    }
+  }
 }));

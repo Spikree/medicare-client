@@ -23,8 +23,10 @@ const DoctorDetails = () => {
     getLabResultsByDoctor,
     isFetchingLabResultsByDoctor,
     LabResultsByDoctorList,
-    isFetchingPatientReviews, 
+    isFetchingPatientReviews,
     isFetchingDoctorDetails,
+    getDoctorDataAccessInfo,
+    doctorDataAccessInfo
   } = PatientStore();
 
   const [selectedRecord, setSelectedRecord] =
@@ -37,8 +39,9 @@ const DoctorDetails = () => {
   useEffect(() => {
     if (doctorId) {
       getDoctorDetails(doctorId);
+      getDoctorDataAccessInfo(doctorId);
     }
-  }, [doctorId, getDoctorDetails]);
+  }, [doctorId, getDoctorDetails, getDoctorDataAccessInfo]);
 
   const handleViewMore = (record: DoctorDetailsInterface) => {
     setSelectedRecord(record);
@@ -78,6 +81,7 @@ const DoctorDetails = () => {
             <TabsContent className="p-6" value="current">
               {doctorStatus && (
                 <DoctorDetailsComponent
+                doctorDataAccessInfo={doctorDataAccessInfo}
                   doctorDetailsList={doctorDetailsList}
                   handleViewMore={handleViewMore}
                   doctorStatus={doctorStatus}
@@ -87,7 +91,7 @@ const DoctorDetails = () => {
 
               {selectedRecord && (
                 <MedicalRecordDetailsDialog
-                 patientStatus={doctorStatus}
+                  patientStatus={doctorStatus}
                   setIsDialogOpen={setIsViewMoreDialogOpen}
                   isDialogOpen={isViewMoreDialogOpen}
                   selectedRecord={selectedRecord}
