@@ -92,14 +92,14 @@ interface allergiesAndHealthInfo {
 }
 
 export interface doctorDataAccessInfo {
-  _id: string,
-  name: string,
-  email: string,
-  doctor: string,
-  patient: string,
-  patientStatus: string,
-  patientDataAccess: string
-  createdOn: string
+  _id: string;
+  name: string;
+  email: string;
+  doctor: string;
+  patient: string;
+  patientStatus: string;
+  patientDataAccess: string;
+  createdOn: string;
 }
 
 export interface PatientAllData {
@@ -221,14 +221,16 @@ interface PatientStore {
   getAllYourData: () => Promise<AxiosResponse | void>;
   removeDoctor: (doctorId: string) => Promise<void>;
   reassignDoctor: (doctorId: string) => Promise<void>;
-  getDoctorDataAccessInfo: (doctorId: string) => Promise<void>
+  getDoctorDataAccessInfo: (doctorId: string) => Promise<void>;
+  giveDoctorDataAccess: (doctorId: string) => Promise<void>;
+  removeDataAccessFromDoctor: (doctorId: string) => Promise<void>;
 
   isUploadingLabResults: boolean;
   isFetchingPatientReviews: boolean;
   isFetchingDoctorDetails: boolean;
   isFetchingDoctorList: boolean;
   isFetchingLabResultsByDoctor: boolean;
-  doctorDataAccessInfo : doctorDataAccessInfo | null;
+  doctorDataAccessInfo: doctorDataAccessInfo | null;
 
   doctorList: DoctorInterface[];
   allergiesAndHealthInfo: allergiesAndHealthInfo | null;
@@ -568,13 +570,44 @@ export const PatientStore = create<PatientStore>((set, get) => ({
 
   getDoctorDataAccessInfo: async (doctorId: string) => {
     try {
-      const response = await axiosInstance.get(`/patient/getDoctorDataAccessInfo/${doctorId}`);
-      set({doctorDataAccessInfo: response.data.doctorDataAccessInfo});
+      const response = await axiosInstance.get(
+        `/patient/getDoctorDataAccessInfo/${doctorId}`
+      );
+      set({ doctorDataAccessInfo: response.data.doctorDataAccessInfo });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
-        axiosError.response?.data?.message || "Error getting doctor access info";
+        axiosError.response?.data?.message ||
+        "Error getting doctor access info";
       toast.error(errorMessage);
     }
-  }
+  },
+
+  giveDoctorDataAccess: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/giveDoctorDataAccess/${doctorId}`
+      );
+      console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error giving doctor data access";
+      toast.error(errorMessage);
+    }
+  },
+
+  removeDataAccessFromDoctor: async (doctorId: string) => {
+    try {
+      const response = await axiosInstance.post(
+        `/patient/removeDataAccessFromDoctor/${doctorId}`
+      );
+      console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      const errorMessage =
+        axiosError.response?.data?.message || "Error giving doctor data access";
+      toast.error(errorMessage);
+    }
+  },
 }));

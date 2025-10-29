@@ -217,6 +217,18 @@ const MedicalRecords = ({
             </Card>
           ))}
         </div>
+      ) : patientStatus === "old" ? (
+        <div className="flex flex-col items-center justify-center min-h-[347px]">
+          <div className="text-center">
+            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Patient has removed your access to their the data
+            </h3>
+            <p className="text-muted-foreground">
+              No medical records.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[347px]">
           <div className="text-center">

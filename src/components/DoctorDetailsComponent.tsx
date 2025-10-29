@@ -8,6 +8,7 @@ import { Calendar, Eye, FileText, Loader } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import type { doctorDataAccessInfo } from "@/store/PatientStore";
+import { useEffect } from "react";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
@@ -15,6 +16,8 @@ interface Props {
   doctorStatus: string;
   isFetchingDoctorDetails: boolean;
   doctorDataAccessInfo: doctorDataAccessInfo | null;
+  giveDoctorDataAccess: (doctorId: string) => void;
+  removeDataAccessFromDoctor: (doctorId: string) => void;
 }
 
 const DoctorDetailsComponent = ({
@@ -23,8 +26,10 @@ const DoctorDetailsComponent = ({
   doctorStatus,
   isFetchingDoctorDetails,
   doctorDataAccessInfo,
+  giveDoctorDataAccess,
+  removeDataAccessFromDoctor
 }: Props) => {
-  const { removeDoctor, reassignDoctor } = PatientStore();
+  const { removeDoctor, reassignDoctor, getDoctorDataAccessInfo } = PatientStore();
   const { doctorName } = useParams();
   const navigate = useNavigate();
 
@@ -45,6 +50,24 @@ const DoctorDetailsComponent = ({
       });
     }
   };
+
+  useEffect(() => {
+
+  },[doctorDataAccessInfo])
+
+  const handleGiveDataAccess = () => {
+    if(doctorId) {
+      giveDoctorDataAccess(doctorId);
+      getDoctorDataAccessInfo(doctorId);
+    }
+  }
+
+  const handleRemoveDataAccess = () => {
+    if(doctorId) {
+      removeDataAccessFromDoctor(doctorId);
+      getDoctorDataAccessInfo(doctorId);
+    }
+  }
 
   return (
     <Dialog>
@@ -85,7 +108,7 @@ const DoctorDetailsComponent = ({
 
           {doctorDataAccessInfo?.patientDataAccess ? (
             <Button
-              // onClick={handleRemoveDoctor}
+              onClick={handleRemoveDataAccess}
               variant={"green"}
               className="w-full sm:w-auto"
             >
@@ -94,7 +117,7 @@ const DoctorDetailsComponent = ({
             </Button>
           ) : (
             <Button
-              // onClick={handleRemoveDoctor}
+              onClick={handleGiveDataAccess}
               variant={"green"}
               className="w-full sm:w-auto"
             >

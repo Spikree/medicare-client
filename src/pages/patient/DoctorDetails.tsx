@@ -26,7 +26,9 @@ const DoctorDetails = () => {
     isFetchingPatientReviews,
     isFetchingDoctorDetails,
     getDoctorDataAccessInfo,
-    doctorDataAccessInfo
+    doctorDataAccessInfo,
+    giveDoctorDataAccess,
+    removeDataAccessFromDoctor
   } = PatientStore();
 
   const [selectedRecord, setSelectedRecord] =
@@ -81,6 +83,8 @@ const DoctorDetails = () => {
             <TabsContent className="p-6" value="current">
               {doctorStatus && (
                 <DoctorDetailsComponent
+                giveDoctorDataAccess={giveDoctorDataAccess}
+                removeDataAccessFromDoctor={removeDataAccessFromDoctor}
                 doctorDataAccessInfo={doctorDataAccessInfo}
                   doctorDetailsList={doctorDetailsList}
                   handleViewMore={handleViewMore}
