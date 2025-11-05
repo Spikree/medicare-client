@@ -4,3 +4,7 @@
 4. Add a button which shows patients alergies and general health info on doctor side : Done
 5. Add a button for patient to add alergies and general health info and also the update button : Done
 6. omplement giveDoctorDataAccess,removeDataAccessFromDoctor : Done
+7. Remove lab results access as well
+
+for backend
+8. When we reassign the doctor give the doctor the data access (make the data access variable true)

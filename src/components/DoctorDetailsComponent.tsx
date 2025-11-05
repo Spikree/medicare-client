@@ -96,6 +96,7 @@ const DoctorDetailsComponent = ({
               <span className="sm:hidden">Remove</span>
             </Button>
           ) : (
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
             <Button
               onClick={handleReassignDoctor}
               variant={"green"}
@@ -104,9 +105,8 @@ const DoctorDetailsComponent = ({
               <span className="hidden sm:inline">Reassign Doctor</span>
               <span className="sm:hidden">Reassign</span>
             </Button>
-          )}
 
-          {doctorDataAccessInfo?.patientDataAccess ? (
+            {doctorDataAccessInfo?.patientDataAccess ? (
             <Button
               onClick={handleRemoveDataAccess}
               variant={"green"}
@@ -125,6 +125,10 @@ const DoctorDetailsComponent = ({
               {/* <span className="sm:hidden">Remove</span> */}
             </Button>
           )}
+            </div>
+          )}
+
+          
         </div>
       </div>
 
