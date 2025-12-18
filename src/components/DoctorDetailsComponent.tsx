@@ -53,17 +53,17 @@ const DoctorDetailsComponent = ({
 
   useEffect(() => {
 
-  },[doctorDataAccessInfo])
+  }, [doctorDataAccessInfo])
 
   const handleGiveDataAccess = () => {
-    if(doctorId) {
+    if (doctorId) {
       giveDoctorDataAccess(doctorId);
       getDoctorDataAccessInfo(doctorId);
     }
   }
 
   const handleRemoveDataAccess = () => {
-    if(doctorId) {
+    if (doctorId) {
       removeDataAccessFromDoctor(doctorId);
       getDoctorDataAccessInfo(doctorId);
     }
@@ -97,38 +97,38 @@ const DoctorDetailsComponent = ({
             </Button>
           ) : (
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
-            <Button
-              onClick={handleReassignDoctor}
-              variant={"green"}
-              className="w-full sm:w-auto"
-            >
-              <span className="hidden sm:inline">Reassign Doctor</span>
-              <span className="sm:hidden">Reassign</span>
-            </Button>
+              <Button
+                onClick={handleReassignDoctor}
+                variant={"green"}
+                className="w-full sm:w-auto"
+              >
+                <span className="hidden sm:inline">Reassign Doctor</span>
+                <span className="sm:hidden">Reassign</span>
+              </Button>
 
-            {doctorDataAccessInfo?.patientDataAccess ? (
-            <Button
-              onClick={handleRemoveDataAccess}
-              variant={"green"}
-              className="w-full sm:w-auto"
-            >
-              <span className="">Remove data access</span>
-              {/* <span className="sm:hidden">Remove</span> */}
-            </Button>
-          ) : (
-            <Button
-              onClick={handleGiveDataAccess}
-              variant={"green"}
-              className="w-full sm:w-auto"
-            >
-              <span className="">Give data access</span>
-              {/* <span className="sm:hidden">Remove</span> */}
-            </Button>
-          )}
+              {doctorDataAccessInfo?.patientDataAccess ? (
+                <Button
+                  onClick={handleRemoveDataAccess}
+                  variant={"green"}
+                  className="w-full sm:w-auto"
+                >
+                  <span className="">Remove data access</span>
+                  {/* <span className="sm:hidden">Remove</span> */}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleGiveDataAccess}
+                  variant={"green"}
+                  className="w-full sm:w-auto"
+                >
+                  <span className="">Give data access</span>
+                  {/* <span className="sm:hidden">Remove</span> */}
+                </Button>
+              )}
             </div>
           )}
 
-          
+
         </div>
       </div>
 

@@ -19,7 +19,7 @@ interface AuthStore {
     email: string,
     password: string,
     name: string,
-    role: "doctor" | "patient"
+    role: "doctor" | "patient",
   ) => Promise<void>;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     try {
       const response = await axiosInstance.post("/auth/login", formData);
       set({ authUser: response.data.user });
-      localStorage.setItem("user_role", response.data.user.role)
+      localStorage.setItem("user_role", response.data.user.role);
       toast(response.data.message);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     name: string,
     email: string,
     password: string,
-    role: string
+    role: string,
   ) => {
     const formData = {
       name,
@@ -66,7 +66,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       console.log(response);
       set({ authUser: response.data.user });
       toast(response.data.message);
-      localStorage.setItem("user_role", response.data.user.role)
+      localStorage.setItem("user_role", response.data.user.role);
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
@@ -79,17 +79,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
   logout: async () => {
     try {
       const response = await axiosInstance.post("/auth/logout");
-      toast.success(response.data.message)
-      set({authUser: null});
+      toast.success(response.data.message);
+      set({ authUser: null });
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       const errorMessage =
-        axiosError.response?.data?.message ||
-        "Error logging out";
+        axiosError.response?.data?.message || "Error logging out";
       toast.error(errorMessage);
     } finally {
-      set({authUser: null});
-      localStorage.removeItem("user_role")
+      set({ authUser: null });
+      localStorage.removeItem("user_role");
     }
   },
 
@@ -99,7 +98,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const response = await axiosInstance.get("/auth/checkAuth");
       set({ authUser: response.data });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       set({ isCheckingAuth: false });
     }
