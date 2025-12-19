@@ -25,6 +25,7 @@ import {
   Heart,
   Shield,
   Download,
+  CreditCard,
 } from "lucide-react";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 import { CommonStore } from "@/store/CommonStore";
@@ -38,10 +39,10 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState(authUser?.bio || "");
   const [editedProfilePicture, setEditedProfilePicture] = useState(
-    authUser?.profilePicture || ""
+    authUser?.profilePicture || "",
   );
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
-    null
+    null,
   );
 
   const getAllPatientData = () => {
@@ -165,7 +166,7 @@ const ProfilePage = () => {
 
               {authUser?.role === "patient" && (
                 <Button onClick={getAllPatientData} variant={"green"}>
-                  <Download/>
+                  <Download />
                   Download your data
                 </Button>
               )}
@@ -252,6 +253,18 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <CreditCard className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Plan</p>
+                    <p className="text-sm text-gray-600">
+                      {authUser.subscription?.plan}
+                      {" | "}
+                      {authUser?.subscription?.status}
+                    </p>
+                  </div>
+                </div>
+
                 {authUser.doctorId && (
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <Shield className="h-5 w-5 text-gray-400" />
@@ -313,7 +326,7 @@ const ProfilePage = () => {
                     <div className="flex items-center gap-2">
                       <Badge
                         className={`px-3 py-1 font-medium ${getRoleColor(
-                          authUser.role
+                          authUser.role,
                         )}`}
                       >
                         {getRoleIcon(authUser.role)}

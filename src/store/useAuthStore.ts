@@ -11,6 +11,12 @@ interface authUser {
   bio?: string;
   profilePicture?: string;
   doctorId?: string;
+  subscription?: {
+    status: "trailing" | "active" | "past_due" | "canceled" | "expired";
+    plan: "premium" | "basic";
+    trialEndsAt: Date;
+    billingCycleEndsAt?: Date;
+  };
 }
 
 interface AuthStore {

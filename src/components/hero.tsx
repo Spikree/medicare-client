@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button"
-import { Play, ArrowRight } from "lucide-react"
-import { placeholderSVG } from "@/assets/assets"
+import { Button } from "@/components/ui/button";
+import { Play, ArrowRight } from "lucide-react";
+import { placeholderSVG } from "@/assets/assets";
+import { useNavigate } from "react-router-dom";
+import { HomePageImage } from "@/assets/assets";
 
 export default function Hero() {
+  const navigator = useNavigate();
+
   return (
     <section className="relative bg-gradient-to-br from-emerald-50 to-teal-50 py-20 sm:py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,18 +17,25 @@ export default function Hero() {
               <span className="text-emerald-600"> Medical Practice</span>
             </h1>
             <p className="mt-6 text-xl text-gray-600 leading-relaxed">
-              Manage patients, appointments, and medical records with ease. Our comprehensive platform helps healthcare
-              professionals provide better care while reducing administrative burden.
+              Manage patients, appointments, and medical records with ease. Our
+              comprehensive platform helps healthcare professionals provide
+              better care while reducing administrative burden.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-3">
+              <Button
+                size="lg"
+                className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-3"
+                onClick={() => {
+                  navigator("/auth");
+                }}
+              >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+              {/*<Button size="lg" variant="outline" className="text-lg px-8 py-3">
                 <Play className="mr-2 h-5 w-5" />
                 Watch Demo
-              </Button>
+              </Button>*/}
             </div>
             <div className="mt-8 flex items-center justify-center lg:justify-start space-x-6 text-sm text-gray-500">
               <div className="flex items-center">
@@ -44,7 +55,7 @@ export default function Hero() {
           <div className="relative">
             <div className="bg-white rounded-2xl shadow-2xl p-8">
               <img
-                src={placeholderSVG}
+                src={HomePageImage}
                 alt="MedCare Pro Dashboard"
                 className="w-auto h-auto rounded-lg"
               />
@@ -59,5 +70,5 @@ export default function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }
