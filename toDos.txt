@@ -1,4 +1,5 @@
 1. Fix the typing indicator in the chat page for both doctor and patient : Done
+
 2. Fix the home component responsiveness for patient : Done
 3. Add a loader to the labresults page for patient : Done
 4. Add a button which shows patients alergies and general health info on doctor side : Done
@@ -8,3 +9,5 @@
 
 for backend
 8. When we reassign the doctor give the doctor the data access (make the data access variable true)
+9. Decrypt the data when the user is downloading patient info
+10. Learn vim

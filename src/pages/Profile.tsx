@@ -253,17 +253,21 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <CreditCard className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Plan</p>
-                    <p className="text-sm text-gray-600">
-                      {authUser.subscription?.plan}
-                      {" | "}
-                      {authUser?.subscription?.status}
-                    </p>
+                {authUser?.role === "doctor" ? (
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <CreditCard className="h-5 w-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Plan</p>
+                      <p className="text-sm text-gray-600">
+                        {authUser.subscription?.plan}
+                        {" | "}
+                        {authUser?.subscription?.status}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <></>
+                )}
 
                 {authUser.doctorId && (
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
