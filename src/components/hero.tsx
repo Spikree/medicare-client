@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight } from "lucide-react";
-import { placeholderSVG } from "@/assets/assets";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { HomePageImage } from "@/assets/assets";
 
