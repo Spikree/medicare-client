@@ -18,6 +18,8 @@ import { Loader } from "lucide-react";
 import ChatPageDoctor from "./pages/doctor/ChatPageDoctor";
 import ChatPagePatient from "./pages/patient/ChatPagePatient";
 import AddPatientHealthInfo from "./components/AddPatientHealthInfo";
+import CheckoutPage from "./pages/stripe/CheckoutPage";
+import SuccessPage from "./pages/stripe/SuccessPage";
 
 const App = () => {
   const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
@@ -60,6 +62,7 @@ const App = () => {
                 element={<PatientAiSummary />}
               />
               <Route path="/chatPage/:patientId" element={<ChatPageDoctor />} />
+              <Route path="/checkOut" element={<CheckoutPage />} />
             </Route>
             <Route path="/profile" element={<DoctorProfile />} />
 
@@ -69,13 +72,18 @@ const App = () => {
                 path="/doctorDetails/:doctorId/:doctorName/:doctorStatus"
                 element={<DoctorDetails />}
               />
-              <Route path="/chatPagePatient/:doctorId" element={<ChatPagePatient />} />
+              <Route
+                path="/chatPagePatient/:doctorId"
+                element={<ChatPagePatient />}
+              />
             </Route>
           </Route>
         </Route>
+
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
 
-      {authUser?.role === "patient" && <AddPatientHealthInfo/>}
+      {authUser?.role === "patient" && <AddPatientHealthInfo />}
     </>
   );
 };
