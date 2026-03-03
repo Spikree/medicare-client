@@ -33,12 +33,9 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100);
-    doc.text(
-      `Report Date: ${new Date().toLocaleDateString()}`,
-      105,
-      yPos,
-      { align: "center" }
-    );
+    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 105, yPos, {
+      align: "center",
+    });
     yPos += 20;
 
     // User Information (No changes)
@@ -52,7 +49,7 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     doc.text(`Email: ${patientData.userInfo?.email || "N/A"}`, 110, yPos);
     yPos += 7;
     doc.text(`Bio: ${patientData.userInfo?.bio || "N/A"}`, 20, yPos);
-    
+
     // Medical Records (Patient Details)
     if (patientData.patientDetails && patientData.patientDetails.length > 0) {
       yPos += 20;
@@ -62,7 +59,8 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
       yPos += 10;
 
       patientData.patientDetails.forEach((detail, index) => {
-        if (yPos > doc.internal.pageSize.height - 40) { // Increased margin for safety
+        if (yPos > doc.internal.pageSize.height - 40) {
+          // Increased margin for safety
           doc.addPage();
           yPos = 20;
         }
@@ -76,14 +74,10 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
         doc.text(
           `Medication: ${detail.medicationPrescribed || "N/A"}`,
           110,
-          yPos
+          yPos,
         );
         yPos += 7;
-        doc.text(
-          `Experience: ${detail.patientExperience || "N/A"}`,
-          30,
-          yPos
-        );
+        doc.text(`Experience: ${detail.patientExperience || "N/A"}`, 30, yPos);
         yPos += 10;
       });
     }
@@ -92,8 +86,8 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     if (patientData.labResults && patientData.labResults.length > 0) {
       // Check for page break before adding a new section
       if (yPos > doc.internal.pageSize.height - 40) {
-          doc.addPage();
-          yPos = 20;
+        doc.addPage();
+        yPos = 20;
       }
       yPos += 10;
       doc.setFontSize(16);
@@ -122,11 +116,11 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
           doc.text(
             "Confidential Patient Data. For medical use only.",
             data.settings.margin.left,
-            doc.internal.pageSize.height - 10
+            doc.internal.pageSize.height - 10,
           );
         },
       });
-      
+
       // **CRITICAL FIX: Update yPos to the position after the table**
       yPos = doc.lastAutoTable?.finalY || yPos + 10;
     }
@@ -138,7 +132,7 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
         doc.addPage();
         yPos = 20;
       }
-      
+
       yPos += 15; // Add some margin after the previous section
       doc.setFontSize(16);
       doc.text("Patient Reviews", 20, yPos);
@@ -161,7 +155,7 @@ export const downloadPatientDataPdf = (patientData: PatientAllData) => {
     }
 
     const fileName = `${patientData.userInfo?.name?.replace(/\s+/g, "_") || "patient"}_medical_report.pdf`;
-    
+
     doc.save(fileName);
     toast.success("Medical report downloaded successfully!");
   } catch (error) {
