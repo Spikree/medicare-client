@@ -5,7 +5,13 @@ import CheckoutForm from "./CheckoutForm";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Loader2, ShieldCheck } from "lucide-react";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PROMISE_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PROMISE_KEY, {
+  developerTools: {
+    assistant: {
+      enabled: import.meta.env.VITE_BACKEND_DEVTOOLS,
+    },
+  },
+});
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
