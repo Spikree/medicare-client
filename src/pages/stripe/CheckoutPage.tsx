@@ -4,11 +4,12 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PROMISE_KEY, {
   developerTools: {
     assistant: {
-      enabled: import.meta.env.VITE_BACKEND_DEVTOOLS,
+      enabled: import.meta.env.VITE_BACKEND_DEVTOOLS === true,
     },
   },
 });
@@ -88,7 +89,7 @@ export default function CheckoutPage() {
       )}
 
       {clientSecret && (
-        <div className="w-full max-w-lg bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="w-full flex flex-col max-w-lg bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-slate-900">
               Complete Setup
@@ -105,11 +106,14 @@ export default function CheckoutPage() {
             />
           </Elements>
 
+
+
           <div className="mt-6 text-center flex items-center justify-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="w-4 h-4" />
             <span>Payments processed securely by Stripe</span>
+            </div>
           </div>
-        </div>
+
       )}
     </div>
   );

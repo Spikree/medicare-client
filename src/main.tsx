@@ -5,8 +5,8 @@ import App from "./App.tsx";
 import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")!).render(
-    <BrowserRouter>
-      <App />
-      <Toaster />
-    </BrowserRouter>
+  <BrowserRouter>
+    <App />
+    <Toaster />
+  </BrowserRouter>,
 );

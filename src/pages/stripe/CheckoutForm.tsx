@@ -66,7 +66,6 @@ export default function CheckoutForm({
       onSubmit={handleSubmit}
       className="flex flex-col gap-6 w-full max-w-md mx-auto"
     >
-      {/* 👇 DYNAMIC ORDER SUMMARY */}
       <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Subscription Summary
@@ -100,7 +99,6 @@ export default function CheckoutForm({
             : "You won't be charged until your trial ends. Cancel anytime."}
         </p>
       </div>
-      {/* 👆 END ORDER SUMMARY */}
 
       <PaymentElement />
 
@@ -117,7 +115,6 @@ export default function CheckoutForm({
         ) : (
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5" />
-            {/* Change button text dynamically */}
             <span>
               {hasHadTrial ? "Subscribe Now" : "Start 7-Day Free Trial"}
             </span>
