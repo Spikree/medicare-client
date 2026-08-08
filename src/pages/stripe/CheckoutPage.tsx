@@ -4,7 +4,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Loader2, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PROMISE_KEY, {
   developerTools: {
