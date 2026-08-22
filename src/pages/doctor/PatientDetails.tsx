@@ -7,6 +7,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { Activity } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BreadcrumbElement from "@/components/BreadcrumbElement";
+import PageHeader from "@/components/PageHeader";
+import { Badge } from "@/components/ui/badge";
 import MedicalRecords from "@/components/MedicalRecords";
 import { toast } from "sonner";
 import MedicalRecordDetailsDialog from "@/components/MedicalRecordDetailsDialog";
@@ -16,7 +18,7 @@ import { downloadPatientDataPdf } from "@/utils/downloadPatientData";
 import { type PatientAllData } from "@/store/PatientStore";
 
 const PatientDetailsPage = () => {
-  const { patientId } = useParams();
+  const { patientId, patientName, patientStatus } = useParams();
   const {
     getPatientDetails,
     patientDetailsList,
@@ -52,8 +54,6 @@ const PatientDetailsPage = () => {
     showPatientDetailsByCurrentDoctor,
     setShowPatientDetailsByCurrentDoctor,
   ] = useState<boolean>(false);
-
-  const {patientStatus} = useParams();
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -138,10 +138,10 @@ const PatientDetailsPage = () => {
 
   if (!patientDetailsList) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Activity className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-muted-foreground">Loading patient details...</p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Activity className="h-4 w-4 animate-spin text-primary" />
+          Loading patient details…
         </div>
       </div>
     );
@@ -156,19 +156,31 @@ const PatientDetailsPage = () => {
 
   return (
     <Dialog>
-      <BreadcrumbElement
-        items={breadcrumbItems}
-        currentPage="Patient Details"
-      />
-      <div className="w-full p-6">
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <BreadcrumbElement
+            items={breadcrumbItems}
+            currentPage="Patient details"
+          />
+          <PageHeader
+            title={patientName ?? "Patient details"}
+            description="Visit history, prescriptions, and uploaded lab results."
+            actions={
+              <Badge variant={patientStatus === "current" ? "success" : "muted"}>
+                {patientStatus === "current" ? "Current patient" : "Discharged"}
+              </Badge>
+            }
+          />
+        </div>
+
         <Tabs defaultValue="current">
           <TabsList>
-            <TabsTrigger value="current">Patient Record</TabsTrigger>
-            <TabsTrigger value="old">Lab Results</TabsTrigger>
+            <TabsTrigger value="current">Patient record</TabsTrigger>
+            <TabsTrigger value="old">Lab results</TabsTrigger>
           </TabsList>
 
-          <Card className="py-2 mt-4 border-0 shadow-none">
-            <TabsContent className="p-6" value="current">
+          <Card className="p-5">
+            <TabsContent value="current" className="mt-0">
               <MedicalRecords
               patientStatus={patientStatus}
               fetchingPatientDetails={fetchingPatientDetails}
@@ -213,7 +225,7 @@ const PatientDetailsPage = () => {
               )}
             </TabsContent>
 
-            <TabsContent className="p-6" value="old">
+            <TabsContent value="old" className="mt-0">
               <PatientLabResultsComponent
                 patientLabResults={patientLabResults}
                 setIsUploadLabResultsDialogOpen={
@@ -235,5 +247,6 @@ const PatientDetailsPage = () => {
     </Dialog>
   );
 };
+
 
 export default PatientDetailsPage;

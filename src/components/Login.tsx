@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthLayout } from "./AuthLayout";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -20,15 +21,16 @@ export function LoginForm({ setShowLogin }: props) {
     password: "",
   });
 
-  const {login} = useAuthStore();
+  const { login } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    login(formData.email, formData.password);
-    setIsLoading(false);
+    try {
+      await login(formData.email, formData.password);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,40 +42,27 @@ export function LoginForm({ setShowLogin }: props) {
 
   return (
     <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to your MedCare Pro account"
+      title="Sign in"
+      subtitle="Enter your credentials to reach your practice."
     >
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div>
-          <Label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email address
-          </Label>
-          <div className="mt-1">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your email"
-            />
-          </div>
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email address</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="you@practice.com"
+          />
         </div>
 
-        <div>
-          <Label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
-          </Label>
-          <div className="mt-1 relative">
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
             <Input
               id="password"
               name="password"
@@ -82,71 +71,58 @@ export function LoginForm({ setShowLogin }: props) {
               required
               value={formData.password}
               onChange={handleInputChange}
-              className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your password"
+              className="pr-10"
+              placeholder="••••••••"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-4 w-4" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-4 w-4" />
               )}
             </button>
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-            />
+          <div className="flex items-center gap-2">
+            <Checkbox id="remember-me" name="remember-me" />
             <Label
               htmlFor="remember-me"
-              className="ml-2 block text-sm text-gray-900"
+              className="text-sm font-normal text-muted-foreground"
             >
               Remember me
             </Label>
           </div>
 
-          <div className="text-sm">
-            <a
-              href="#"
-              className="font-medium text-emerald-600 hover:text-emerald-500"
-            >
-              Forgot your password?
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
+          <a
+            href="#"
+            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? "Signing in..." : "Sign in"}
-          </Button>
+            Forgot password?
+          </a>
         </div>
 
-        <div className="text-center">
-          <span className="text-sm text-gray-600">
-            Don't have an account?{" "}
-            <a
-              onClick={() => setShowLogin(false)}
-              className="font-medium text-emerald-600 hover:text-emerald-500 cursor-pointer"
-            >
-              Sign up here
-            </a>
-          </span>
-        </div>
+        <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading ? "Signing in…" : "Sign in"}
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <button
+            type="button"
+            onClick={() => setShowLogin(false)}
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Create one
+          </button>
+        </p>
       </form>
     </AuthLayout>
   );

@@ -1,19 +1,23 @@
-// import CTA from "@/components/cta";
+import CTA from "@/components/cta";
 import Features from "@/components/features";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Hero from "@/components/hero";
+import Security from "@/components/security";
 import Testimonials from "@/components/testimonials";
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
-      <Hero/>
-      <Features/>
-      <Testimonials/>
-      {/* <CTA/> */}
-      <Footer/>
+      <main>
+        <Hero />
+        <Features />
+        <Security />
+        <Testimonials />
+        <CTA />
+      </main>
+      <Footer />
     </div>
   );
 };

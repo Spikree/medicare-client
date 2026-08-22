@@ -1,5 +1,7 @@
 import BreadcrumbElement from "@/components/BreadcrumbElement";
 import DoctorDetailsComponent from "@/components/DoctorDetailsComponent";
+import PageHeader from "@/components/PageHeader";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -12,8 +14,7 @@ import MedicalRecordDetailsDialog from "@/components/MedicalRecordDetailsDialog"
 import PatientLabResultsByDoctor from "@/components/PatientLabResultsByDoctor";
 
 const DoctorDetails = () => {
-  const { doctorId } = useParams();
-  const { doctorStatus } = useParams();
+  const { doctorId, doctorName, doctorStatus } = useParams();
   const {
     getDoctorDetails,
     doctorDetailsList,
@@ -71,16 +72,31 @@ const DoctorDetails = () => {
 
   return (
     <Dialog>
-      <BreadcrumbElement items={breadcrumbItems} currentPage="Doctor Details" />
-      <div className="w-full p-6">
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <BreadcrumbElement
+            items={breadcrumbItems}
+            currentPage="Doctor details"
+          />
+          <PageHeader
+            title={doctorName ? `Dr. ${doctorName}` : "Doctor details"}
+            description="Records this clinician has authored, and the labs they can see."
+            actions={
+              <Badge variant={doctorStatus === "current" ? "success" : "muted"}>
+                {doctorStatus === "current" ? "Current" : "Past"}
+              </Badge>
+            }
+          />
+        </div>
+
         <Tabs defaultValue="current">
           <TabsList>
-            <TabsTrigger value="current">Patient Record</TabsTrigger>
-            <TabsTrigger value="old">Lab Results</TabsTrigger>
+            <TabsTrigger value="current">Patient record</TabsTrigger>
+            <TabsTrigger value="old">Lab results</TabsTrigger>
           </TabsList>
 
-          <Card className="py-2 mt-4 border-0 shadow-none">
-            <TabsContent className="p-6" value="current">
+          <Card className="p-5">
+            <TabsContent value="current" className="mt-0">
               {doctorStatus && (
                 <DoctorDetailsComponent
                 giveDoctorDataAccess={giveDoctorDataAccess}
@@ -111,7 +127,7 @@ const DoctorDetails = () => {
               )}
             </TabsContent>
 
-            <TabsContent className="p-6" value="old">
+            <TabsContent value="old" className="mt-0">
               {/* add patient lab results by current doctor component */}
               {doctorId && (
                 <PatientLabResultsByDoctor

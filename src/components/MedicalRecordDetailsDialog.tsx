@@ -1,15 +1,10 @@
-import {
-  AlertCircle,
-  Calendar,
-  FileText,
-  MessageSquare,
-  Pill,
-  User,
-} from "lucide-react";
+import { Activity, Calendar, MessageSquare, Pill, User } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -35,8 +30,30 @@ interface Props {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => void;
+}
+
+function Section({
+  icon: Icon,
+  label,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <h3 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+        {label}
+      </h3>
+      <div className="mt-2 rounded-md border border-border bg-muted/40 p-3 text-sm leading-relaxed">
+        {children}
+      </div>
+    </section>
+  );
 }
 
 const MedicalRecordDetailsDialog = ({
@@ -51,110 +68,82 @@ const MedicalRecordDetailsDialog = ({
   patientReview,
   isFetchingPatientReviews,
 }: Props) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const [showPatientReviewList, setShowPatientReviewList] =
+    useState<boolean>(false);
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleString(undefined, {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const [showPatientReviewList, setShowPatientReviewList] =
-    useState<boolean>(false);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Complete Medical Record
-          </DialogTitle>
+          <DialogTitle>Medical record</DialogTitle>
           <DialogDescription>
-            Detailed information for this medical record
+            Full detail for this entry in the patient&rsquo;s chart.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
-          {/* Patient Info */}
-          <div className="bg-muted/50 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-3">
-              <User className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">Patient Information</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Name:</span>
-                <p className="font-medium">{selectedRecord.name}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Medical Details */}
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <span className="font-medium">Disease & Symptoms</span>
-              </div>
-              <div className="border border-red-200 rounded-md p-3 bg-red-50">
-                <p className="text-sm text-red-900">{selectedRecord.symptom}</p>
-              </div>
+        <div className="space-y-5">
+          <dl className="grid gap-4 rounded-md border border-border p-4 sm:grid-cols-2">
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <User className="h-3.5 w-3.5" />
+                Patient
+              </dt>
+              <dd className="mt-1 truncate text-sm font-medium">
+                {selectedRecord.name}
+              </dd>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Pill className="h-4 w-4 text-purple-600" />
-                <span className="font-medium">Medication Prescribed</span>
-              </div>
-              <div className="border border-purple-200 rounded-md p-3 bg-purple-50">
-                <p className="text-sm text-purple-900">
-                  {selectedRecord.medicationPrescribed}
-                </p>
-              </div>
+            <div className="min-w-0">
+              <dt className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                Recorded
+              </dt>
+              <dd className="tabular mt-1 text-sm">
+                {formatDate(selectedRecord.createdOn)}
+              </dd>
             </div>
+          </dl>
 
-            {selectedRecord.patientExperience && (
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <MessageSquare className="h-4 w-4 text-orange-600" />
-                  <span className="font-medium">Patient Experience</span>
-                </div>
-                <div className="border border-orange-200 rounded-md p-3 bg-orange-50">
-                  <p className="text-sm text-orange-900">
-                    {selectedRecord.patientExperience}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          <Section icon={Activity} label="Diagnosis &amp; symptoms">
+            {selectedRecord.symptom}
+          </Section>
 
-          {/* Record Metadata */}
-          <div className="bg-muted/50 p-4 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <Calendar className="h-4 w-4 text-gray-600" />
-              <span className="font-medium">Record Details</span>
-            </div>
-            <div className="space-y-1 text-sm text-muted-foreground">
-              <p>Created: {formatDate(selectedRecord.createdOn)}</p>
-            </div>
-          </div>
+          <Section icon={Pill} label="Medication prescribed">
+            {selectedRecord.medicationPrescribed}
+          </Section>
+
+          {selectedRecord.patientExperience && (
+            <Section icon={MessageSquare} label="Patient experience">
+              {selectedRecord.patientExperience}
+            </Section>
+          )}
         </div>
 
-        {patientStatus === "current" && <Button onClick={patientFeedbackModelView} variant="green">
-          Add patient feedback
-        </Button>}
-        <Button
-          onClick={() => {
-            getPatientReviewsForMedicalRecord(selectedRecord?._id || "");
-            setShowPatientReviewList(true);
-          }}
-          variant="green"
-        >
-          Show patient feedback
-        </Button>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => {
+              getPatientReviewsForMedicalRecord(selectedRecord?._id || "");
+              setShowPatientReviewList(true);
+            }}
+          >
+            View feedback
+          </Button>
+
+          {patientStatus === "current" && (
+            <Button onClick={patientFeedbackModelView}>Add feedback</Button>
+          )}
+        </DialogFooter>
+
         {showPatientFeedbackModel && (
           <AddPatientFeedbackDialog
             isOpen={showPatientFeedbackModel}
@@ -164,9 +153,10 @@ const MedicalRecordDetailsDialog = ({
           />
         )}
       </DialogContent>
+
       <PatientReviewsList
-      isFetchingPatientReviews={isFetchingPatientReviews}
-      patientReview={patientReview}
+        isFetchingPatientReviews={isFetchingPatientReviews}
+        patientReview={patientReview}
         isOpen={showPatientReviewList}
         setIsOpen={setShowPatientReviewList}
       />

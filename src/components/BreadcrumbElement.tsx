@@ -18,8 +18,9 @@ type Props = {
   currentPage: string;
 };
 
-const BreadcrumbElement = ({ currentPage }: Props) => {
-  const user_role = localStorage.getItem("user_role");
+const BreadcrumbElement = ({ items = [], currentPage }: Props) => {
+  const userRole = localStorage.getItem("user_role");
+  const rootLabel = userRole === "doctor" ? "Patients" : "My care team";
 
   const handleBackClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -28,21 +29,29 @@ const BreadcrumbElement = ({ currentPage }: Props) => {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="text-sm">
         <BreadcrumbItem>
-          {user_role === "doctor" ? (
-            <BreadcrumbLink href="#" onClick={handleBackClick}>
-              Dashboard
-            </BreadcrumbLink>
-          ) : (
-            <BreadcrumbLink href="#" onClick={handleBackClick}>
-              Home
-            </BreadcrumbLink>
-          )}
+          <BreadcrumbLink
+            href="#"
+            onClick={handleBackClick}
+            className="transition-colors hover:text-foreground"
+          >
+            {rootLabel}
+          </BreadcrumbLink>
         </BreadcrumbItem>
+
+        {items.map((item) => (
+          <React.Fragment key={item.link}>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={item.link}>{item.name}</BreadcrumbLink>
+            </BreadcrumbItem>
+          </React.Fragment>
+        ))}
+
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{currentPage}</BreadcrumbPage>
+          <BreadcrumbPage className="font-medium">{currentPage}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

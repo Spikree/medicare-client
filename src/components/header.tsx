@@ -3,16 +3,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Menu, User, LogIn, UserPlus, X, LogOut, Plus } from "lucide-react";
+import { LayoutGrid, LogIn, LogOut, Menu, Plus, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "./ui/card";
 import { defaultProfileImage } from "@/assets/assets";
 import { useUiStore } from "@/store/UiStore";
+import { Logo } from "@/components/Logo";
+
+const marketingLinks = [
+  { label: "Features", href: "#features" },
+  { label: "Security", href: "#security" },
+  { label: "Testimonials", href: "#testimonials" },
+];
 
 export default function Header() {
   const { authUser, logout } = useAuthStore();
@@ -20,206 +27,165 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleItemClick = (): void => {
-    setIsOpen(false);
-  };
+  const homePath = authUser?.role === "doctor" ? "/dashboard" : "/home";
 
   const handleLinkClick = (href: string): void => {
     if (href.startsWith("#")) {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = href;
+      navigate(href);
     }
-    handleItemClick();
-  };
-
-  const logoutUser = () => {
-    logout();
+    setIsOpen(false);
   };
 
   return (
-    <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-emerald-600 hover:text-emerald-700 transition-colors duration-200 cursor-pointer">
-                MedCare Pro
-              </h1>
-            </div>
-          </div>
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
+      <div className="container flex h-16 items-center justify-between gap-4">
+        <button
+          type="button"
+          onClick={() => navigate(authUser ? homePath : "/")}
+          className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label="MedCare Pro home"
+        >
+          <Logo />
+        </button>
 
-          {authUser ? (
+        {authUser ? (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
+              onClick={() => navigate(homePath)}
+            >
+              <LayoutGrid />
+              {authUser.role === "doctor" ? "Dashboard" : "My care"}
+            </Button>
+
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
-                  aria-label="Open navigation menu"
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  aria-label="Open account menu"
                 >
-                  {isOpen ? (
-                    <X className="h-5 w-5" />
-                  ) : (
-                    <Menu className="h-5 w-5" />
-                  )}
-                </Button>
+                  <img
+                    src={authUser.profilePicture || defaultProfileImage}
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                  <span className="hidden max-w-[10rem] truncate font-medium sm:block">
+                    {authUser.name}
+                  </span>
+                </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                sideOffset={8}
-              >
-                <div className="py-1">
-                  <DropdownMenuItem
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => navigate("/profile")}
-                  >
-                    <Card className="h-10 w-10 rounded-full">
-                      <img
-                        src={authUser?.profilePicture || defaultProfileImage}
-                        alt=""
-                        className="h-10 w-10 rounded-full"
-                      />
-                    </Card>
-                    <div>
-                      <p>{authUser.name}</p>
-                      <p className="text-xs">{authUser.email}</p>
-                    </div>
+
+              <DropdownMenuContent align="end" sideOffset={8} className="w-64">
+                <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
+                  <img
+                    src={authUser.profilePicture || defaultProfileImage}
+                    alt=""
+                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                  />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {authUser.name}
+                    </span>
+                    <span className="block truncate text-xs font-normal text-muted-foreground">
+                      {authUser.email}
+                    </span>
+                  </span>
+                </DropdownMenuLabel>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Profile
+                </DropdownMenuItem>
+
+                {authUser.role === "patient" && (
+                  <DropdownMenuItem onClick={toggleAddHealthInfoModal}>
+                    <Plus className="mr-2 h-4 w-4 text-muted-foreground" />
+                    Add health info
                   </DropdownMenuItem>
-                  {authUser?.role === "patient" && (
-                    <DropdownMenuItem
-                      onClick={toggleAddHealthInfoModal}
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    >
-                      <Plus className="h-4 w-4 mr-3 text-gray-400" />
-                      Add health info
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                    onClick={() => logoutUser()}
-                  >
-                    <LogOut className="h-4 w-4 mr-3 text-gray-400" />
-                    Log out
-                  </DropdownMenuItem>
-                </div>
+                )}
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={() => logout()}
+                  className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <nav className="hidden md:block">
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="ghost"
-                    className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                    onClick={() => handleLinkClick("#features")}
-                  >
-                    Features
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                    onClick={() => handleLinkClick("#testimonials")}
-                  >
-                    Testimonials
-                  </Button>
-                </div>
-
-                <div className="flex items-center space-x-3 border-l border-gray-200 pl-6">
-                  <Button
-                    variant="ghost"
-                    className="text-gray-600 hover:text-emerald-600 hover:bg-emerald-50"
-                    onClick={() => handleLinkClick("/auth")}
-                  >
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
-                  </Button>
-                  <Button
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
-                    onClick={() => handleLinkClick("/auth")}
-                  >
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Get Started
-                  </Button>
-                </div>
-              </div>
+          </div>
+        ) : (
+          <>
+            <nav className="hidden items-center gap-1 md:flex">
+              {marketingLinks.map((link) => (
+                <button
+                  key={link.href}
+                  type="button"
+                  onClick={() => handleLinkClick(link.href)}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {link.label}
+                </button>
+              ))}
             </nav>
-          )}
 
-          {authUser ? null : (
+            <div className="hidden items-center gap-2 md:flex">
+              <Button variant="ghost" onClick={() => handleLinkClick("/auth")}>
+                Sign in
+              </Button>
+              <Button onClick={() => handleLinkClick("/auth")}>
+                Get started
+              </Button>
+            </div>
+
             <div className="md:hidden">
               <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="relative p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200"
+                    variant="outline"
+                    size="icon"
                     aria-label="Open navigation menu"
                   >
-                    {isOpen ? (
-                      <X className="h-5 w-5" />
-                    ) : (
-                      <Menu className="h-5 w-5" />
-                    )}
+                    <Menu />
                   </Button>
                 </DropdownMenuTrigger>
 
-                {authUser ? (
-                  ""
-                ) : (
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-56 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                    sideOffset={8}
+                <DropdownMenuContent align="end" sideOffset={8} className="w-56">
+                  {marketingLinks.map((link) => (
+                    <DropdownMenuItem
+                      key={link.href}
+                      onClick={() => handleLinkClick(link.href)}
+                    >
+                      {link.label}
+                    </DropdownMenuItem>
+                  ))}
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onClick={() => handleLinkClick("/auth")}>
+                    <LogIn className="mr-2 h-4 w-4 text-muted-foreground" />
+                    Sign in
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleLinkClick("/auth")}
+                    className="font-medium text-primary focus:text-primary"
                   >
-                    <div className="py-1">
-                      <DropdownMenuItem
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                        onClick={() => handleLinkClick("#features")}
-                      >
-                        <User className="h-4 w-4 mr-3 text-gray-400" />
-                        Features
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                        onClick={() => handleLinkClick("#testimonials")}
-                      >
-                        <User className="h-4 w-4 mr-3 text-gray-400" />
-                        Testimonials
-                      </DropdownMenuItem>
-                    </div>
-
-                    <DropdownMenuSeparator className="h-px bg-gray-200" />
-
-                    <div className="py-1">
-                      <DropdownMenuItem
-                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-                        onClick={() => handleLinkClick("/auth")}
-                      >
-                        <LogIn className="h-4 w-4 mr-3 text-gray-400" />
-                        Sign In
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem
-                        className="flex items-center px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50 cursor-pointer transition-colors duration-200"
-                        onClick={() => handleLinkClick("/auth")}
-                      >
-                        <UserPlus className="h-4 w-4 mr-3 text-emerald-500" />
-                        Get Started
-                      </DropdownMenuItem>
-                    </div>
-                  </DropdownMenuContent>
-                )}
+                    Get started
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </header>
   );

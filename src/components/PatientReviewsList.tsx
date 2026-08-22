@@ -6,9 +6,11 @@ import {
   DialogDescription,
 } from "./ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import type { PatientReview } from "@/store/PatientStore";
-import { Loader } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 
 interface Props {
   isOpen: boolean;
@@ -17,115 +19,113 @@ interface Props {
   isFetchingPatientReviews: boolean;
 }
 
+/** Side-effect strings the backend uses to mean "nothing to report". */
+const NO_SIDE_EFFECTS = ["none.", "no side effects to rest"];
+
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("");
+
 const PatientReviewsList = ({
   isOpen,
   setIsOpen,
   patientReview,
   isFetchingPatientReviews,
 }: Props) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString(undefined, {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] lg:max-w-[750px] bg-slate-50 dark:bg-slate-900">
+      <DialogContent className="w-[95vw] max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-            Patient Feedback
-          </DialogTitle>
+          <DialogTitle>Feedback on this record</DialogTitle>
           <DialogDescription>
-            Here's what patients are saying about their experience.
+            Notes left by the patient and the treating clinician.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[60vh] w-full rounded-md border p-4 bg-white dark:bg-slate-950">
-          {isFetchingPatientReviews ? (
-            <div className="flex justify-center">
-              <Loader className="animate-spin"/>
-            </div>
-            
-          ) : (
-            <div className="space-y-4">
-              {patientReview?.length > 0 ? (
-                patientReview.map((review) => (
-                  <Card
+        {isFetchingPatientReviews ? (
+          <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading feedback…
+          </div>
+        ) : patientReview?.length > 0 ? (
+          <ScrollArea className="scrollbar-slim max-h-[60vh] pr-3">
+            <ul className="space-y-3">
+              {patientReview.map((review) => {
+                const byDoctor = review?.reviewBy === "doctor";
+                const author = byDoctor ? review.doctor : review.patient;
+                const showSideEffects =
+                  review.sideEffects &&
+                  !NO_SIDE_EFFECTS.includes(
+                    review.sideEffects.trim().toLowerCase()
+                  );
+
+                return (
+                  <li
                     key={review._id}
-                    className="shadow-md hover:shadow-lg transition-shadow duration-300 dark:bg-slate-800"
+                    className="rounded-lg border border-border p-4"
                   >
-                    {review?.reviewBy === "doctor" ? (
-                      <CardHeader className="flex flex-row items-start space-x-4 pb-3">
-                        <div className="flex flex-col gap-2">
-                          <p className=" text-gray-500 dark:text-gray-400">
-                            {review.doctor.name}
-                          </p>
-                          <div className="flex flex-col gap-2">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {review.doctor.email}
-                            </p>
-                            <hr />
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Reviewed on {formatDate(review.createdOn)}
-                            </p>
-                          </div>
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>
+                          {initials(author?.name ?? "?")}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="truncate text-sm font-medium">
+                            {byDoctor ? `Dr. ${author?.name}` : author?.name}
+                          </span>
+                          <Badge variant={byDoctor ? "brand" : "muted"}>
+                            {byDoctor ? "Clinician" : "Patient"}
+                          </Badge>
+                          <span className="tabular ml-auto text-xs text-muted-foreground">
+                            {formatDate(review.createdOn)}
+                          </span>
                         </div>
-                      </CardHeader>
-                    ) : (
-                      <CardHeader>
-                        <div className="flex flex-col gap-2">
-                          <p className=" text-gray-500 dark:text-gray-400">
-                            {review.patient.name}
-                          </p>
-                          <div className="flex flex-col gap-2">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {review.patient.email}
-                            </p>
-                            <hr />
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Reviewed on {formatDate(review.createdOn)}
-                            </p>
-                          </div>
-                        </div>
-                      </CardHeader>
-                    )}
-                    <CardContent>
-                      <div>
-                        <h4 className="font-semibold mb-1 text-gray-800 dark:text-gray-200">
-                          Review:
-                        </h4>
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                          "{review.patientReview}"
+
+                        <p className="truncate text-xs text-muted-foreground">
+                          {author?.email}
                         </p>
-                      </div>
-                      {review.sideEffects &&
-                        review.sideEffects.toLowerCase() !== "none." &&
-                        review.sideEffects.toLowerCase() !==
-                          "no side effects to rest" && (
-                          <div className="mt-4">
-                            <h4 className="font-semibold mb-1 text-gray-800 dark:text-gray-200">
-                              Side Effects Noted:
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+
+                        <p className="mt-3 text-sm leading-relaxed">
+                          {review.patientReview}
+                        </p>
+
+                        {showSideEffects && (
+                          <div className="mt-3 rounded-md border border-warning/25 bg-warning/10 p-3">
+                            <p className="text-xs font-medium uppercase tracking-wider text-warning">
+                              Side effects noted
+                            </p>
+                            <p className="mt-1 text-sm leading-relaxed">
                               {review.sideEffects}
                             </p>
                           </div>
                         )}
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-                  <p className="text-lg font-semibold">No Reviews Yet</p>
-                  <p>Check back later for patient feedback.</p>
-                </div>
-              )}
-            </div>
-          )}
-        </ScrollArea>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </ScrollArea>
+        ) : (
+          <EmptyState
+            icon={MessageSquare}
+            title="No feedback yet"
+            description="Feedback added against this record will appear here."
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

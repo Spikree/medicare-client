@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
@@ -11,7 +18,7 @@ interface props {
     patientDetailId: string,
     patientReview: string,
     sideEffects: string,
-    reviewBy: string,
+    reviewBy: string
   ) => void | Promise<void>;
   patientDetailId: string;
 }
@@ -24,47 +31,57 @@ const AddPatientFeedbackDialog = ({
 }: props) => {
   const [patientReview, setPatientReview] = useState("");
   const [sideEffects, setSideEffects] = useState("");
-  const reviewBy = localStorage.getItem("user_role") || ""
+  const reviewBy = localStorage.getItem("user_role") || "";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    Promise.resolve(onSubmit(patientDetailId, patientReview, sideEffects, reviewBy)).then(
-      () => {
-        setPatientReview("");
-        setSideEffects("");
-        onOpenChange(false);
-      }
-    );
+    Promise.resolve(
+      onSubmit(patientDetailId, patientReview, sideEffects, reviewBy)
+    ).then(() => {
+      setPatientReview("");
+      setSideEffects("");
+      onOpenChange(false);
+    });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Patient Feedback</DialogTitle>
+          <DialogTitle>Add feedback</DialogTitle>
+          <DialogDescription>
+            Record how the patient responded to this course of treatment.
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="patientReview">Patient Review</Label>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="patientReview">Review</Label>
             <Textarea
               id="patientReview"
               value={patientReview}
               onChange={(e) => setPatientReview(e.target.value)}
-              placeholder="Enter patient review..."
-              className="min-h-[100px]"
+              placeholder="How the treatment went"
+              required
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="sideEffects">Side Effects</Label>
+
+          <div className="space-y-2">
+            <Label htmlFor="sideEffects">
+              Side effects{" "}
+              <span className="font-normal text-muted-foreground">
+                (optional)
+              </span>
+            </Label>
             <Textarea
               id="sideEffects"
               value={sideEffects}
               onChange={(e) => setSideEffects(e.target.value)}
-              placeholder="Enter any side effects..."
-              className="min-h-[100px]"
+              placeholder="Any adverse reactions observed"
             />
           </div>
-          <div className="flex justify-end gap-2">
+
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -72,10 +89,10 @@ const AddPatientFeedbackDialog = ({
             >
               Cancel
             </Button>
-            <Button variant={"green"} type="submit">
-              Submit Feedback
+            <Button type="submit" disabled={!patientReview.trim()}>
+              Submit feedback
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

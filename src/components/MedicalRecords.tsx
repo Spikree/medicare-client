@@ -1,20 +1,13 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Calendar,
-  Download,
-  Eye,
-  FileText,
-  Loader,
-  PersonStanding,
-  Plus,
-  Upload,
-} from "lucide-react";
+import { Download, FileText, HeartPulse, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -29,11 +22,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { PatientDetails } from "@/store/DoctorStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useParams } from "react-router-dom";
 import { CommonStore } from "@/store/CommonStore";
 import { useEffect, useState } from "react";
+import MedicalRecordCard from "@/components/MedicalRecordCard";
+import EmptyState from "@/components/EmptyState";
 
 interface Props {
   patientDetailsList: PatientDetails[];
@@ -94,214 +88,171 @@ const MedicalRecords = ({
       medicalRecord.doctor?.toString() === authUser?._id.toString()
   );
 
+  const visibleRecords = showPatientDetailsByCurrentDoctor
+    ? patientDetailsByCurrentDoctor
+    : patientDetailsList;
+
+  const canSubmitRecord =
+    disease.trim() && symptom.trim() && medicationPrescribed.trim();
+
   return (
     <Dialog
       open={isUploadPatientsDialogOpen}
       onOpenChange={setIsUploadPatientsDialogOpen}
     >
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-        <div className="flex flex-col items-start gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-              {patientName}
-            </h1>
-            <p className="text-muted-foreground">
-              Medical Records ({patientDetailsList.length} entries)
-            </p>
-            <hr className="mt-2" />
-            <div className="flex items-center text-muted-foreground mt-2">
-              <span className="mr-2">By you</span>
-              <Checkbox
-                checked={showPatientDetailsByCurrentDoctor}
-                onCheckedChange={(checked) =>
-                  setShowPatientDetailsByCurrentDoctor(!!checked)
-                }
-              />
-            </div>
+      <div className="mb-5 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3">
+          <h2 className="text-base font-semibold">
+            Medical records
+            <span className="ml-2 tabular text-sm font-normal text-muted-foreground">
+              {patientDetailsList.length}{" "}
+              {patientDetailsList.length === 1 ? "entry" : "entries"}
+            </span>
+          </h2>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="authored-by-me"
+              checked={showPatientDetailsByCurrentDoctor}
+              onCheckedChange={(checked) =>
+                setShowPatientDetailsByCurrentDoctor(!!checked)
+              }
+            />
+            <Label
+              htmlFor="authored-by-me"
+              className="text-sm font-normal text-muted-foreground"
+            >
+              Only records I authored
+            </Label>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {patientStatus === "current" && (
-            <DialogTrigger asChild>
-              <Button
-                className="flex items-center gap-2 w-full sm:w-auto"
-                variant="green"
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Upload patient records</span>
-                <span className="sm:hidden">Upload Records</span>
+            <>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus />
+                  Add record
+                </Button>
+              </DialogTrigger>
+
+              <Button onClick={getAllPatientData} variant="outline">
+                <Download />
+                Export data
               </Button>
-            </DialogTrigger>
-          )}
-          {patientStatus === "current" && (
-            <Button
-              onClick={getAllPatientData}
-              variant={"green"}
-              className="w-full sm:w-auto"
-            >
-              <Download />
-              <span className="hidden sm:inline">
-                Download all patient data
-              </span>
-              <span className="sm:hidden">Download Data</span>
-            </Button>
+            </>
           )}
 
           <Button
-            onClick={() =>
-              setIsAllergiesAndHealthInfoOpen(!isAllergiesAndHealthInfoOpen)
-            }
-            variant={"green"}
+            onClick={() => setIsAllergiesAndHealthInfoOpen(true)}
+            variant="outline"
           >
-            <PersonStanding className="h-4 w-4" />
-            Patient info
+            <HeartPulse />
+            Health info
           </Button>
         </div>
       </div>
 
       {fetchingPatientDetails ? (
-        <div className="flex justify-center p-8 m-8">
-          <Loader className="animate-spin" />
+        <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading records…
         </div>
-      ) : patientDetailsList?.length > 0 ? (
-        <div className="space-y-4">
-          {(showPatientDetailsByCurrentDoctor
-            ? patientDetailsByCurrentDoctor
-            : patientDetailsList
-          ).map((record: PatientDetails) => (
-            <Card
+      ) : visibleRecords?.length > 0 ? (
+        <div className="space-y-3">
+          {visibleRecords.map((record: PatientDetails) => (
+            <MedicalRecordCard
               key={record._id}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Disease
-                      </label>
-                      <p className="text-sm text-foreground break-words">
-                        {record.Disease}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Symptoms
-                      </label>
-                      <p className="text-sm text-foreground break-words">
-                        {record.symptom}
-                      </p>
-                    </div>
-                    <div className="space-y-1 sm:col-span-2 lg:col-span-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Date
-                      </label>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3 flex-shrink-0" />
-                        {new Date(record.createdOn).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewMore(record)}
-                    className="flex items-center gap-2 w-full sm:w-auto lg:ml-4"
-                  >
-                    <Eye className="h-4 w-4" />
-                    View More
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              record={record}
+              onViewMore={() => handleViewMore(record)}
+            />
           ))}
         </div>
       ) : patientStatus === "old" ? (
-        <div className="flex flex-col items-center justify-center min-h-[347px]">
-          <div className="text-center">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              Patient has removed your access to their the data
-            </h3>
-            <p className="text-muted-foreground">
-              No medical records.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="Access to this patient's data has been removed"
+          description="The patient revoked your access, so their records are no longer visible."
+        />
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[347px]">
-          <div className="text-center">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              No Medical Records Yet
-            </h3>
-            <p className="text-muted-foreground">
-              No medical records have been uploaded for this patient.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No medical records yet"
+          description="Records you add for this patient will appear here."
+        />
       )}
 
-      <DialogContent className="sm:max-w-md flex flex-col gap-4 p-4 sm:p-6 sm:mx-0 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
-            <Upload className="h-5 w-5" />
-            Upload patient records
-          </DialogTitle>
+          <DialogTitle>Add medical record</DialogTitle>
+          <DialogDescription>
+            Capture the visit against {patientName ?? "this patient"}&rsquo;s
+            chart.
+          </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Disease</label>
-          <Input
-            required
-            value={disease}
-            onChange={(e) => setDisease(e.target.value)}
-            placeholder="Enter disease"
-            className="focus:ring-2 focus:ring-green-500"
-          />
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="record-disease">Diagnosis</Label>
+            <Input
+              id="record-disease"
+              required
+              value={disease}
+              onChange={(e) => setDisease(e.target.value)}
+              placeholder="e.g. Community-acquired pneumonia"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="record-symptoms">Symptoms</Label>
+            <Textarea
+              id="record-symptoms"
+              required
+              value={symptom}
+              onChange={(e) => setSymptom(e.target.value)}
+              placeholder="Presenting symptoms and observations"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="record-medication">Medication prescribed</Label>
+            <Textarea
+              id="record-medication"
+              required
+              value={medicationPrescribed}
+              onChange={(e) => setMedicationPrescribed(e.target.value)}
+              placeholder="Drug, dose, and duration"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="record-experience">
+              Patient experience{" "}
+              <span className="font-normal text-muted-foreground">
+                (optional)
+              </span>
+            </Label>
+            <Textarea
+              id="record-experience"
+              value={patientExperience}
+              onChange={(e) => setPatientExperience(e.target.value)}
+              placeholder="How the patient described the episode"
+            />
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">Symptoms</label>
-          <Textarea
-            required
-            value={symptom}
-            onChange={(e) => setSymptom(e.target.value)}
-            placeholder="Enter symptoms"
-            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Patient Experience
-          </label>
-          <Textarea
-            value={patientExperience}
-            onChange={(e) => setPatientExperience(e.target.value)}
-            placeholder="Enter patient experience"
-            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-700">
-            Medication Prescribed
-          </label>
-          <Textarea
-            required
-            value={medicationPrescribed}
-            onChange={(e) => setMedicationPrescribed(e.target.value)}
-            placeholder="Enter medication prescribed"
-            className="focus:ring-2 focus:ring-green-500 min-h-[100px]"
-          />
-        </div>
-        <Button
-          onClick={() => {
-            addPatientRecords();
-          }}
-          variant="green"
-          className="mt-4 w-full"
-        >
-          Submit
-        </Button>
+
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setIsUploadPatientsDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button onClick={addPatientRecords} disabled={!canSubmitRecord}>
+            Save record
+          </Button>
+        </DialogFooter>
       </DialogContent>
 
       <AlertDialog
@@ -309,23 +260,31 @@ const MedicalRecords = ({
         onOpenChange={setIsAllergiesAndHealthInfoOpen}
       >
         <AlertDialogContent>
-          <AlertDialogTitle>{patientName} Health info</AlertDialogTitle>
+          <AlertDialogTitle>
+            {patientName ?? "Patient"} — health info
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {allergiesAndHealthInfo?.createdOn}
+            {allergiesAndHealthInfo?.createdOn
+              ? `Last updated ${new Date(
+                  allergiesAndHealthInfo.createdOn
+                ).toLocaleDateString()}`
+              : "No health information recorded yet."}
           </AlertDialogDescription>
 
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            Known Allergies
-          </Label>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Known allergies</Label>
+              <Input readOnly value={allergiesAndHealthInfo?.allergies ?? ""} />
+            </div>
 
-          <Input readOnly value={allergiesAndHealthInfo?.allergies} />
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            General healthInfo
-          </Label>
-          <Textarea
-            readOnly
-            value={allergiesAndHealthInfo?.generalHealthInfo}
-          />
+            <div className="space-y-2">
+              <Label>General health info</Label>
+              <Textarea
+                readOnly
+                value={allergiesAndHealthInfo?.generalHealthInfo ?? ""}
+              />
+            </div>
+          </div>
 
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>

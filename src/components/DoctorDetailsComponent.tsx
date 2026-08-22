@@ -2,13 +2,12 @@ import {
   PatientStore,
   type DoctorDetailsInterface,
 } from "@/store/PatientStore";
-import { Dialog } from "./ui/dialog";
-import { Card, CardContent } from "./ui/card";
-import { Calendar, Eye, FileText, Loader } from "lucide-react";
-import { Button } from "./ui/button";
+import { FileText, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import type { doctorDataAccessInfo } from "@/store/PatientStore";
-import { useEffect } from "react";
+import MedicalRecordCard from "@/components/MedicalRecordCard";
+import EmptyState from "@/components/EmptyState";
 
 interface Props {
   doctorDetailsList: DoctorDetailsInterface[];
@@ -27,10 +26,10 @@ const DoctorDetailsComponent = ({
   isFetchingDoctorDetails,
   doctorDataAccessInfo,
   giveDoctorDataAccess,
-  removeDataAccessFromDoctor
+  removeDataAccessFromDoctor,
 }: Props) => {
-  const { removeDoctor, reassignDoctor, getDoctorDataAccessInfo } = PatientStore();
-  const { doctorName } = useParams();
+  const { removeDoctor, reassignDoctor, getDoctorDataAccessInfo } =
+    PatientStore();
   const navigate = useNavigate();
 
   const { doctorId } = useParams();
@@ -51,155 +50,101 @@ const DoctorDetailsComponent = ({
     }
   };
 
-  useEffect(() => {
-
-  }, [doctorDataAccessInfo])
-
   const handleGiveDataAccess = () => {
     if (doctorId) {
       giveDoctorDataAccess(doctorId);
       getDoctorDataAccessInfo(doctorId);
     }
-  }
+  };
 
   const handleRemoveDataAccess = () => {
     if (doctorId) {
       removeDataAccessFromDoctor(doctorId);
       getDoctorDataAccessInfo(doctorId);
     }
-  }
+  };
+
+  const hasAccess = Boolean(doctorDataAccessInfo?.patientDataAccess);
 
   return (
-    <Dialog>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-        <div className="flex flex-col items-start gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-              {doctorName}
-            </h1>
-            <p className="text-muted-foreground">
-              Medical Records ({doctorDetailsList.length} entries)
-            </p>
-            <hr className="mt-2" />
-            <div className="flex items-center text-muted-foreground mt-2"></div>
-          </div>
-        </div>
+    <>
+      <div className="mb-5 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-base font-semibold">
+          Medical records
+          <span className="ml-2 tabular text-sm font-normal text-muted-foreground">
+            {doctorDetailsList.length}{" "}
+            {doctorDetailsList.length === 1 ? "entry" : "entries"}
+          </span>
+        </h2>
 
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {doctorStatus === "current" ? (
-            <Button
-              onClick={handleRemoveDoctor}
-              variant={"green"}
-              className="w-full sm:w-auto"
-            >
-              <span className="hidden sm:inline">Remove Doctor</span>
-              <span className="sm:hidden">Remove</span>
+            <Button variant="destructive" onClick={handleRemoveDoctor}>
+              Remove doctor
             </Button>
           ) : (
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-wrap">
-              <Button
-                onClick={handleReassignDoctor}
-                variant={"green"}
-                className="w-full sm:w-auto"
-              >
-                <span className="hidden sm:inline">Reassign Doctor</span>
-                <span className="sm:hidden">Reassign</span>
-              </Button>
-
-              {doctorDataAccessInfo?.patientDataAccess ? (
-                <Button
-                  onClick={handleRemoveDataAccess}
-                  variant={"green"}
-                  className="w-full sm:w-auto"
-                >
-                  <span className="">Remove data access</span>
-                  {/* <span className="sm:hidden">Remove</span> */}
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleGiveDataAccess}
-                  variant={"green"}
-                  className="w-full sm:w-auto"
-                >
-                  <span className="">Give data access</span>
-                  {/* <span className="sm:hidden">Remove</span> */}
-                </Button>
-              )}
-            </div>
+            <Button variant="outline" onClick={handleReassignDoctor}>
+              Reassign doctor
+            </Button>
           )}
-
-
         </div>
       </div>
 
+      {/* Data-sharing control for past clinicians — the patient decides whether
+          a former doctor keeps visibility of their history. */}
+      {doctorStatus !== "current" && (
+        <div className="mb-5 flex flex-col gap-3 rounded-lg border border-border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-3">
+            {hasAccess ? (
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+            ) : (
+              <ShieldOff className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+            )}
+            <div>
+              <p className="text-sm font-medium">
+                {hasAccess
+                  ? "This doctor can see your records"
+                  : "This doctor cannot see your records"}
+              </p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                You can change this at any time.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant={hasAccess ? "destructive" : "default"}
+            onClick={hasAccess ? handleRemoveDataAccess : handleGiveDataAccess}
+            className="shrink-0"
+          >
+            {hasAccess ? "Revoke access" : "Grant access"}
+          </Button>
+        </div>
+      )}
+
       {isFetchingDoctorDetails ? (
-        <div className="flex justify-center p-8 m-8">
-          <Loader className="animate-spin" />
+        <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading records…
         </div>
       ) : doctorDetailsList?.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {doctorDetailsList.map((record: DoctorDetailsInterface) => (
-            <Card
+            <MedicalRecordCard
               key={record._id}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Disease
-                      </label>
-                      <p className="text-sm text-foreground break-words">
-                        {record.Disease}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Symptoms
-                      </label>
-                      <p className="text-sm text-foreground break-words">
-                        {record.symptom}
-                      </p>
-                    </div>
-                    <div className="space-y-1 sm:col-span-2 lg:col-span-1">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Date
-                      </label>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3 flex-shrink-0" />
-                        {new Date(record.createdOn).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewMore(record)}
-                    className="flex items-center gap-2 w-full sm:w-auto lg:ml-4"
-                  >
-                    <Eye className="h-4 w-4" />
-                    View More
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              record={record}
+              onViewMore={() => handleViewMore(record)}
+            />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[347px]">
-          <div className="text-center">
-            <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              No Medical Records Yet
-            </h3>
-            <p className="text-muted-foreground">
-              No medical records have been uploaded for this patient.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No medical records yet"
+          description="Records this clinician adds will appear here."
+        />
       )}
-    </Dialog>
+    </>
   );
 };
 

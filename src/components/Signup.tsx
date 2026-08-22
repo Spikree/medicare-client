@@ -1,195 +1,226 @@
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import { AuthLayout } from "./AuthLayout"
-import { useAuthStore } from "@/store/useAuthStore"
-import { toast } from "sonner"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Loader2, Stethoscope, User } from "lucide-react";
+import { AuthLayout } from "./AuthLayout";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface props {
-    setShowLogin: (value: boolean) => void;
+  setShowLogin: (value: boolean) => void;
 }
 
-export function SignupForm({setShowLogin} : props) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+const roles = [
+  {
+    value: "doctor",
+    label: "Doctor",
+    hint: "Manage patients and records",
+    icon: Stethoscope,
+  },
+  {
+    value: "patient",
+    label: "Patient",
+    hint: "Track your own care",
+    icon: User,
+  },
+] as const;
+
+export function SignupForm({ setShowLogin }: props) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     role: "",
-  })
+  });
 
-  const {signup} = useAuthStore();
-
-  const roles = [
-    { value: "doctor", label: "Doctor" },
-    { value: "patient", label: "Patient" },
-  ]
+  const { signup } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
 
-    const containsHTML = /<[^>]*>/g.test(formData.name);
+    if (/<[^>]*>/g.test(formData.name)) {
+      toast.error("Invalid name");
+      return;
+    }
 
-    if (containsHTML) {
-    toast.error("Invalid name");
-    setIsLoading(false);
-    return;
-  }
+    if (!formData.role) {
+      toast.error("Select whether you're a doctor or a patient");
+      return;
+    }
 
-    signup(formData.name, formData.email, formData.password, formData.role as "doctor" | "patient");
+    if (!acceptedTerms) {
+      toast.error("Please accept the Terms of Service to continue");
+      return;
+    }
 
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    try {
+      await signup(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.role as "doctor" | "patient"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
-
-  const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: value,
-    }))
-  }
+    }));
+  };
 
   return (
-    <AuthLayout title="Create your account" subtitle="Join thousands of healthcare professionals using MedCare Pro">
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div>
-          <Label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Full name
-          </Label>
-          <div className="mt-1">
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              required
-              value={formData.name}
-              onChange={handleInputChange}
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your full name"
-            />
+    <AuthLayout
+      title="Create your account"
+      subtitle="Set up your practice in a couple of minutes."
+    >
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        {/* Role is the decision that shapes the whole account, so it leads and
+            is shown as an explicit choice rather than hidden in a dropdown. */}
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-sm font-medium">I'm signing up as</legend>
+          <div className="grid grid-cols-2 gap-3">
+            {roles.map(({ value, label, hint, icon: Icon }) => {
+              const selected = formData.role === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, role: value }))
+                  }
+                  className={cn(
+                    "rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    selected
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "border-input hover:border-border hover:bg-accent/50"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "h-4 w-4",
+                      selected ? "text-primary" : "text-muted-foreground"
+                    )}
+                  />
+                  <span className="mt-2 block text-sm font-medium">{label}</span>
+                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                    {hint}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+        </fieldset>
+
+        <div className="space-y-2">
+          <Label htmlFor="name">Full name</Label>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            required
+            value={formData.name}
+            onChange={handleInputChange}
+            placeholder="Dr. Sarah Johnson"
+          />
         </div>
 
-        <div>
-          <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email address
-          </Label>
-          <div className="mt-1">
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your email"
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email address</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="you@practice.com"
+          />
         </div>
 
-        <div>
-          <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </Label>
-          <div className="mt-1 relative">
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
             <Input
               id="password"
               name="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
               required
+              minLength={8}
               value={formData.password}
               onChange={handleInputChange}
-              className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
-              placeholder="Create a password"
+              className="pr-10"
+              placeholder="At least 8 characters"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
-          <p className="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
         </div>
 
-        <div>
-          <Label htmlFor="role" className="block text-sm font-medium text-gray-700">
-            Role
-          </Label>
-          <div className="mt-1">
-            <Select onValueChange={handleRoleChange} required>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select your role" />
-              </SelectTrigger>
-              <SelectContent>
-                {roles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex items-center">
-          <input
+        <div className="flex items-start gap-2.5">
+          <Checkbox
             id="terms"
-            name="terms"
-            type="checkbox"
-            required
-            className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+            checked={acceptedTerms}
+            onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+            className="mt-0.5"
           />
-          <Label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+          <Label
+            htmlFor="terms"
+            className="text-sm font-normal leading-relaxed text-muted-foreground"
+          >
             I agree to the{" "}
-            <a href="#" className="text-emerald-600 hover:text-emerald-500">
+            <a href="#" className="text-primary underline-offset-4 hover:underline">
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="#" className="text-emerald-600 hover:text-emerald-500">
+            <a href="#" className="text-primary underline-offset-4 hover:underline">
               Privacy Policy
             </a>
           </Label>
         </div>
 
-        <div>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
-          >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? "Creating account..." : "Create account"}
-          </Button>
-        </div>
+        <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading ? "Creating account…" : "Create account"}
+        </Button>
 
-        <div className="text-center">
-          <span className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <a onClick={() => {setShowLogin(true)}} className="font-medium text-emerald-600 hover:text-emerald-500 cursor-pointer">
-              Sign in here
-            </a>
-          </span>
-        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => setShowLogin(true)}
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Sign in
+          </button>
+        </p>
       </form>
     </AuthLayout>
-  )
+  );
 }

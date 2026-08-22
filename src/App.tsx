@@ -30,12 +30,12 @@ const App = () => {
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex flex-col items-center justify-center space-y-2">
-          <Loader className="animate-spin h-10 w-10" />
-          <p className="max-w-96 text-center">
-            Backend might take some time to spin up as it's hosted on a free
-            service
+      <div className="flex h-screen items-center justify-center bg-surface p-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <Loader className="h-7 w-7 animate-spin text-primary" />
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Starting up — the backend is hosted on a free tier and can take a
+            moment to wake.
           </p>
         </div>
       </div>

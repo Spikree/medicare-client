@@ -11,11 +11,11 @@ import { useUiStore } from "@/store/UiStore";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
 import { PatientStore } from "@/store/PatientStore";
 import { useEffect, useState } from "react";
-// import { CommonStore } from "@/store/CommonStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Label } from "@radix-ui/react-label";
+import { Pencil } from "lucide-react";
 
 const AddPatientHealthInfo = () => {
   const {
@@ -49,86 +49,75 @@ const AddPatientHealthInfo = () => {
       open={isAddHealthInfoModalOpen}
       onOpenChange={toggleAddHealthInfoModal}
     >
-      {isEditingHealthInfo ? (
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Add health info</AlertDialogTitle>
-            <AlertDialogDescription>
-              Add all the allergies and health info which helps doctors make
-              informed decisions
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            Known Allergies
-          </Label>
-
-          <Input
-            value={allergies}
-            onChange={(e) => {
-              setAllergies(e.target.value);
-            }}
-            placeholder="Add your allergies"
-          />
-
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            General healthInfo
-          </Label>
-          <Textarea
-            value={healthInfo}
-            onChange={(e) => {
-              setHealthInfo(e.target.value);
-            }}
-            placeholder="Add your healthinfo"
-          />
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setIsEditingHealthInfo(!isEditingHealthInfo)}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <Button
-              onClick={() => {
-                addAllergiesAndHealthinfo(allergies, healthInfo);
-              }}
-              variant={"green"}
-            >
-              Save
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      ) : (
-        <AlertDialogContent>
-          <AlertDialogTitle>Health info</AlertDialogTitle>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {isEditingHealthInfo ? "Edit health info" : "Health info"}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This data will help doctors make an informed decision
+            Allergies and background conditions help your clinicians make
+            informed decisions about your care.
           </AlertDialogDescription>
+        </AlertDialogHeader>
 
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            Known Allergies
-          </Label>
+        <div className="space-y-4 py-1">
+          <div className="space-y-2">
+            <Label htmlFor="allergies">Known allergies</Label>
+            <Input
+              id="allergies"
+              readOnly={!isEditingHealthInfo}
+              value={
+                isEditingHealthInfo
+                  ? allergies
+                  : allergiesAndHealthInfo?.allergies ?? ""
+              }
+              onChange={(e) => setAllergies(e.target.value)}
+              placeholder="e.g. Penicillin, peanuts"
+            />
+          </div>
 
-          <Input readOnly value={allergiesAndHealthInfo?.allergies} />
-          <Label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            General healthInfo
-          </Label>
-          <Textarea
-            readOnly
-            value={allergiesAndHealthInfo?.generalHealthInfo}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="general-health-info">General health info</Label>
+            <Textarea
+              id="general-health-info"
+              readOnly={!isEditingHealthInfo}
+              value={
+                isEditingHealthInfo
+                  ? healthInfo
+                  : allergiesAndHealthInfo?.generalHealthInfo ?? ""
+              }
+              onChange={(e) => setHealthInfo(e.target.value)}
+              placeholder="Ongoing conditions, medication you take regularly, anything a clinician should know"
+            />
+          </div>
+        </div>
 
-          <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
-            <Button
-              onClick={() => setIsEditingHealthInfo(!isEditingHealthInfo)}
-              variant={"green"}
-              className="flex items-center gap-2"
-            >
-              Edit Information
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      )}
+        <AlertDialogFooter>
+          {isEditingHealthInfo ? (
+            <>
+              <AlertDialogCancel onClick={() => setIsEditingHealthInfo(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <Button
+                onClick={() => {
+                  addAllergiesAndHealthinfo(allergies, healthInfo);
+                  setIsEditingHealthInfo(false);
+                }}
+              >
+                Save
+              </Button>
+            </>
+          ) : (
+            <>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+              <Button onClick={() => setIsEditingHealthInfo(true)}>
+                <Pencil />
+                Edit information
+              </Button>
+            </>
+          )}
+        </AlertDialogFooter>
+      </AlertDialogContent>
     </AlertDialog>
   );
 };

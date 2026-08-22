@@ -4,14 +4,11 @@ import { useState } from "react";
 
 const Auth = () => {
   const [showLogin, setShowLogin] = useState(true);
-  return (
-    <div className="p-8 min-h-max">
-      {showLogin ? (
-        <LoginForm setShowLogin={setShowLogin} />
-      ) : (
-        <SignupForm setShowLogin={setShowLogin} />
-      )}
-    </div>
+
+  return showLogin ? (
+    <LoginForm setShowLogin={setShowLogin} />
+  ) : (
+    <SignupForm setShowLogin={setShowLogin} />
   );
 };
 

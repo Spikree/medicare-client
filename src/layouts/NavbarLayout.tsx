@@ -3,11 +3,13 @@ import { Outlet } from "react-router-dom";
 
 const SidebarLayout = () => {
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden bg-surface text-surface-foreground">
       <Header />
 
-      <div className="flex-grow bg-gray-100 p-4 sm:p-6 overflow-y-auto">
-        <Outlet />
+      <div className="scrollbar-slim flex-grow overflow-y-auto">
+        <div className="container py-6 lg:py-8">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

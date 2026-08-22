@@ -5,7 +5,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function CheckoutForm({
   clientSecret,
@@ -51,7 +52,7 @@ export default function CheckoutForm({
     if (error) {
       if (error.type === "card_error" || error.type === "validation_error") {
         setMessage(
-          error.message ?? "An unexpected error occurred with your card.",
+          error.message ?? "An unexpected error occurred with your card."
         );
       } else {
         setMessage("An unexpected error occurred. Please try again.");
@@ -62,40 +63,38 @@ export default function CheckoutForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-6 w-full max-w-md mx-auto"
-    >
-      <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Subscription Summary
-        </h3>
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
+      <div className="rounded-lg border border-border bg-muted/40 p-5">
+        <h2 className="text-sm font-semibold">Subscription summary</h2>
 
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-gray-600">
-            <span>AI Summary Pro Plan</span>
-            <span className="font-medium text-gray-900">£3.00 / month</span>
+        <dl className="mt-4 space-y-2.5 text-sm">
+          <div className="flex items-center justify-between gap-4">
+            <dt className="text-muted-foreground">AI Summary Pro</dt>
+            <dd className="tabular font-medium">£3.00 / month</dd>
           </div>
-          {/* Only show the free trial line if they are getting one! */}
+
+          {/* Only show the free trial line if they are getting one */}
           {!hasHadTrial && (
-            <div className="flex justify-between text-gray-600">
-              <span>Free Trial</span>
-              <span className="font-medium text-green-600">7 Days</span>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-muted-foreground">Free trial</dt>
+              <dd>
+                <Badge variant="success">7 days</Badge>
+              </dd>
             </div>
           )}
-        </div>
+        </dl>
 
-        <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
-          <span className="font-semibold text-gray-900">Due Today</span>
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+          <span className="text-sm font-semibold">Due today</span>
           {/* Change the amount due based on their history */}
-          <span className="text-xl font-bold text-gray-900">
+          <span className="tabular text-lg font-semibold">
             {hasHadTrial ? "£3.00" : "£0.00"}
           </span>
         </div>
 
-        <p className="text-xs text-gray-500 mt-3 text-center">
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
           {hasHadTrial
-            ? "Your subscription will begin immediately."
+            ? "Your subscription begins immediately."
             : "You won't be charged until your trial ends. Cancel anytime."}
         </p>
       </div>
@@ -104,27 +103,25 @@ export default function CheckoutForm({
 
       <Button
         type="submit"
+        size="lg"
         disabled={isLoading || !stripe || !elements}
-        className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white h-12 text-lg rounded-xl transition-transform active:scale-95"
+        className="w-full"
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>Processing...</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5" />
-            <span>
-              {hasHadTrial ? "Subscribe Now" : "Start 7-Day Free Trial"}
-            </span>
-          </div>
-        )}
+        {isLoading && <Loader2 className="animate-spin" />}
+        {isLoading
+          ? "Processing…"
+          : hasHadTrial
+            ? "Subscribe now"
+            : "Start 7-day free trial"}
       </Button>
 
       {message && (
-        <div className="text-sm text-red-500 text-center mt-2 font-medium bg-red-50 p-3 rounded-lg border border-red-100">
-          {message}
+        <div
+          role="alert"
+          className="flex gap-2.5 rounded-md border border-destructive/25 bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span className="leading-relaxed">{message}</span>
         </div>
       )}
     </form>

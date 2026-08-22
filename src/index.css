@@ -4,58 +4,99 @@
 
 @layer base {
   :root {
+    /* Canvas ------------------------------------------------------------ */
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 200 24% 12%;
+
+    /* The app shell sits on a tinted canvas so white cards read as raised
+       surfaces without needing heavy shadows. */
+    --surface: 195 24% 97%;
+    --surface-foreground: 200 24% 12%;
+
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 200 24% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --greenPrimary: 142, 71%, 45%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --popover-foreground: 200 24% 12%;
+
+    /* Brand ------------------------------------------------------------- */
+    --primary: 193 42% 27%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 25% 95%;
+    --secondary-foreground: 195 32% 24%;
+
+    --muted: 200 20% 96%;
+    --muted-foreground: 200 12% 42%;
+
+    --accent: 190 38% 94%;
+    --accent-foreground: 193 48% 22%;
+
+    /* Status ------------------------------------------------------------ */
+    --destructive: 0 65% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 62% 28%;
+    --success-foreground: 0 0% 100%;
+    --warning: 32 85% 40%;
+    --warning-foreground: 0 0% 100%;
+    --info: 205 72% 36%;
+    --info-foreground: 0 0% 100%;
+
+    /* Lines ------------------------------------------------------------- */
+    --border: 200 18% 89%;
+    --input: 200 18% 85%;
+    --ring: 193 52% 34%;
+
+    --chart-1: 193 42% 32%;
+    --chart-2: 172 46% 38%;
+    --chart-3: 205 62% 42%;
+    --chart-4: 32 72% 48%;
+    --chart-5: 260 34% 48%;
+
+    --radius: 0.5rem;
   }
+
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --background: 200 30% 8%;
+    --foreground: 195 18% 93%;
+
+    --surface: 200 30% 6%;
+    --surface-foreground: 195 18% 93%;
+
+    --card: 200 26% 11%;
+    --card-foreground: 195 18% 93%;
+    --popover: 200 26% 11%;
+    --popover-foreground: 195 18% 93%;
+
+    --primary: 187 52% 52%;
+    --primary-foreground: 200 40% 9%;
+
+    --secondary: 200 20% 17%;
+    --secondary-foreground: 195 18% 93%;
+
+    --muted: 200 20% 16%;
+    --muted-foreground: 200 12% 62%;
+
+    --accent: 195 28% 19%;
+    --accent-foreground: 187 52% 72%;
+
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 158 52% 44%;
+    --success-foreground: 200 40% 9%;
+    --warning: 36 78% 54%;
+    --warning-foreground: 200 40% 9%;
+    --info: 205 68% 56%;
+    --info-foreground: 200 40% 9%;
+
+    --border: 200 18% 20%;
+    --input: 200 18% 24%;
+    --ring: 187 52% 46%;
+
+    --chart-1: 187 52% 52%;
+    --chart-2: 168 48% 48%;
+    --chart-3: 205 62% 58%;
+    --chart-4: 36 74% 56%;
+    --chart-5: 264 46% 64%;
   }
 }
 
@@ -63,7 +104,64 @@
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings carry the weight in this design; tightening tracking at large
+     sizes is what separates it from default Tailwind type. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  /* Tabular figures keep clinical values (dates, counts, IDs) aligned. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    @apply bg-primary/15;
+  }
+}
+
+@layer components {
+  /* Thin, low-contrast scrollbars — chat and record lists scroll a lot. */
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+  }
+
+  .scrollbar-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Subtle grid used behind the marketing hero. */
+  .bg-grid {
+    background-image: linear-gradient(
+        to right,
+        hsl(var(--border) / 0.6) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, hsl(var(--border) / 0.6) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 }
