@@ -31,13 +31,14 @@ export default function CheckoutPage() {
       hasFetched.current = true;
 
       try {
-        const response = await fetch(import.meta.env.VITE_BACKEND_URL, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/stripe/create-subscription`, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: authUser.email,
             name: authUser.name || "Unknown User",
-            // Put your actual Price ID here
+            // Put actual Price ID here
             priceId: import.meta.env.VITE_PRICE_ID,
           }),
         });
