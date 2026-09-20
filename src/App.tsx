@@ -34,7 +34,7 @@ const App = () => {
         <div className="flex flex-col items-center gap-4 text-center">
           <Loader className="h-7 w-7 animate-spin text-primary" />
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Starting up — the backend is hosted on a free tier and can take a
+            Starting up the backend is hosted on a free tier and can take a
             moment to wake.
           </p>
         </div>
